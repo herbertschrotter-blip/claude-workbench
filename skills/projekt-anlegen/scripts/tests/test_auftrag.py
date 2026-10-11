@@ -11,7 +11,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import auftrag as a  # noqa: E402
 
-KATALOG = {"python-tool": {"id": "python-tool", "version": 1, "features": {"storage": ["none", "sqlite"]}}}
+KATALOG = {"python-tool": {"id": "python-tool", "version": 1, "features": {"storage": ["none", "sqlite"]},
+                           "lizenz": {"MIT": ["lizenz-mit"], "Apache-2.0": ["lizenz-apache"]}}}
 GUT = {
     "schema_version": 1,
     "project": {"name": "Beispiel Werkzeug", "slug": "beispiel-werkzeug", "package": "beispiel_werkzeug"},
@@ -140,6 +141,35 @@ class ZielTest(unittest.TestCase):
             os.symlink(fremd, Path(tmp) / "neu")
             with self.assertRaises(a.AuftragFehler):
                 a.zielordner(tmp, "neu")
+
+
+class LizenzTest(unittest.TestCase):
+    LIZENZ = {"art": "MIT", "inhaber": "Vorname Nachname", "jahr": 2026}
+
+    def fehler(self, lizenz):
+        with self.assertRaises(a.AuftragFehler) as ctx:
+            a.pruefen(mit(lizenz=lizenz), KATALOG)
+        return " | ".join(ctx.exception.fehler)
+
+    def test_ohne_und_mit_lizenz(self):
+        a.pruefen(copy.deepcopy(GUT), KATALOG)
+        for art in a.LIZENZEN:
+            a.pruefen(mit(lizenz=dict(self.LIZENZ, art=art)), KATALOG)
+
+    def test_ungueltige_lizenz(self):
+        self.assertIn("lizenz.art", self.fehler(dict(self.LIZENZ, art="GPL")))
+        self.assertIn("lizenz.inhaber", self.fehler(dict(self.LIZENZ, inhaber="a/b")))
+        self.assertIn("lizenz.inhaber", self.fehler(dict(self.LIZENZ, inhaber=" ")))
+        for jahr in (1999, 2101, "2026", True):
+            self.assertIn("lizenz.jahr", self.fehler(dict(self.LIZENZ, jahr=jahr)), jahr)
+        self.assertIn("lizenz.jahr: fehlt", self.fehler({"art": "MIT", "inhaber": "X"}))
+        self.assertIn("lizenz.url: unbekanntes Feld", self.fehler(dict(self.LIZENZ, url="x")))
+
+    def test_projektart_ohne_lizenz(self):
+        katalog = {"python-tool": dict(KATALOG["python-tool"], lizenz={})}
+        with self.assertRaises(a.AuftragFehler) as ctx:
+            a.pruefen(mit(lizenz=self.LIZENZ), katalog)
+        self.assertIn("erlaubt: keine", " ".join(ctx.exception.fehler))
 
 
 if __name__ == "__main__":

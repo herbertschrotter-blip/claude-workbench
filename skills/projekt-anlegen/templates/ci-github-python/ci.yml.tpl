@@ -15,5 +15,6 @@ jobs:
       - run: python -m pip install -e ".[dev]"
       - run: python -m ruff format --check .
       - run: python -m ruff check .
+      - run: python -m mypy
       - run: python -m pytest
       - run: python -m {{package}} status

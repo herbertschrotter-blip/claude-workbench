@@ -46,7 +46,8 @@ class SqliteSpeicher:
     def status_lesen(self) -> str:
         con = sqlite3.connect(self._datei)
         try:
-            return con.execute("SELECT state FROM system_status WHERE id = 1").fetchone()[0]
+            zeile = con.execute("SELECT state FROM system_status WHERE id = 1").fetchone()
+            return str(zeile[0])
         finally:
             con.close()
 

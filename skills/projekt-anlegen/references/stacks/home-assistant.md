@@ -60,7 +60,8 @@ Faustregeln aus den HA-Vorgaben (Details in `docs/ha-grundsatz/`):
 - **Eigene Integration** (Repo): `custom_components/<domain>/` mit `__init__.py`, `manifest.json` (`domain`, `name`,
   `version`, `documentation`, `codeowners`, `iot_class`, `config_flow`, `requirements`), `const.py`,
   `translations/de.json` und `en.json`; dazu `hacs.json`, `README.md`, `CHANGELOG.md`, `tests/`. Vorlage ist das
-  verbreitete `integration_blueprint`. Ausgeliefert wird der Ordner nach `custom_components/<domain>/`. Der
+  verbreitete `integration_blueprint`. Ausgeliefert wird der Ordner nach `custom_components/<domain>/`; der Generator
+  legt dafür `ausliefern.py` mit Rückweg (`--zurueck`) ins Projekt. Der
   Generator erzeugt sie lauffähig und geprüft (Projektart `ha-integration` in `references/generator.md`, Aufsatz auf
   vorhandene Entitäten oder eigener Abruf); von Hand nur, was er nicht kennt.
 

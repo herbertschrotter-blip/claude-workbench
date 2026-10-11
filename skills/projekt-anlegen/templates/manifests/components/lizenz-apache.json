@@ -1,0 +1,19 @@
+{
+  "id": "lizenz-apache",
+  "requires": [
+    "common"
+  ],
+  "conflicts": [
+    "lizenz-mit"
+  ],
+  "files": [
+    {
+      "source": "lizenz-apache/LICENSE.tpl",
+      "target": "LICENSE"
+    },
+    {
+      "source": "lizenz-apache/NOTICE.tpl",
+      "target": "NOTICE"
+    }
+  ]
+}

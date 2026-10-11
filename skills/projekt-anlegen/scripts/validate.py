@@ -3,7 +3,7 @@
 
 Prüft, was das Skill-Prüfskript (tools/validate-skills.ps1) nicht prüft: Manifeste gültig, jede Kombination einer
 Projektart auflösbar (bekannte Bausteine, keine Zyklen oder Konflikte, Vorlagen vorhanden, keine doppelten
-Zieldateien), nur erlaubte Platzhalter, UTF-8 ohne BOM, keine Projektwerte (absolute Pfade, Konten) in Vorlagen.
+Zieldateien, auch mit jeder Lizenz), nur erlaubte Platzhalter, UTF-8 ohne BOM, keine Projektwerte (absolute Pfade, Konten) in Vorlagen.
 Exit 0 = alles gut, sonst 1 mit den Befunden.
 
 Mit `--erzeugen <ablage>` erzeugt und prüft das Skript zusätzlich jede freigegebene Kombination echt (Werkzeuge
@@ -29,6 +29,8 @@ VERBOTEN = [
     (re.compile(r"(?i)herbert|schrotter"), "Name eines Kontos"),
     (re.compile(r"(?i)(?:api[_-]?key|token|password|passwort)\s*[:=]\s*['\"][^'\"{]{4,}"), "Zugangsdaten"),
 ]
+MUSTER_LIZENZEN = [None, {"art": "MIT", "inhaber": "Prüf Inhaber", "jahr": 2026},
+                   {"art": "Apache-2.0", "inhaber": "Prüf Inhaber", "jahr": 2026}]
 MUSTER_AUFTRAG = {
     "schema_version": 1,
     "project": {"name": "Prüfprojekt", "slug": "pruefprojekt", "package": "pruefprojekt"},
@@ -48,10 +50,13 @@ def pruefen(templates=TEMPLATES):
     for art in arten.values():
         befunde += [f"{art['id']}: {f}" for f in tokens_pruefen(art.get("pruefung", {}))]
         for kombination in art.get("kombinationen", []):
-            for github in (False, True):
+            lizenzen = [z for z in MUSTER_LIZENZEN if z is None or z["art"] in art.get("lizenz", {})]
+            for github, lizenz in [(g, z) for g in (False, True) for z in lizenzen]:
                 auftrag = dict(MUSTER_AUFTRAG, template={"id": art["id"], "version": art["version"]},
                                features=dict(kombination), delivery={"github": github})
-                wo = f"{art['id']} {kombination}{' + GitHub' if github else ''}"
+                if lizenz:
+                    auftrag["lizenz"] = lizenz
+                wo = f"{art['id']} {kombination}{' + GitHub' if github else ''}{' + ' + lizenz['art'] if lizenz else ''}"
                 try:
                     ids = auswahl(auftrag, art)
                     dateiplan(aufloesen(ids, katalog), katalog, {k: "x" for k in ERLAUBTE_PLATZHALTER | features},
@@ -94,6 +99,8 @@ def alle_erzeugen(ablage, templates=TEMPLATES):
                                                         "package": slug.replace("-", "_")},
                                template={"id": art["id"], "version": art["version"]},
                                features=dict(kombination), delivery={"github": github})
+                if github and art.get("lizenz"):  # öffentliche Repos bekommen eine Lizenz; beide Arten kommen dran
+                    auftrag["lizenz"] = MUSTER_LIZENZEN[1 + nr % 2]
                 r = anlegen(auftrag, ablage, templates)
                 zeilen = ", ".join(
                     f"{x['name']} übersprungen ({x['uebersprungen']})" if "uebersprungen" in x

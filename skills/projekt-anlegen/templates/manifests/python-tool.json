@@ -21,6 +21,14 @@
       "ci-github-python"
     ]
   },
+  "lizenz": {
+    "MIT": [
+      "lizenz-mit"
+    ],
+    "Apache-2.0": [
+      "lizenz-apache"
+    ]
+  },
   "kombinationen": [
     {
       "storage": "none"
@@ -68,6 +76,14 @@
           "ruff",
           "check",
           "."
+        ]
+      },
+      {
+        "name": "typen",
+        "befehl": [
+          "{venv_python}",
+          "-m",
+          "mypy"
         ]
       },
       {

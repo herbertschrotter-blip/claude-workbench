@@ -8,3 +8,4 @@ dist/
 *.egg-info/
 .env
 daten/
+.mypy_cache/

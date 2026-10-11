@@ -14,7 +14,7 @@ from pathlib import Path, PurePosixPath
 from auftrag import TEMPLATES, AuftragFehler
 
 PLATZHALTER = re.compile(r"\{\{\s*([A-Za-z_][A-Za-z0-9_]*)\s*\}\}")
-ERLAUBTE_PLATZHALTER = {"name", "slug", "package", "package_upper", "github"}
+ERLAUBTE_PLATZHALTER = {"name", "slug", "package", "package_upper", "github", "lizenz_inhaber", "lizenz_jahr"}
 VERSION_PRAEFIX = "v_"  # {{v_<paket>}}: Version aus templates/versions.json (Bindestriche als _)
 
 
@@ -52,7 +52,7 @@ def komponenten(templates=TEMPLATES):
 
 def werte(auftrag, katalog_versionen=None):
     """Platzhalterwerte aus dem Auftrag (nur Texte, keine Pfade aus Nutzereingaben) und dem Versionskatalog."""
-    project = auftrag["project"]
+    project, lizenz = auftrag["project"], auftrag.get("lizenz")
     return {
         **(katalog_versionen or {}),
         "name": project["name"],
@@ -61,6 +61,7 @@ def werte(auftrag, katalog_versionen=None):
         "package_upper": project["package"].upper(),
         **{key: str(wert) for key, wert in auftrag["features"].items()},
         "github": "true" if auftrag["delivery"]["github"] else "false",
+        **({"lizenz_inhaber": lizenz["inhaber"], "lizenz_jahr": str(lizenz["jahr"])} if lizenz else {}),
     }
 
 
@@ -82,12 +83,14 @@ def ersetzen(text, werte_, wo="Vorlage"):
 
 
 def auswahl(auftrag, manifest):
-    """Bausteine, die der Auftrag verlangt: Grundbausteine, je Feature, je Auslieferung."""
+    """Bausteine, die der Auftrag verlangt: Grundbausteine, je Feature, je Auslieferung, je Lizenz."""
     ids = list(manifest.get("components", []))
     for key, wert in auftrag["features"].items():
         ids += manifest["features"][key][wert]
     if auftrag["delivery"]["github"]:
         ids += manifest.get("delivery", {}).get("github", [])
+    if auftrag.get("lizenz"):
+        ids += manifest["lizenz"][auftrag["lizenz"]["art"]]
     return list(dict.fromkeys(ids))
 
 

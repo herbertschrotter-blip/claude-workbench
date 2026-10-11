@@ -8,6 +8,19 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.52.0] — 2026-10-11
+
+- **skills/projekt-anlegen, Feature (Projekt-Generator P3):**
+  - Update-Prüfung: `scripts/versionen.py` vergleicht `templates/versions.json` mit PyPI; der Skill ruft es vor jedem
+    neuen Projekt auf und nennt neuere Versionen (nur Hinweis; HA und HA-Testpaket nur gemeinsam anheben).
+  - Typprüfung: mypy 2.4.0 als Check `typen` – Python-Werkzeug strict für Paket und Tests, HA-Integration strict für
+    die Fachlogik ohne HA und `ausliefern.py`; in Manifest, Skill-Profil und CI des neuen Projekts.
+  - Lizenz: freiwilliges Feld `lizenz` im Erzeugungsauftrag (MIT, Apache-2.0; Inhaber, Jahr); der Plan wählt sie bei
+    öffentlichem GitHub-Repo (MIT als Vorschlag), privat keine.
+  - Auslieferung mit Rückweg für HA-Integrationen: `ausliefern.py` kopiert nach `custom_components/<domain>`, sichert
+    die vorige Fassung im Projekt, `--zurueck` stellt sie wieder her; nur durch den Nutzer oder nach Bestätigung,
+    `Code.Auslieferung` im Profil.
+
 ## [v0.51.1] — 2026-10-11
 
 - **skills/code-erstellen, Fix:** Selbst-Review: `code-review` meldet nur, beheben, testen und committen macht
