@@ -30,7 +30,7 @@ CLAUDE.md.
 - Repos: `herbertschrotter-blip/claude-workbench`; zusätzlich der Referenzfall `herbertschrotter-blip/HA_Dash_DreameX60`
 - Kontextquelle: im Referenzfall `docs/ARCHITEKTUR.md`, `docs/DATEN.md`, `docs/HAUSREGELN.md`, `docs/ENTSCHEIDUNGEN.md`;
   hier `docs/ha-grundsatz/`; höchstens 3–5 Blöcke
-- Ergebnis-Ort: `docs/ha-grundsatz/` (Grundsatzregeln) und `skills/modul-bauplan/` (Skill)
+- Ergebnis-Ort: `docs/ha-grundsatz/` (Grundsatzregeln; einen eigenen Skill gibt es nicht)
 - Pflicht-Block „Rahmen“:
 
 ```
@@ -38,8 +38,8 @@ CLAUDE.md.
 
 - Herbert ist Home-Assistant-Einsteiger; gebaut wird mit Claude Code. Regeln müssen für ihn verständlich und für
   Claude eindeutig prüfbar sein.
-- Ergebnis: (1) eine Doku „HA-Grundsatzregeln“ (Skill-Repo, docs/ha-grundsatz/), (2) der Skill „modul-bauplan“, der
-  vom Konzept bis zum fertigen Dashboard führt und die Reihenfolge vorschlägt (Modi: Planen, Prüfen, Nachschlagen).
+- Ergebnis: die Doku „HA-Grundsatzregeln“ (Skill-Repo, docs/ha-grundsatz/); sie nutzen die Skills projekt-anlegen
+  (Anlegen), code-erstellen (Bauen) und audit (Prüfen) – einen eigenen Skill dafür gibt es nicht.
 - Skills sind projektneutral: Projektwerte (Pfade, Präfixe, IDs) stehen in einem Profil der CLAUDE.md des jeweiligen
   Repos; Plattform-Spezifisches (Home Assistant) in einer eigenen Referenzdatei des Skills.
 - Bestehende Apps (Referenzfall Heidi) werden nach den Grundsatzregeln von Grund auf neu gebaut – ohne Migration:
