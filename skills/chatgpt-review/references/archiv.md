@@ -47,7 +47,7 @@ Beispiele (BPM, Heidi): [`beispiele.md`](beispiele.md#themen).
     ├── README.md          ← Serie-Übersicht, Runden-Zusammenfassung
     ├── r1/
     │   ├── 01-claude-prompt.md       ← Claudes Prompt an ChatGPT
-    │   ├── 02-chatgpt-response.md    ← ChatGPTs Antwort im Canvas
+    │   ├── 02-chatgpt-response.md    ← ChatGPTs Antwort (Weg kopieren: aus dem Canvas)
     │   ├── 03-claude-analysis.md     ← Claudes Einschätzung/Reaktion
     │   └── 04-user-decisions.md      ← Herberts Antworten + Entscheidungen
     ├── r2/ ...
@@ -76,7 +76,8 @@ Wenn der User eine neue Review-Serie startet, VOR Phase 1 Initialprompt:
    Bei "neues Thema": Prosa-Frage nach Kurzname (kebab-case).
 
 2. **CGR-ID festziehen:** `CGR-<aktuelles-YYYY-MM-DD>-<thema>`
-   (aktuelles Datum nehmen, nicht fragen)
+   (aktuelles Datum nehmen, nicht fragen). Existiert der Ordner schon: nie überschreiben, Auswahlfrage „bestehende
+   Serie fortsetzen / neue Serie mit Suffix `-2` / abbrechen“
 
 3. **Repo-Pfad ermitteln:**
    - Claude Code: Repo-Wurzel der Sitzung (`git rev-parse --show-toplevel`)
@@ -96,6 +97,7 @@ Wenn der User eine neue Review-Serie startet, VOR Phase 1 Initialprompt:
    **Branch:** <Branch>
    **Weg:** codex | kopieren
    **Codex-Thread:** <thread_id, nur Weg codex>
+   **Websuche:** live | aus <nur Weg codex>
    **Ursprungs-Chat:** <optional, nur Cowork>
    **Status:** Runde 1 offen
 
@@ -143,7 +145,7 @@ Wenn innerhalb einer bestehenden Serie eine neue Runde beginnt:
 | Phase | Aktion | Datei |
 |-------|--------|-------|
 | Phase 1 Initialprompt erstellt | `01-claude-prompt.md` schreiben (DC / Write) | r<N>/01-claude-prompt.md |
-| ChatGPT-Antwort liegt vor (codex: Aufruf fertig; kopieren: User pastet) | `02-chatgpt-response.md` schreiben (codex: schreibt Codex mit `-o`; sonst DC / Write) | r<N>/02-chatgpt-response.md |
+| ChatGPT-Antwort liegt vor (codex: Aufruf fertig; kopieren: User pastet) | `02-chatgpt-response.md` schreiben (codex: Claude kopiert die Ausgabe nach Erfolg aus dem Scratchpad; sonst DC / Write) | r<N>/02-chatgpt-response.md |
 | Phase 2 Stufe A Claude-Analyse | `03-claude-analysis.md` schreiben (DC / Write) | r<N>/03-claude-analysis.md |
 | User-Entscheidungen nach Stufe A | `04-user-decisions.md` schreiben (DC / Write) | r<N>/04-user-decisions.md |
 

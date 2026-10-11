@@ -8,6 +8,20 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.53.1] — 2026-10-11
+
+- **skills/chatgpt-review, Fix (Weg codex nach Review CGR-2026-10-11-skillsystem):**
+  - Sandbox-Test vor jedem Aufruf (`codex sandbox -c sandbox_mode="read-only" -- true`); weiter nur mit der Diagnose
+    einer geprüften Umgebung (neuer Abschnitt „Geprüfte Umgebungen“), sonst Weg codex anhalten.
+  - Vertrauensblock in jedem Prompt; Websuche auf Serienebene (`**Websuche:** live | aus`), vor dem Senden aus bei
+    Dateiinhalt oder vertraulichem Kontext, dann Block „Dateien“ statt Repo-Zugriff.
+  - Ausgabe je Versuch im Scratchpad, erst bei Erfolg unverändert nach `02`; Timeout mit `timeout -k`, nie zwei
+    Versuche gleichzeitig; Aufruf auch bei `resume` im Scratchpad; Hinweis nach Fehlversuch.
+  - Raw-Links am geprüften Remote-Commit statt am Branch (Ausnahme im Kern), Commit-Wechsel nennen; Codex-Optionen nur
+    Modell und Denktiefe; Kontextrekonstruktion beim Wechsel auf „kopieren“.
+  - Konsistenz: Weg-Tabelle, Stufe A/B, Lifecycle `02`, Canvas im Archiv; bestehende Serie nie überschreiben; drei
+    neue VERBOTEN-Punkte.
+
 ## [v0.53.0] — 2026-10-11
 
 - **skills/chatgpt-review, Feature (Weg codex):** In Claude Code führt der Skill die Review-Runden selbst über die Codex
