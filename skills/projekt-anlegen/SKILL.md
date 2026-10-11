@@ -107,6 +107,8 @@ bevor gefragt wird; ein Plan nur im eigenen Denken gilt nicht als gezeigt. Auswa
   erzeugt das Grundgerüst in einen Zwischenordner, prüft es (Werkzeuge einrichten, Formatierung, Lint, Tests, Start)
   und stellt es erst bei Grün an seinen Platz. Bei Rot entsteht nichts; Claude meldet den Schritt und die Ursache.
   Ergebnis als Tabelle Prüfung / Dauer / Ergebnis. Ablauf, Aufruf und Grenzen: `references/generator.md`.
+- **Versionen:** Vor dem Generator `scripts/versionen.py` aufrufen und neuere Werkzeugversionen in einem Satz nennen.
+  Das ist nur ein Hinweis; angehoben wird erst nach grüner CI des Generators.
 - **Sonst** Ordner und Grunddateien nach der Stack-Reference. Nur das Gerüst: lauffähige Minimalfassung, keine
   Fachlogik.
 - **Testgerüst parallel-fähig**, wenn der Stack einen Testläufer mit Parallelbetrieb hat (Stack-Reference): Die Zahl
