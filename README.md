@@ -13,6 +13,7 @@ Skill lädt. Alles kommt als Plugin über den Marketplace `workbench`.
 | **Claude Code**, angemeldet | darin laufen die Skills | Das Skript bietet den offiziellen Installer an und meldet am Ende an (`claude auth login`, Browser) |
 | **git** | Claude Code holt den Marketplace als Git-Repo | Das Skript installiert es auf Wunsch |
 | **Python 3** (ab 3.8) | Skill-Log und Wächter sind Python-Skripte | Das Skript installiert es auf Wunsch (Windows: aus dem Microsoft Store, damit `python3` funktioniert) |
+| Codex CLI (optional), angemeldet | Skill chatgpt-review führt die Review-Runden damit selbst (Weg codex) | Das Skript bietet den offiziellen Installer an, prüft die Version und meldet am Ende an (ChatGPT-Konto) |
 | ClickUp-Konnektor (optional) | nur für den Skill tracker | bei claude.ai unter Konnektoren |
 
 ### 2. Installieren – ein Befehl
@@ -31,7 +32,8 @@ curl -fsSL https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbe
 
 Das Skript prüft zuerst ohne Netz, was schon da ist, und stellt dann **alle Fragen auf einmal**:
 
-1. **Was fehlt, installieren?** (git, Python, Claude Code – nur, was wirklich fehlt; Updates für git werden angeboten)
+1. **Was fehlt, installieren?** (git, Python, Claude Code – nur, was wirklich fehlt; Updates für git werden angeboten;
+   dazu die Codex CLI für chatgpt-review – fehlt sie, wird sie angeboten, ist sie veraltet, das Update)
 2. **Desktop-App oder Terminal?** In der Claude-Desktop-App kommen nur die Helfer (`work-hooks`), die Skills holt die
    App von claude.ai. Im Terminal kommen Skills und Helfer (`work`, dazu `skill-workshop`).
 3. **Rechnername** – Vorschlag ist der Windows-Computername bzw. der schon eingerichtete Name (z. B. `surface`).
@@ -96,7 +98,8 @@ ClickUp-Konnektor (MCP). Die Skills sprechen Deutsch.
 unbeaufsichtigt: Fehlendes installieren (git und Python mit winget bzw. Paketmanager, Claude Code mit dem offiziellen
 Installer, parallel), `~/.local/bin` dauerhaft in den PATH, Marketplace, Plugins passend zum Rechner, Optionen
 `log_host` und `log_repo`, `autoUpdate`, auf Wunsch `skillOverrides`, Probe der Hooks, unter Windows optional eine
-wöchentliche Aufgabe für git-Updates, zum Schluss die Anmeldung. Ein erneuter Lauf setzt fort bzw. aktualisiert.
+wöchentliche Aufgabe für git-Updates, optional die Codex CLI (offizieller Installer, Versionsprüfung), zum Schluss die
+Anmeldung (Claude, Codex). Ein erneuter Lauf setzt fort bzw. aktualisiert.
 Ablauf, Protokoll, Entfernen und Fehlerquellen: [`docs/installation.md`](./docs/installation.md).
 
 Windows (PowerShell):
@@ -112,8 +115,8 @@ curl -fsSL https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbe
 ```
 
 Optionen: `--modus terminal|desktop`, `--host <name>`, `--log-repo <owner/name>`, `--ja` (alle Vorschläge annehmen),
-`--ohne-overrides`, `--ohne-login`, `--entfernen`; unter Windows `-Modus`, `-RechnerName`, `-LogRepo`, `-Ja`,
-`-OhneOverrides`, `-OhneLogin`, `-Entfernen` (mit `powershell -File tools\install.ps1 …` aus einem Klon, oder
+`--ohne-overrides`, `--ohne-login`, `--codex`/`--ohne-codex`, `--entfernen`; unter Windows `-Modus`, `-RechnerName`,
+`-LogRepo`, `-Ja`, `-OhneOverrides`, `-OhneLogin`, `-Codex`/`-OhneCodex`, `-Entfernen` (mit `powershell -File tools\install.ps1 …` aus einem Klon, oder
 `& ([scriptblock]::Create((irm …/install.ps1))) -Entfernen`).
 Die Logik steht in [`tools/einrichten.py`](./tools/einrichten.py).
 

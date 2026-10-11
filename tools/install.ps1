@@ -2,14 +2,15 @@
 #
 #   irm https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbench/main/tools/install.ps1 | iex
 #   powershell -ExecutionPolicy Bypass -File tools\install.ps1 [-Modus terminal|desktop] [-RechnerName NAME]
-#              [-LogRepo owner/name] [-Ja] [-OhneOverrides]
+#              [-LogRepo owner/name] [-Ja] [-OhneOverrides] [-Codex | -OhneCodex]
 #   Entfernen:  & ([scriptblock]::Create((irm https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbench/main/tools/install.ps1))) -Entfernen
 #               bzw. powershell -ExecutionPolicy Bypass -File tools\install.ps1 -Entfernen
 # Protokoll fuer das Entfernen: ~/.claude/workbench-einrichtung.json (was das Skript installiert hat, was schon da war).
 #
 # Ablauf: Bestandsaufnahme ohne Netz -> Hintergrund-Pruefungen starten -> ALLE Fragen auf einmal -> unbeaufsichtigt
-# installieren (winget nacheinander, Claude-Installer als eigener Prozess parallel) -> Marketplace -> einrichten.py
-# (Plugins, Optionen, autoUpdate, skillOverrides, Probe) -> optional geplante Aufgabe fuer git-Updates -> Anmeldung.
+# installieren (winget nacheinander, Claude-Installer als eigener Prozess parallel, danach optional die Codex CLI mit
+# ihrem offiziellen Installer) -> Marketplace -> einrichten.py (Plugins, Optionen, autoUpdate, skillOverrides, Probe)
+# -> optional geplante Aufgabe fuer git-Updates -> Anmeldung (Claude, Codex).
 # Ein erneuter Start setzt sauber fort (jeder Schritt prueft vorher, ob er noetig ist). Fehlerquellen:
 # docs/installation.md.
 #
@@ -18,7 +19,9 @@
 $Repo = 'herbertschrotter-blip/claude-workbench'
 $Marketplace = 'workbench'
 $SammelName = 'skill-log'  # Sammel-Repo fuer das Skill-Log: eines je GitHub-Konto, <konto>/skill-log
+$CodexInstaller = 'https://chatgpt.com/codex/install.ps1'  # offizieller Installer der Codex CLI (prueft SHA-256)
 $Modus = ''; $RechnerName = ''; $LogRepo = $null; $Ja = $false; $OhneOverrides = $false; $Entfernen = $false; $OhneLogin = $false
+$CodexWahl = $null  # $null = fragen, $true = -Codex, $false = -OhneCodex
 for ($i = 0; $i -lt $args.Count; $i++) {
     switch ($args[$i]) {
         '-Modus' { $i++; $Modus = $args[$i] }
@@ -28,6 +31,8 @@ for ($i = 0; $i -lt $args.Count; $i++) {
         '-OhneOverrides' { $OhneOverrides = $true }
         '-Entfernen' { $Entfernen = $true }
         '-OhneLogin' { $OhneLogin = $true }
+        '-Codex' { $CodexWahl = $true }
+        '-OhneCodex' { $CodexWahl = $false }
     }
 }
 
@@ -43,6 +48,7 @@ $Ise = [bool]$psISE
 $Temp = Join-Path $env:TEMP 'workbench-einrichtung'
 New-Item -ItemType Directory -Force -Path $Temp | Out-Null
 $LocalBin = Join-Path $env:USERPROFILE '.local\bin'
+$CodexBin = Join-Path $env:LOCALAPPDATA 'Programs\OpenAI\Codex\bin'  # Ordner des Codex-Installers (Junction)
 $PsExe = (Get-Process -Id $PID).Path
 
 # --- Ausgabe: Fortschritt oben fest (Write-Progress), Meldungen laufen darunter ----------------------------------------
@@ -83,6 +89,7 @@ function Has([string]$Name) { [bool](Get-Command $Name -ErrorAction SilentlyCont
 function Neu-Pfad {
     $env:Path = [Environment]::GetEnvironmentVariable('Path', 'Machine') + ';' + [Environment]::GetEnvironmentVariable('Path', 'User')
     if ((Test-Path (Join-Path $LocalBin 'claude.exe')) -and -not (Im-Pfad $LocalBin $env:Path)) { $env:Path += ";$LocalBin" }
+    if ((Test-Path (Join-Path $CodexBin 'codex.exe')) -and -not (Im-Pfad $CodexBin $env:Path)) { $env:Path += ";$CodexBin" }
 }
 
 function Norm([string]$Dir) { ([Environment]::ExpandEnvironmentVariables($Dir)).TrimEnd('\').ToLowerInvariant() }
@@ -126,6 +133,19 @@ function Python3-Ok {
     # endet. Deshalb wirklich ausfuehren und nur Exit 0 mit der richtigen Version zaehlen.
     if (-not (Has 'python3')) { return $false }
     try { $null = & python3 -c 'import sys; sys.exit(sys.version_info < (3, 8))' 2>&1; return ($LASTEXITCODE -eq 0) } catch { return $false }
+}
+
+function Codex-Version {
+    try { $v = (& codex --version 2>$null | Out-String); if ($v -match 'codex-cli\s+(\d[\w.\-]*)') { return $Matches[1] } } catch { }
+    return ''
+}
+function Codex-Neueste {
+    # Neueste Release der Codex CLI laut GitHub (Tag rust-vX.Y.Z), leer ohne Netz
+    try { return ([string](Invoke-RestMethod -Uri 'https://api.github.com/repos/openai/codex/releases/latest' -TimeoutSec 15).tag_name) -replace '^rust-v', '' } catch { return '' }
+}
+function Codex-Angemeldet { try { & codex login status *> $null; return ($LASTEXITCODE -eq 0) } catch { return $false } }
+function Version-Kleiner([string]$A, [string]$B) {
+    try { return ([version]($A -replace '[^\d.].*$', '')) -lt ([version]($B -replace '[^\d.].*$', '')) } catch { return ($A -ne $B) }
 }
 
 function Json([string]$Text) {
@@ -224,6 +244,12 @@ if ($Entfernen) {
                     Remove-Item -Force (Join-Path $LocalBin 'claude.exe') -ErrorAction SilentlyContinue
                     Remove-Item -Recurse -Force (Join-Path $env:USERPROFILE '.local\share\claude') -ErrorAction SilentlyContinue
                     $weg = $true } }
+            'codex' { if (Frage 'Codex CLI entfernen (vom Skript installiert; ~/.codex mit Anmeldung und Sitzungen bleibt)?' $false) {
+                    $item = Get-Item $CodexBin -Force -ErrorAction SilentlyContinue
+                    if ($item -and ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) { [IO.Directory]::Delete($CodexBin) }  # Junction: nur die Verknuepfung
+                    elseif ($item) { Remove-Item -Recurse -Force $CodexBin -ErrorAction SilentlyContinue }
+                    Remove-Item -Recurse -Force (Join-Path $env:USERPROFILE '.codex\packages\standalone') -ErrorAction SilentlyContinue
+                    $weg = $true } }
             'git' { if (Frage 'git entfernen (vom Skript installiert)?' $false) { & winget uninstall -e --id Git.Git --silent --disable-interactivity; $weg = ($LASTEXITCODE -eq 0) } }
             'python' { if (Frage 'Python 3.12 aus dem Store entfernen (vom Skript installiert)?' $false) { & winget uninstall -e --id 9NCVDN91XZQP --disable-interactivity; $weg = ($LASTEXITCODE -eq 0) } }
         }
@@ -265,6 +291,9 @@ if (-not $hatPython -and (Has 'python')) {
 $hatClaude = Has 'claude'
 $wingetVersion = $null
 if (Has 'winget') { try { $v = (& winget --version 2>$null | Out-String).Trim(); if ($v -match '(\d+)\.(\d+)') { $wingetVersion = [version]"$($Matches[1]).$($Matches[2])" } } catch { } }
+if ((Test-Path (Join-Path $CodexBin 'codex.exe')) -and -not (Im-Pfad $CodexBin $env:Path)) { $env:Path += ";$CodexBin" }
+$hatCodex = Has 'codex'
+$codexVersion = if ($hatCodex) { Codex-Version } else { '' }
 $angemeldet = $false; $marketplaceDa = $false; $plugins = @()
 if ($hatClaude) {
     $status = Claude-Json @('auth', 'status')
@@ -276,10 +305,12 @@ if ($hatClaude) {
 if ($hatGit) { $script:Protokoll += @{ was = 'git'; wert = 'Git.Git'; aktion = 'war-da' } }
 if ($hatPython) { $script:Protokoll += @{ was = 'python'; wert = 'python3'; aktion = 'war-da' } }
 if ($hatClaude) { $script:Protokoll += @{ was = 'claude'; wert = 'claude'; aktion = 'war-da' } }
+if ($hatCodex) { $script:Protokoll += @{ was = 'codex'; wert = 'codex'; aktion = 'war-da' } }
 $script:Protokoll += @{ was = 'marketplace'; wert = $Marketplace; aktion = $(if ($marketplaceDa) { 'war-da' } else { 'installiert' }) }
 if ($hatGit) { Ok "git: $((git --version) -replace 'git version ', '')" }
 if ($hatPython) { Ok "Python: $(python3 --version)" }
 if ($hatClaude) { Ok ("Claude Code: $((claude --version) -replace ' \(Claude Code\)', '')" + $(if ($angemeldet) { ', angemeldet' } else { ', nicht angemeldet' })) }
+if ($hatCodex) { Ok ("Codex CLI: $(if ($codexVersion) { $codexVersion } else { '?' })" + $(if (Codex-Angemeldet) { ', angemeldet' } else { ', nicht angemeldet' })) }
 if ($marketplaceDa) { Ok ("Marketplace $Marketplace" + $(if ($plugins) { ', Plugins: ' + ($plugins -join ', ') } else { '' })) }
 try {
     # Nur Info: wie viel parallel moeglich ist (Testlaeufe mit -n auto messen die Kerne selbst)
@@ -381,6 +412,25 @@ $mitOverrides = $false
 if ($Modus -eq 'terminal' -and -not $OhneOverrides) {
     $mitOverrides = Frage 'Sind dieselben Skills auch bei claude.ai hochgeladen (dann doppelte im Terminal ausblenden)?' $false
 }
+$wollCodex = $false  # Codex CLI fuer chatgpt-review (Weg codex): fehlt -> installieren, aelter -> aktualisieren
+if ($CodexWahl -ne $false) {
+    $arch = if ($env:PROCESSOR_ARCHITEW6432) { $env:PROCESSOR_ARCHITEW6432 } else { $env:PROCESSOR_ARCHITECTURE }
+    if ($arch -notin @('AMD64', 'ARM64')) {
+        Hinweis "Codex CLI: fuer Windows $arch gibt es kein Paket - uebersprungen."
+    } else {
+        Balken 10 'Pruefe Codex CLI'
+        $codexNeu = Codex-Neueste
+        if (-not $hatCodex) {
+            $wollCodex = ($CodexWahl -eq $true) -or (Frage 'Codex CLI fehlt (fuer chatgpt-review). Mit dem offiziellen Installer installieren?' $true)
+        } elseif (-not $codexNeu) {
+            Hinweis 'Neueste Version der Codex CLI nicht ermittelbar (kein Netz?) - Codex bleibt, wie es ist.'
+        } elseif (Version-Kleiner $codexVersion $codexNeu) {
+            $wollCodex = ($CodexWahl -eq $true) -or (Frage "Codex CLI $codexVersion -> $codexNeu verfuegbar. Aktualisieren?" $true)
+        } else {
+            Ok "Codex CLI $codexVersion ist aktuell"
+        }
+    }
+}
 $wollAufgabe = $false
 if ($wingetVersion -and -not (Get-ScheduledTask -TaskName 'workbench git-Update' -ErrorAction SilentlyContinue)) {
     $wollAufgabe = Frage 'Woechentliche geplante Aufgabe fuer git-Updates anlegen (jeweils mit UAC-Abfrage)?' $true
@@ -422,7 +472,7 @@ if ($wollPython) {
     $script:Protokoll += @{ was = 'python'; wert = 'python3'; aktion = 'installiert' }
 }
 if ($claudeJob) {
-    Warte @($claudeJob) 42 50 'Claude Code wird installiert'
+    Warte @($claudeJob) 42 46 'Claude Code wird installiert'
     Neu-Pfad
     if (Test-Path (Join-Path $LocalBin 'claude.exe')) { Pfad-Dauerhaft $LocalBin }
     if (-not (Has 'claude')) {
@@ -435,6 +485,29 @@ if ($claudeJob) {
     Ok "Claude Code: $((claude --version) -replace ' \(Claude Code\)', '')"
     $script:Protokoll += @{ was = 'claude'; wert = 'claude'; aktion = 'installiert' }
     $angemeldet = [bool]((Claude-Json @('auth', 'status')).loggedIn)
+}
+if ($wollCodex) {
+    # Offizieller Installer im eigenen Prozess; optional, ein Fehlschlag bricht die Einrichtung nicht ab. Seinen Ordner
+    # vorher selbst in den Benutzer-PATH (REG_EXPAND_SZ): der Installer schreibt den PATH sonst als REG_SZ.
+    $codexPfadNeu = -not (Im-Pfad $CodexBin ([Environment]::GetEnvironmentVariable('Path', 'User')))
+    Pfad-Dauerhaft $CodexBin
+    $env:CODEX_NON_INTERACTIVE = '1'
+    $j = Starte 'codex-install' $PsExe @('-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', "irm $CodexInstaller | iex")
+    $env:CODEX_NON_INTERACTIVE = $null
+    Warte @($j) 46 50 'Codex CLI wird installiert'
+    Neu-Pfad
+    if ((Code $j) -eq 0 -and (Has 'codex')) {
+        Ok "Codex CLI: $(Codex-Version)"
+        if (-not $hatCodex) { $script:Protokoll += @{ was = 'codex'; wert = 'codex'; aktion = 'installiert' } }
+        $hatCodex = $true
+    } else {
+        Hinweis "Codex CLI nicht installiert: $(Letzte $j)"
+        if ($codexPfadNeu -and -not (Test-Path (Join-Path $CodexBin 'codex.exe'))) {
+            # gerade selbst gesetzten PATH-Eintrag zuruecknehmen, sonst zeigt er auf einen leeren Ordner
+            Pfad-Entfernen $CodexBin
+            $script:Protokoll = @($script:Protokoll | Where-Object { -not ($_.was -eq 'pfad' -and $_.aktion -eq 'installiert' -and (Norm $_.wert) -eq (Norm $CodexBin)) })
+        }
+    }
 }
 
 # --- 5. Marketplace ------------------------------------------------------------------------------------------------------
@@ -500,6 +573,18 @@ if (-not $angemeldet -and -not $OhneLogin) {
     & claude auth login
     $angemeldet = [bool]((Claude-Json @('auth', 'status')).loggedIn)
     if ($angemeldet) { Ok 'Claude Code angemeldet' } else { Hinweis 'Noch nicht angemeldet - spaeter mit: claude auth login' }
+}
+if ($hatCodex -and (Has 'codex')) {
+    $codexOk = Codex-Angemeldet
+    if (-not $codexOk -and -not $OhneLogin) {
+        Meldung ''
+        Meldung '  Codex CLI ist noch nicht angemeldet - gleich oeffnet sich der Browser fuer das ChatGPT-Konto.' 'Cyan'
+        Fortschritt-Ende
+        & codex login
+        $codexOk = Codex-Angemeldet
+        if ($codexOk) { Ok 'Codex CLI angemeldet' }
+    }
+    if (-not $codexOk) { Hinweis 'Codex CLI nicht angemeldet - spaeter mit: codex login' }
 }
 Balken 100 'Fertig'
 Fortschritt-Ende

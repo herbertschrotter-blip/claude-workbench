@@ -15,7 +15,7 @@ Ergänzt den Schnellstart der [README](../README.md). Die Skripte: `tools/instal
 
 1. **Bestandsaufnahme ohne Netz:** git, `python3` (wirklich ausgeführt – die Store-Verknüpfung zählt nicht), Claude Code
    samt `%USERPROFILE%\.local\bin` bzw. `~/.local/bin`, winget, Anmeldung (`claude auth status`, Feld `loggedIn`),
-   Marketplace, Plugins. Liegt `claude.exe` schon unter `.local\bin`, aber nicht im PATH, repariert das Skript nur den
+   Marketplace, Plugins, Codex CLI (`codex --version`, `codex login status`). Liegt `claude.exe` schon unter `.local\bin`, aber nicht im PATH, repariert das Skript nur den
    PATH und installiert nicht neu. Dazu zur Info Kerne und Speicher der Maschine (Testläufe mit `-n auto` messen die
    Kerne selbst; nichts wird eingetragen).
 2. **Im Hintergrund sofort:** Marketplace auffrischen, `claude update`, git auf Updates prüfen, fehlendes git mit
@@ -28,9 +28,18 @@ Ergänzt den Schnellstart der [README](../README.md). Die Skripte: `tools/instal
    erreichbar ist. Das Konto kommt aus `gh` oder den gespeicherten git-Zugangsdaten (Git Credential Manager), geprüft
    wird mit `git ls-remote` – ohne Anmeldefenster. Fehlt das Repo und ist `gh` da, bietet das Skript an, es privat mit
    README anzulegen (Vorschlag „nein“; `--entfernen` löscht es nicht). `-` = kein Sammel-Repo.
+   **Codex CLI** (für chatgpt-review, Weg codex): System und Architektur prüfen (Linux und macOS auf x86_64/ARM64,
+   Windows x64/ARM64; sonst übersprungen), neueste Version über die GitHub-API (`openai/codex`, Tag `rust-vX.Y.Z`).
+   Fehlt Codex: „installieren?“; ist es älter: „aktualisieren?“ (Vorschlag jeweils „ja“; `--codex`/`--ohne-codex`
+   entscheiden ohne Frage). Ohne Netz bleibt ein vorhandenes Codex, wie es ist.
 4. **Installieren:** winget-Pakete nacheinander (Sperren, UAC), der offizielle Claude-Installer gleichzeitig in einem
    eigenen Prozess – er setzt `Set-StrictMode`, `$ErrorActionPreference = "Stop"` und endet bei Fehlern mit `exit`, was
    im selben Fenster das Skript bzw. das Fenster beenden würde.
+   **Codex CLI** danach mit dem offiziellen Installer (`chatgpt.com/codex/install.sh` bzw. `install.ps1`,
+   `CODEX_NON_INTERACTIVE=1`): Paket der Plattform, SHA-256-Prüfung, `~/.codex/packages/standalone`, Befehl unter
+   `~/.local/bin` (Windows: `%LOCALAPPDATA%\Programs\OpenAI\Codex\bin`). Unter Windows trägt das Skript diesen Ordner
+   vorher selbst in den Benutzer-PATH ein (REG_EXPAND_SZ), weil der Installer den PATH sonst als REG_SZ schreibt. Ein
+   Fehlschlag ist nur ein Hinweis – Codex ist optional.
 5. **Marketplace**, dann **einrichten.py**: Plugins je Rechner, Optionen `log_host`/`log_repo`, `autoUpdate`,
    `skillOverrides`, Probe der Hooks. `einrichten.py` meldet seinen Fortschritt als `##BALKEN`-Zeilen.
 
@@ -39,7 +48,9 @@ laufende Aufgabe. Windows: `Write-Progress` (PowerShell 7 auf die Ansicht „Cla
 Zeilen als fester Bereich (Rollbereich des Terminals), ohne Terminal einfache Zeilen.
 6. **Anmeldung am Ende:** `claude plugin …` läuft auch ohne Anmeldung (geprüft 08.10.2026). Steht `loggedIn` auf
    `false`, startet `claude auth login` (Browser), danach geht es weiter. **Die Anmeldung der Claude-Desktop-App zählt
-   für das CLI nicht.**
+   für das CLI nicht.** Danach die **Codex CLI**, wenn sie da und nicht angemeldet ist (`codex login status`): unter
+   Linux/macOS `codex login --device-auth` (Code auf einer Webseite eingeben, geht auch am Handy), unter Windows
+   `codex login` (Browser); mit `--ohne-login` bzw. ohne Terminal nur ein Hinweis.
 
 Ein erneuter Start setzt nach einem Abbruch sauber fort: Jeder Schritt prüft vorher, ob er nötig ist.
 
@@ -54,6 +65,7 @@ Ein erneuter Start setzt nach einem Abbruch sauber fort: Jeder Schritt prüft vo
 | Claude Code (nativer Installer) | selbst, eingebauter Updater; das Skript stößt zusätzlich `claude update` an |
 | Plugins `work`, `skill-workshop`, `work-hooks` | selbst beim Start einer Sitzung (`autoUpdate: true` im Eintrag `workbench`, setzt `einrichten.py`) |
 | Python aus dem Microsoft Store | selbst über den Store (innerhalb 3.12) |
+| Codex CLI | Skript erneut starten: es vergleicht `codex --version` mit der neuesten Release und bietet das Update an (offizieller Installer) |
 | git (winget) | **nicht** – optional die geplante Aufgabe „workbench git-Update“ (montags 9 Uhr, holt nach, wenn der Rechner aus war). git ist maschinenweit installiert, deshalb kommt beim Lauf eine UAC-Abfrage; ohne Zustimmung bleibt es beim alten Stand. Sonst: Skript erneut starten, es prüft git auf Updates |
 
 ## Entfernen
@@ -70,7 +82,8 @@ curl -fsSL https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbe
 
 Nimmt nur zurück, was im Protokoll als `installiert` steht, jeweils mit Rückfrage: Plugins, Marketplace, `autoUpdate`
 und die eigenen `skillOverrides` (ein seither geänderter Override bleibt), PATH-Eintrag, geplante Aufgabe; Claude Code,
-git und Python nur, wenn das Skript sie installiert hat (Vorschlag „nein“). Das Skill-Log (`~/.claude/skill-log`) und
+Codex CLI, git und Python nur, wenn das Skript sie installiert hat (Vorschlag „nein“). Bei Codex verschwinden Befehl,
+`~/.codex/packages/standalone` und der PATH-Block des Codex-Installers; `~/.codex` mit Anmeldung und Sitzungen bleibt. Das Skill-Log (`~/.claude/skill-log`) und
 `~/.claude` bleiben; der lokale Klon des Sammel-Repos nur auf ausdrückliches Ja. Bleibt etwas übrig (abgelehnt), bleibt
 das Protokoll, und ein erneutes Entfernen macht weiter.
 
@@ -102,6 +115,8 @@ Was das Skript selbst abfängt, steht mit ✓; sonst die Lösung.
 | ✓ Verwaltete Einstellungen (`managed-settings`, `strictKnownMarketplaces`) erlauben den Marketplace nicht | Meldung; IT fragen |
 | ✓ Download von Claude Code scheitert (Region, Proxy, Firewall, Virenscanner blockiert `claude.exe`) | Meldung mit den letzten Zeilen des Installers; Region: [unterstützte Länder](https://www.anthropic.com/supported-countries); Proxy: `HTTPS_PROXY` setzen; Virenscanner: Ausnahme für `%USERPROFILE%\.local\bin` |
 | ✓ ARM64-Windows | Hinweis; Claude Code und Store-Python haben ARM64-Fassungen |
+| ✓ Codex CLI lässt sich nicht laden (`chatgpt.com` oder `releases.openai.com` gesperrt, Proxy) | Hinweis mit den letzten Zeilen des Installers, die Einrichtung läuft weiter. Ohne `releases.openai.com`: `CODEX_INSTALLER_USE_RELEASES_OPENAI_COM=false` setzen (lädt von GitHub) und erneut starten |
+| ✓ Codex CLI schon über npm oder Homebrew installiert | Der offizielle Installer erkennt das und richtet die eigenständige Fassung daneben ein; unter Windows schreibt er dann den PATH selbst (REG_SZ) – danach `echo $env:Path` prüfen |
 | ✓ Abbruch mitten drin | Skript erneut starten, es setzt fort |
 | Benutzerordner mit Leerzeichen/Umlauten, OneDrive-umgeleitete Ordner | Argumente werden gequotet; `.claude` liegt immer unter `%USERPROFILE%`, nicht unter OneDrive. Bei Problemen den Pfad in der Fehlermeldung prüfen |
 | Proxy für git | `git config --global http.proxy …` |
@@ -115,6 +130,8 @@ Was das Skript selbst abfängt, steht mit ✓; sonst die Lösung.
 3. Prüfen: Gesamt- und Aufgabenbalken stehen oben fest und scrollen nicht mit; alle Fragen kommen am Anfang; danach keine Rückfrage mehr bis zur Anmeldung;
    am Ende „FERTIG“.
 4. Neues Fenster: `claude --version` (PATH dauerhaft), `claude plugin list`, `Get-Content ~\.claude\workbench-einrichtung.json`.
+   Codex: `codex --version`, `codex login status`, im Protokoll der Eintrag `codex`; `reg query HKCU\Environment /v Path`
+   zeigt den Typ `REG_EXPAND_SZ` (der Codex-Installer hat ihn nicht umgeschrieben).
 5. Skript noch einmal starten: alles „OK“, nichts wird neu installiert.
 6. Mit Sammel-Repo: Claude-Desktop-App ganz beenden (Infobereich), neu starten, eine Nachricht schicken; dann
    `Get-Content ~\.claude\skill-log\sammel-status.json` zeigt `"push": "ok"` und den Rechnernamen.

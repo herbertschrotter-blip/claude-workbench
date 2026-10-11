@@ -2,21 +2,26 @@
 # Einrichtung des Marketplace workbench auf Linux/macOS (auch Home-Assistant-Add-on).
 #
 #   sh tools/install.sh [--modus terminal|desktop] [--host NAME] [--log-repo owner/name] [--ja] [--ohne-overrides]
+#                       [--codex | --ohne-codex]
 #   sh tools/install.sh --entfernen
 #   Tests: WORKBENCH_REPO=<lokaler Ordner> HOME=<leerer Ordner> sh tools/install.sh --ja --ohne-login ...
 #   curl -fsSL https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbench/main/tools/install.sh | sh
 #
 # Ablauf wie tools/install.ps1: Bestandsaufnahme -> alle Fragen auf einmal -> installieren (Claude-Installer parallel
-# zu den Paketen) -> Marketplace -> einrichten.py (Plugins, Optionen, autoUpdate, skillOverrides, Probe) -> Anmeldung.
+# zu den Paketen) -> Codex CLI (optional, offizieller Installer) -> Marketplace -> einrichten.py (Plugins, Optionen,
+# autoUpdate, skillOverrides, Probe) -> Anmeldung (Claude, Codex).
 # Protokoll fuer --entfernen: ~/.claude/workbench-einrichtung.json. Fehlerquellen: docs/installation.md.
 
 REPO="${WORKBENCH_REPO:-herbertschrotter-blip/claude-workbench}"  # WORKBENCH_REPO: anderes Repo oder lokaler Ordner (Tests)
 MARKETPLACE="workbench"
 SAMMEL_NAME="skill-log"  # Sammel-Repo für das Skill-Log: eines je GitHub-Konto, <konto>/skill-log
-JA=""; MODUS=""; HOST=""; LOGREPO="-"; OHNE_OVERRIDES=""; ENTFERNEN=""; OHNE_LOGIN=""
+CODEX_INSTALLER="https://chatgpt.com/codex/install.sh"  # offizieller Installer der Codex CLI (prüft SHA-256)
+JA=""; MODUS=""; HOST=""; LOGREPO="-"; OHNE_OVERRIDES=""; ENTFERNEN=""; OHNE_LOGIN=""; CODEX=""
 while [ $# -gt 0 ]; do
     case "$1" in
         --ja) JA=1 ;;
+        --codex) CODEX=1 ;;
+        --ohne-codex) CODEX=0 ;;
         --modus) shift; MODUS="$1" ;;
         --host) shift; HOST="$1" ;;
         --log-repo) shift; LOGREPO="$1" ;;
@@ -104,6 +109,22 @@ pfad_dauerhaft() {  # ~/.local/bin dauerhaft in die Profil-Datei, sofort in die 
     fi
     case ":$PATH:" in *":$LOCALBIN:"*) ;; *) PATH="$LOCALBIN:$PATH"; export PATH ;; esac
 }
+codex_version() { codex --version 2>/dev/null | sed -n 's/^codex-cli \([0-9][^ ]*\).*/\1/p' | head -1; }
+codex_neueste() {  # neueste Release der Codex CLI laut GitHub (Tag rust-vX.Y.Z), leer ohne Netz
+    curl -fsSL --max-time 15 https://api.github.com/repos/openai/codex/releases/latest 2>/dev/null |
+        sed -n 's/.*"tag_name": *"rust-v\([^"]*\)".*/\1/p' | head -1
+}
+codex_system() {  # Plattformen mit fertigen Codex-Paketen
+    case "$(uname -s)-$(uname -m)" in
+        Linux-x86_64|Linux-amd64|Linux-aarch64|Linux-arm64|Darwin-x86_64|Darwin-arm64) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+codex_angemeldet() { codex login status >/dev/null 2>&1; }
+version_kleiner() {  # version_kleiner A B -> 0, wenn A älter als B (Zahlen je Stelle)
+    awk -v a="$1" -v b="$2" 'BEGIN { n = split(a, x, "."); m = split(b, y, "."); if (m > n) n = m
+        for (i = 1; i <= n; i++) { if (x[i] + 0 < y[i] + 0) exit 0; if (x[i] + 0 > y[i] + 0) exit 1 }; exit 1 }'
+}
 eingeloggt() { claude auth status 2>/dev/null | python3 -I -c 'import json,sys; sys.exit(0 if json.load(sys.stdin).get("loggedIn") else 1)' 2>/dev/null; }
 marketplace_ort() {
     claude plugin marketplace list --json 2>/dev/null | python3 -I -c '
@@ -140,7 +161,7 @@ if [ -n "$ENTFERNEN" ]; then
     python3 -I - "$PROTOKOLL" <<'PY' > "$TMP/rest.txt"
 import json, sys
 for e in json.load(open(sys.argv[1], encoding="utf-8-sig")).get("eintraege", []):
-    if e.get("aktion") == "installiert" and e["was"] in ("pfad", "claude", "git", "python"):
+    if e.get("aktion") == "installiert" and e["was"] in ("pfad", "claude", "codex", "git", "python"):
         print(e["was"], e.get("wert", ""))
 PY
     printf '\n[Entfernen] System\n'
@@ -150,6 +171,12 @@ PY
             pfad) if frage "PATH-Zeile aus $wert entfernen?" j; then sed -i.bak '/workbench: ~\/.local\/bin/d' "$wert" && echo "  OK  entfernt" && echo "$was $wert" >> "$TMP/weg.txt"; fi ;;
             claude) if frage "Claude Code entfernen (~/.claude mit Gesprächen und Skill-Log bleibt)?" n; then
                         rm -f "$LOCALBIN/claude"; rm -rf "$HOME/.local/share/claude"; echo "  OK  entfernt"; echo "$was $wert" >> "$TMP/weg.txt"; fi ;;
+            codex) if frage "Codex CLI entfernen (~/.codex mit Anmeldung und Sitzungen bleibt)?" n; then
+                        rm -f "$LOCALBIN/codex" "$LOCALBIN/codex-code-mode-host"; rm -rf "$HOME/.codex/packages/standalone"
+                        for f in "$HOME/.profile" "$HOME/.bash_profile" "$HOME/.zprofile"; do  # PATH-Block des Codex-Installers
+                            grep -qs '# >>> Codex installer >>>' "$f" && sed -i.bak '/# >>> Codex installer >>>/,/# <<< Codex installer <<</d' "$f"
+                        done
+                        echo "  OK  entfernt"; echo "$was $wert" >> "$TMP/weg.txt"; fi ;;
             git|python) echo "  $was wurde über den Paketmanager installiert - bei Bedarf von Hand entfernen." ;;
         esac
     done < "$TMP/rest.txt"
@@ -190,6 +217,12 @@ if has claude; then
     [ -n "$HAT_PY" ] && eingeloggt && ANGEMELDET=1
     [ -n "$HAT_PY" ] && [ -n "$(marketplace_ort)" ] && MP_DA=1
     ok "Claude Code: $(claude --version 2>/dev/null | head -1)$([ -n "$ANGEMELDET" ] && echo ', angemeldet' || echo ', nicht angemeldet')"
+fi
+HAT_CODEX=""; CODEX_V=""
+[ -x "$LOCALBIN/codex" ] && ! has codex && { PATH="$LOCALBIN:$PATH"; export PATH; }
+if has codex; then
+    HAT_CODEX=1; CODEX_V=$(codex_version); protokoll codex codex war-da
+    ok "Codex CLI: ${CODEX_V:-?}$(codex_angemeldet && echo ', angemeldet' || echo ', nicht angemeldet')"
 fi
 if [ -n "$MP_DA" ]; then protokoll marketplace "$MARKETPLACE" war-da; else protokoll marketplace "$MARKETPLACE" installiert; fi
 # Marketplace sofort im Hintergrund auffrischen
@@ -240,6 +273,24 @@ if [ "$LOGREPO" = "-" ]; then
     fi
     [ "$LOGREPO" = "-" ] && LOGREPO=""
 fi
+WOLL_CODEX=""  # Codex CLI für chatgpt-review (Weg codex): fehlt -> installieren, älter -> aktualisieren
+if [ "$CODEX" != 0 ]; then
+    if ! codex_system; then
+        hinweis "Codex CLI: für $(uname -s) $(uname -m) gibt es kein Paket - übersprungen."
+    else
+        balken 9 "Prüfe Codex CLI"
+        CODEX_NEU=$(codex_neueste)
+        if [ -z "$HAT_CODEX" ]; then
+            { [ "$CODEX" = 1 ] || frage "Codex CLI fehlt (für chatgpt-review). Mit dem offiziellen Installer installieren?" j; } && WOLL_CODEX=1
+        elif [ -z "$CODEX_NEU" ]; then
+            hinweis "Neueste Version der Codex CLI nicht ermittelbar (kein Netz?) - Codex bleibt, wie es ist."
+        elif version_kleiner "$CODEX_V" "$CODEX_NEU"; then
+            { [ "$CODEX" = 1 ] || frage "Codex CLI $CODEX_V -> $CODEX_NEU verfügbar. Aktualisieren?" j; } && WOLL_CODEX=1
+        else
+            ok "Codex CLI $CODEX_V ist aktuell"
+        fi
+    fi
+fi
 OVERRIDES="--ohne-overrides"
 if [ "$MODUS" = terminal ] && [ -z "$OHNE_OVERRIDES" ] && frage "Sind dieselben Skills auch bei claude.ai hochgeladen (doppelte ausblenden)?" n; then OVERRIDES="--mit-overrides"; fi
 
@@ -262,6 +313,20 @@ if [ -n "$WOLL_CLAUDE" ]; then
     [ -x "$LOCALBIN/claude" ] && pfad_dauerhaft
     if has claude; then ok "Claude Code: $(claude --version 2>/dev/null | head -1)"; protokoll claude claude installiert
     else fehler "Claude Code nicht installiert: $(tail -2 "$TMP/claude.txt" | tr '\n' ' ')"; exit 1; fi
+fi
+if [ -n "$WOLL_CODEX" ]; then
+    # Offizieller Installer (Paket je Plattform, SHA-256-Prüfung, ~/.local/bin + ~/.codex/packages); optional, ein
+    # Fehlschlag bricht die Einrichtung nicht ab
+    teil 0 ""; balken 45 "Codex CLI wird installiert"; teil 30 "Codex CLI (offizieller Installer)"
+    if curl -fsSL "$CODEX_INSTALLER" -o "$TMP/codex-install.sh" > "$TMP/codex.txt" 2>&1 &&
+        CODEX_NON_INTERACTIVE=1 sh "$TMP/codex-install.sh" >> "$TMP/codex.txt" 2>&1 && [ -x "$LOCALBIN/codex" ]; then
+        case ":$PATH:" in *":$LOCALBIN:"*) ;; *) PATH="$LOCALBIN:$PATH"; export PATH ;; esac
+        ok "Codex CLI: $(codex_version)"
+        [ -z "$HAT_CODEX" ] && protokoll codex codex installiert
+        HAT_CODEX=1
+    else
+        hinweis "Codex CLI nicht installiert: $(tail -2 "$TMP/codex.txt" | tr '\n' ' ')"
+    fi
 fi
 
 # --- 4. Marketplace ---------------------------------------------------------------------------------------------------
@@ -304,6 +369,18 @@ elif [ -z "$ANGEMELDET" ] && ! eingeloggt; then
     eingeloggt && ANGEMELDET=1 && ok "Claude Code angemeldet"
 else
     ANGEMELDET=1
+fi
+CODEX_OK=""
+if [ -n "$HAT_CODEX" ] && has codex; then
+    if codex_angemeldet; then CODEX_OK=1
+    elif [ -z "$OHNE_LOGIN" ] && [ "$TTY" != /dev/null ]; then
+        meldung ""
+        meldung "  Codex CLI ist noch nicht angemeldet - Anmeldung mit dem ChatGPT-Konto (Code auf einer Webseite eingeben)."
+        fest_aus
+        codex login --device-auth <"$TTY"
+        codex_angemeldet && CODEX_OK=1 && ok "Codex CLI angemeldet"
+    fi
+    [ -z "$CODEX_OK" ] && hinweis "Codex CLI nicht angemeldet - später mit: codex login --device-auth"
 fi
 balken 100 "Fertig"
 fest_aus
