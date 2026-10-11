@@ -90,12 +90,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe",
+      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe; Auswertung 11.10.2026: 4 Fehlalarme durch relative Pfade nach cd (behoben in skill_guard.py e6262c3), 4 Testläufe vom 07.10. nicht gezählt",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 4,
-        "fehlalarm": 0,
-        "zuletzt": "2026-10-09",
+        "treffer": 23,
+        "fehlalarm": 4,
+        "zuletzt": "2026-10-11",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 316,
@@ -128,9 +128,9 @@
       "herkunft": "Skill-Auswertung 04.10.2026 (mockup-erstellen-002) und 06.10.2026 (Zustandsvarianten)",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 0,
+        "treffer": 1,
         "fehlalarm": 0,
-        "zuletzt": null,
+        "zuletzt": "2026-10-09",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 31,
@@ -163,9 +163,9 @@
       "herkunft": "Startregel 07.10.2026",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 0,
+        "treffer": 3,
         "fehlalarm": 0,
-        "zuletzt": null,
+        "zuletzt": "2026-10-11",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 0,
@@ -189,7 +189,10 @@
         "*BAUPLAN*.md",
         "*bauplan*.md"
       ],
-      "ausser": [],
+      "ausser": [
+        "*/mockups/*",
+        "*/Mockups/*"
+      ],
       "projekt": "*",
       "pflicht": [
         "doc-pflege",
@@ -208,12 +211,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Startregel 07.10.2026; 07.10.2026: auf blocken hochgestuft (Rückblick 29.09.–07.10.: 89 Treffer, 0 Fehlalarme; Heidi-Neubau, ha-baustelle Teil 3); 08.10.2026: neue Docs unter docs/ verlangt die Regel doku-neu (doc-pflege)",
+      "herkunft": "Startregel 07.10.2026; 07.10.2026: auf blocken hochgestuft (Rückblick 29.09.–07.10.: 89 Treffer, 0 Fehlalarme; Heidi-Neubau, ha-baustelle Teil 3); 08.10.2026: neue Docs unter docs/ verlangt die Regel doku-neu (doc-pflege); Auswertung 11.10.2026 (Herbert): Mockup-Ablage ausgenommen – dort gilt die Regel mockup (4 Blockaden an mockups/README.md unter mockup-erstellen)",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 2,
-        "fehlalarm": 0,
-        "zuletzt": "2026-10-08",
+        "treffer": 10,
+        "fehlalarm": 4,
+        "zuletzt": "2026-10-11",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 89,
@@ -303,6 +306,7 @@
         "skill-pflege",
         "skill-neu",
         "skill-auswertung",
+        "chatgpt-review",
         "doc-pflege",
         "projekt-anlegen"
       ],
@@ -312,11 +316,11 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Startregel 07.10.2026; 08.10.2026 (Herbert): nur noch git-commit-helper oder ticket (dazu skill-pflege, skill-neu, skill-auswertung, die selbst committen), blocken – Befund ha-baustelle bc267f1c: alle Commits ohne git-commit-helper; 10.10.2026 (Herbert): projekt-anlegen ergänzt – Fehlalarm beim ersten Commit von ha-rasenmaeher (Praxistest projekt-anlegen); zweiter Fehlalarm am selben Tag (Text „git commit“ in einem Python-Heredoc) behebt die Erkennung in skill_guard.py; 11.10.2026 (Herbert): doc-pflege ergänzt – Fehlalarm beim Doku-Commit von docs/offene-uploads.md (doc-pflege committet im Sitzungsabschluss selbst)",
+      "herkunft": "Startregel 07.10.2026; 08.10.2026 (Herbert): nur noch git-commit-helper oder ticket (dazu skill-pflege, skill-neu, skill-auswertung, die selbst committen), blocken – Befund ha-baustelle bc267f1c: alle Commits ohne git-commit-helper; 10.10.2026 (Herbert): projekt-anlegen ergänzt – Fehlalarm beim ersten Commit von ha-rasenmaeher (Praxistest projekt-anlegen); zweiter Fehlalarm am selben Tag (Text „git commit“ in einem Python-Heredoc) behebt die Erkennung in skill_guard.py; 11.10.2026 (Herbert): doc-pflege ergänzt – Fehlalarm beim Doku-Commit von docs/offene-uploads.md (doc-pflege committet im Sitzungsabschluss selbst); Auswertung 11.10.2026 (Herbert): chatgpt-review ergänzt – committet die Archivdateien jeder Runde selbst (3 Blockaden in ha-baustelle, CGR-2026-10-11-hochrechnung)",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 5,
-        "fehlalarm": 3,
+        "treffer": 17,
+        "fehlalarm": 8,
         "zuletzt": "2026-10-11",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
