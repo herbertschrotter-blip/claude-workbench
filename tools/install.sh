@@ -7,7 +7,7 @@
 #   Tests: WORKBENCH_REPO=<lokaler Ordner> HOME=<leerer Ordner> sh tools/install.sh --ja --ohne-login ...
 #   curl -fsSL https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbench/main/tools/install.sh | sh
 #
-# Ablauf wie tools/install.ps1: Bestandsaufnahme -> alle Fragen auf einmal -> installieren (Claude-Installer parallel
+# Ablauf wie tools/install.ps1: Bestandsaufnahme -> alle Fragen auf einmal -> Bereinigung (altes npm-claude) -> installieren (Claude-Installer parallel
 # zu den Paketen) -> Codex CLI (optional, offizieller Installer) -> Marketplace -> einrichten.py (Plugins, Optionen,
 # autoUpdate, skillOverrides, Probe) -> Anmeldung (Claude, Codex).
 # Protokoll fuer --entfernen: ~/.claude/workbench-einrichtung.json. Fehlerquellen: docs/installation.md.
@@ -218,6 +218,15 @@ if has claude; then
     [ -n "$HAT_PY" ] && [ -n "$(marketplace_ort)" ] && MP_DA=1
     ok "Claude Code: $(claude --version 2>/dev/null | head -1)$([ -n "$ANGEMELDET" ] && echo ', angemeldet' || echo ', nicht angemeldet')"
 fi
+NPM_CLAUDE=""  # altes claude als globales npm-Paket neben ~/.local/bin/claude (das Add-on-claude ist keins)
+if [ -n "$HAT_CLAUDE" ] && [ -x "$LOCALBIN/claude" ] && has npm && npm ls -g @anthropic-ai/claude-code --depth=0 >/dev/null 2>&1; then
+    # nur anbieten, wenn die npm-Fassung nicht neuer ist als ~/.local/bin/claude
+    NPM_V=$("$(npm prefix -g 2>/dev/null)/bin/claude" --version 2>/dev/null | sed -n 's/^\([0-9][0-9.]*\).*/\1/p' | head -1)
+    LOCAL_V=$("$LOCALBIN/claude" --version 2>/dev/null | sed -n 's/^\([0-9][0-9.]*\).*/\1/p' | head -1)
+    if [ -n "$NPM_V" ] && [ -n "$LOCAL_V" ] && ! version_kleiner "$LOCAL_V" "$NPM_V"; then
+        NPM_CLAUDE=1; hinweis "Alte Claude-Installation über npm gefunden ($NPM_V neben $LOCALBIN/claude $LOCAL_V)."
+    fi
+fi
 HAT_CODEX=""; CODEX_V=""
 [ -x "$LOCALBIN/codex" ] && ! has codex && { PATH="$LOCALBIN:$PATH"; export PATH; }
 if has codex; then
@@ -226,7 +235,7 @@ if has codex; then
 fi
 if [ -n "$MP_DA" ]; then protokoll marketplace "$MARKETPLACE" war-da; else protokoll marketplace "$MARKETPLACE" installiert; fi
 # Marketplace sofort im Hintergrund auffrischen
-[ -n "$MP_DA" ] && { claude plugin marketplace update "$MARKETPLACE" > "$TMP/mp.txt" 2>&1 & }
+[ -n "$MP_DA" ] && { claude plugin marketplace update "$MARKETPLACE" > "$TMP/mp.txt" 2>&1; echo $? > "$TMP/mp.rc"; } &
 # Nur Info: wie viel parallel möglich ist (Testläufe mit -n auto messen die Kerne selbst)
 KERNE=$(getconf _NPROCESSORS_ONLN 2>/dev/null || nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null)
 SPEICHER=$(awk '/^MemTotal:/ {printf "%.0f", $2 / 1048576}' /proc/meminfo 2>/dev/null)
@@ -237,7 +246,8 @@ balken 5 "Bestandsaufnahme fertig"
 # --- 2. Alle Fragen auf einmal ----------------------------------------------------------------------------------------
 meldung ""
 meldung "  Bitte einmal alles beantworten - danach läuft die Einrichtung ohne weitere Fragen."
-WOLL_GIT=""; WOLL_PY=""; WOLL_CLAUDE=""
+WOLL_GIT=""; WOLL_PY=""; WOLL_CLAUDE=""; WOLL_NPM_WEG=""
+[ -n "$NPM_CLAUDE" ] && frage "Alte Claude-Installation (npm) zu Beginn entfernen (npm uninstall -g @anthropic-ai/claude-code)?" j && WOLL_NPM_WEG=1
 if [ -z "$HAT_GIT" ]; then frage "git fehlt. Installieren?" && WOLL_GIT=1 || { fehler "Ohne git geht es nicht."; exit 1; }; fi
 if [ -z "$HAT_PY" ]; then frage "Python 3 (ab 3.8) fehlt. Installieren?" && WOLL_PY=1 || { fehler "Ohne python3 laufen die Hooks nicht."; exit 1; }; fi
 if [ -z "$HAT_CLAUDE" ]; then frage "Claude Code fehlt. Mit dem offiziellen Installer installieren?" && WOLL_CLAUDE=1 || { fehler "Ohne Claude Code geht es nicht."; exit 1; }; fi
@@ -296,6 +306,12 @@ if [ "$MODUS" = terminal ] && [ -z "$OHNE_OVERRIDES" ] && frage "Sind dieselben 
 
 # --- 3. Installieren (Claude-Installer parallel zu den Paketen) -------------------------------------------------------
 meldung ""
+if [ -n "$WOLL_NPM_WEG" ]; then  # Bereinigung zuerst
+    balken 10 "Bereinigung"
+    if npm uninstall -g @anthropic-ai/claude-code > "$TMP/npm.txt" 2>&1; then
+        ok "Alte Claude-Installation (npm) entfernt"; protokoll claude-npm "@anthropic-ai/claude-code" entfernt
+    else hinweis "npm-claude nicht entfernt: $(tail -1 "$TMP/npm.txt")"; fi
+fi
 balken 10 "Installieren"
 if [ -n "$WOLL_CLAUDE" ]; then (curl -fsSL https://claude.ai/install.sh | bash > "$TMP/claude.txt" 2>&1; echo $? > "$TMP/claude.rc") & fi
 if [ -n "$WOLL_GIT" ]; then
@@ -336,6 +352,13 @@ wait
 ORT=$(marketplace_ort)
 if [ -z "$ORT" ]; then fehler "Marketplace nicht eingerichtet: $(tail -2 "$TMP/mp.txt" | tr '\n' ' ')"; exit 1; fi
 ok "Marketplace $MARKETPLACE"
+[ -n "$MP_DA" ] && [ "$(cat "$TMP/mp.rc" 2>/dev/null)" != 0 ] && hinweis "Marketplace-Update gescheitert: $(tail -2 "$TMP/mp.txt" | tr '\n' ' ')"
+if ! grep -q -- '--protokoll-zusatz' "$ORT/tools/einrichten.py" 2>/dev/null; then
+    # Klon des Marketplace zu alt (Update gescheitert): einrichten.py kennt die Optionen dieses Skripts nicht
+    fehler "Der Stand des Marketplace ist zu alt für diese Einrichtung (tools/einrichten.py ohne --protokoll-zusatz)."
+    meldung "      Lösung: claude plugin marketplace update $MARKETPLACE - dann das Skript erneut starten (es setzt fort)."
+    exit 1
+fi
 printf ']' >> "$ZUSATZ"
 
 # --- 5. Plugins, Einstellungen, Probe (einrichten.py meldet ##BALKEN-Zeilen) ------------------------------------------

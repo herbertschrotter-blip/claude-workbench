@@ -7,8 +7,8 @@
 #               bzw. powershell -ExecutionPolicy Bypass -File tools\install.ps1 -Entfernen
 # Protokoll fuer das Entfernen: ~/.claude/workbench-einrichtung.json (was das Skript installiert hat, was schon da war).
 #
-# Ablauf: Bestandsaufnahme ohne Netz -> Hintergrund-Pruefungen starten -> ALLE Fragen auf einmal -> unbeaufsichtigt
-# installieren (winget nacheinander, Claude-Installer als eigener Prozess parallel, danach optional die Codex CLI mit
+# Ablauf: Bestandsaufnahme ohne Netz -> Hintergrund-Pruefungen starten -> ALLE Fragen auf einmal -> Bereinigung (altes
+# npm-claude) -> unbeaufsichtigt installieren (winget nacheinander, Claude-Installer als eigener Prozess parallel, danach optional die Codex CLI mit
 # ihrem offiziellen Installer) -> Marketplace -> einrichten.py (Plugins, Optionen, autoUpdate, skillOverrides, Probe)
 # -> optional geplante Aufgabe fuer git-Updates -> Anmeldung (Claude, Codex).
 # Ein erneuter Start setzt sauber fort (jeder Schritt prueft vorher, ob er noetig ist). Fehlerquellen:
@@ -133,6 +133,40 @@ function Python3-Ok {
     # endet. Deshalb wirklich ausfuehren und nur Exit 0 mit der richtigen Version zaehlen.
     if (-not (Has 'python3')) { return $false }
     try { $null = & python3 -c 'import sys; sys.exit(sys.version_info < (3, 8))' 2>&1; return ($LASTEXITCODE -eq 0) } catch { return $false }
+}
+
+function Claude-Neueste {
+    # Mehrere claude im PATH (z. B. npm vor winget/nativ): die neueste Version fuer diesen Lauf nach vorn. Ein altes
+    # claude kennt nicht alle Befehle (z. B. "plugin configure"), dann fehlen die Optionen der Plugins.
+    $kand = @(Get-Command claude -All -ErrorAction SilentlyContinue | Where-Object { $_.Source } |
+        Group-Object { Split-Path $_.Source } | ForEach-Object { $_.Group[0] })
+    if ($kand.Count -lt 2) { return }
+    $liste = @(foreach ($k in $kand) {
+        try { $v = (& $k.Source --version 2>$null | Out-String); if ($v -match '(\d+\.\d+\.\d+)') { [pscustomobject]@{ Dir = (Split-Path $k.Source); V = [version]$Matches[1] } } } catch { }
+    }) | Sort-Object V -Descending
+    $liste = @($liste)
+    $script:ClaudeVersionen = $liste
+    if ($liste.Count -lt 2) { Hinweis 'Mehrere Claude-Installationen gefunden (z. B. npm und nativ). Pruefen mit: claude doctor'; return }
+    $neu = $liste[0]
+    $env:Path = (@($neu.Dir) + @(($env:Path -split ';') | Where-Object { $_ -and ((Norm $_) -ne (Norm $neu.Dir)) })) -join ';'
+    $alt = ($liste | Select-Object -Skip 1 | ForEach-Object { "$($_.V) in $($_.Dir)" }) -join ', '
+    Hinweis "Mehrere Claude-Installationen: verwendet wird $($neu.V) aus $($neu.Dir); aelter: $alt."
+}
+
+$script:ClaudeVersionen = @()
+function Npm-Claude {
+    # Claude Code als globales npm-Paket, waehrend daneben eine andere, mindestens gleich neue Installation (winget,
+    # nativ) im PATH liegt. Ist die npm-Fassung die neueste, bleibt sie (sie ist dann die fuer diesen Lauf gewaehlte).
+    if (-not (Has 'npm') -or $script:ClaudeVersionen.Count -lt 2) { return $false }
+    try {
+        $npmDir = Norm ((& npm prefix -g 2>$null | Out-String).Trim())
+        & npm ls -g '@anthropic-ai/claude-code' --depth=0 *> $null
+        if ($LASTEXITCODE -ne 0 -or -not $npmDir) { return $false }
+        $npm = @($script:ClaudeVersionen | Where-Object { (Norm $_.Dir) -eq $npmDir }) | Select-Object -First 1
+        $andere = @($script:ClaudeVersionen | Where-Object { (Norm $_.Dir) -ne $npmDir })
+        if (-not $npm -or $andere.Count -eq 0) { return $false }
+        return (($andere | Sort-Object V -Descending | Select-Object -First 1).V -ge $npm.V)
+    } catch { return $false }
 }
 
 function Codex-Version {
@@ -295,12 +329,14 @@ if ((Test-Path (Join-Path $CodexBin 'codex.exe')) -and -not (Im-Pfad $CodexBin $
 $hatCodex = Has 'codex'
 $codexVersion = if ($hatCodex) { Codex-Version } else { '' }
 $angemeldet = $false; $marketplaceDa = $false; $plugins = @()
+$npmClaude = $false
 if ($hatClaude) {
+    Claude-Neueste
+    $npmClaude = Npm-Claude
     $status = Claude-Json @('auth', 'status')
     $angemeldet = [bool]($status -and $status.loggedIn)
     $marketplaceDa = [bool](Claude-Json @('plugin', 'marketplace', 'list', '--json') | Where-Object { $_.name -eq $Marketplace })
     $plugins = @(Claude-Json @('plugin', 'list', '--json') | Where-Object { $_.id -like "*@$Marketplace" } | ForEach-Object { ($_.id -split '@')[0] })
-    if (@(Get-Command claude -All -ErrorAction SilentlyContinue).Count -gt 1) { Hinweis 'Mehrere Claude-Installationen gefunden (z. B. npm und nativ). Pruefen mit: claude doctor' }
 }
 if ($hatGit) { $script:Protokoll += @{ was = 'git'; wert = 'Git.Git'; aktion = 'war-da' } }
 if ($hatPython) { $script:Protokoll += @{ was = 'python'; wert = 'python3'; aktion = 'war-da' } }
@@ -337,7 +373,11 @@ if ($wingetVersion) {
 Balken 8 'Fragen'
 Meldung ''
 Meldung '  Bitte einmal alles beantworten - danach laeuft die Einrichtung ohne weitere Fragen.' 'Cyan'
-$wollGit = $false; $wollPython = $false; $wollClaude = $false; $wollGitUpdate = $false
+$wollGit = $false; $wollPython = $false; $wollClaude = $false; $wollGitUpdate = $false; $wollNpmWeg = $false
+if ($npmClaude) {
+    # Bereinigung: ein altes npm-claude laeuft sonst in anderen Fenstern und kennt nicht alle Befehle
+    $wollNpmWeg = Frage 'Alte Claude-Installation ueber npm gefunden (neben der aktuellen). Zu Beginn entfernen (npm uninstall -g @anthropic-ai/claude-code)?' $true
+}
 if (-not $hatGit) {
     if (-not $wingetVersion) { Fehler 'git fehlt und winget ist nicht da (App-Installer aus dem Microsoft Store). git von https://git-scm.com installieren und das Skript erneut starten.'; Fortschritt-Ende; return }
     $wollGit = Frage 'git fehlt. Mit winget installieren?'
@@ -438,6 +478,15 @@ if ($wingetVersion -and -not (Get-ScheduledTask -TaskName 'workbench git-Update'
 
 # --- 4. Installieren (winget nacheinander, Claude parallel) -------------------------------------------------------------
 Meldung ''
+if ($wollNpmWeg) {
+    Balken 11 'Bereinigung'
+    $npmLog = Join-Path $Temp 'npm-claude.txt'
+    & npm uninstall -g '@anthropic-ai/claude-code' *> $npmLog
+    if ($LASTEXITCODE -eq 0) {
+        Ok 'Alte Claude-Installation (npm) entfernt'
+        $script:Protokoll += @{ was = 'claude-npm'; wert = '@anthropic-ai/claude-code'; aktion = 'entfernt' }
+    } else { Hinweis "npm-claude nicht entfernt: $((Get-Content $npmLog -ErrorAction SilentlyContinue | Select-Object -Last 2) -join ' | ')" }
+}
 Balken 12 'Installieren'
 $claudeJob = $null
 if ($wollClaude) {
@@ -523,6 +572,14 @@ if (-not $ort) {
     Fortschritt-Ende; return
 }
 Ok "Marketplace $Marketplace"
+if ($marketplaceDa -and (Code $bg.marketplace) -ne 0) { Hinweis "Marketplace-Update gescheitert: $(Letzte $bg.marketplace)" }
+$einrichten = Join-Path $ort 'tools\einrichten.py'
+if (-not (Select-String -Path $einrichten -Pattern '--protokoll-zusatz' -SimpleMatch -Quiet -ErrorAction SilentlyContinue)) {
+    # Klon des Marketplace zu alt (Update gescheitert): einrichten.py kennt die Optionen dieses Skripts nicht
+    Fehler 'Der Stand des Marketplace ist zu alt fuer diese Einrichtung (tools\einrichten.py ohne --protokoll-zusatz).'
+    Meldung "      Loesung: claude plugin marketplace update $Marketplace - dann das Skript erneut starten (es setzt fort)."
+    Fortschritt-Ende; return
+}
 if ($bg.claudeUpdate -and (Code $bg.claudeUpdate) -eq 0 -and (Ausgabe $bg.claudeUpdate) -match 'Successfully updated|updated to') { Ok 'Claude Code aktualisiert (gilt ab dem naechsten Start)' }
 
 # --- 6. Geplante Aufgabe fuer git-Updates ------------------------------------------------------------------------------------
@@ -543,7 +600,7 @@ if ($wollAufgabe) {
 # --- 7. Plugins, Einstellungen, Probe (einrichten.py, meldet seinen Fortschritt ueber ##BALKEN-Zeilen) ---------------------
 $zusatz = Join-Path $Temp 'protokoll-zusatz.json'
 ConvertTo-Json -InputObject @($script:Protokoll) -Depth 4 | Set-Content -Path $zusatz -Encoding UTF8
-$weiter = @('-I', (Join-Path $ort 'tools\einrichten.py'), '--ja', '--balken', '--modus', $Modus, '--host', $RechnerName,
+$weiter = @('-I', $einrichten, '--ja', '--balken', '--modus', $Modus, '--host', $RechnerName,
             '--log-repo', $LogRepo, '--protokoll-zusatz', $zusatz)
 if ($mitOverrides) { $weiter += '--mit-overrides' } else { $weiter += '--ohne-overrides' }
 $py = Starte 'einrichten' 'python3' $weiter

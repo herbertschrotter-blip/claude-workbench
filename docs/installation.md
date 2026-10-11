@@ -20,9 +20,10 @@ Ergänzt den Schnellstart der [README](../README.md). Die Skripte: `tools/instal
    Kerne selbst; nichts wird eingetragen).
 2. **Im Hintergrund sofort:** Marketplace auffrischen, `claude update`, git auf Updates prüfen, fehlendes git mit
    `winget download` vorladen (winget ab 1.8). Python aus dem Store lässt sich nicht vorladen.
-3. **Alle Fragen auf einmal:** was installiert werden soll, Desktop-App oder Terminal, Rechnername (Vorschlag: schon
-   eingerichteter Name, sonst der Windows-Computername), Sammel-Repo, `skillOverrides`, geplante Aufgabe für git-Updates.
-   Danach läuft alles ohne Rückfrage.
+3. **Alle Fragen auf einmal:** Bereinigung (altes npm-claude neben einer anderen Installation entfernen; geschieht als
+   erster Schritt der Installation), was installiert werden soll, Desktop-App oder Terminal, Rechnername (Vorschlag:
+   schon eingerichteter Name, sonst der Windows-Computername), Sammel-Repo, `skillOverrides`, geplante Aufgabe für
+   git-Updates. Danach läuft alles ohne Rückfrage.
    **Sammel-Repo:** eines je GitHub-Konto, auf allen Rechnern dasselbe. Vorschlag in dieser Reihenfolge: schon gesetzte
    Option `log_repo`, `origin` des Klons `~/.claude/skill-log-sammel`, sonst `<konto>/skill-log`, wenn das Repo
    erreichbar ist. Das Konto kommt aus `gh` oder den gespeicherten git-Zugangsdaten (Git Credential Manager), geprüft
@@ -108,7 +109,8 @@ Was das Skript selbst abfängt, steht mit ✓; sonst die Lösung.
 | ✓ TLS 1.2 unter Windows PowerShell 5.1 | Skript schaltet TLS 1.2 zu |
 | ✓ PowerShell „Als Administrator“ oder als anderer Benutzer | Rückfrage; eingerichtet wird immer für das Profil des laufenden Kontos → normales Fenster verwenden |
 | ✓ PowerShell ISE | ohne Balken, Hinweis; besser ein normales Fenster |
-| ✓ Mehrere Claude-Installationen (npm und nativ) | Hinweis; prüfen mit `claude doctor` |
+| ✓ Mehrere Claude-Installationen (npm und nativ/winget) | Windows: das Skript nimmt für den Lauf die neueste Version (Hinweis mit Pfaden). Ein globales npm-Paket `@anthropic-ai/claude-code` neben einer mindestens gleich neuen anderen Installation bietet es als **Bereinigung** zu Beginn zum Entfernen an (Vorschlag „ja“; Protokoll `claude-npm … entfernt`). Befund Firmenlaptop 11.10.2026: npm-claude 2.1.278 vor winget-claude, ohne `plugin configure` – Optionen nicht gesetzt, Marketplace nicht aktualisiert |
+| ✓ Marketplace-Klon zu alt (Update gescheitert) | Hinweis mit der Meldung des Updates; ist `tools/einrichten.py` älter als das Skript (ohne `--protokoll-zusatz`), Abbruch mit Lösung: `claude plugin marketplace update workbench`, dann erneut starten |
 | ✓ Älteres `claude` vor `~/.local/bin` im PATH (z. B. das mitgelieferte im Home-Assistant-Add-on, ohne `plugin configure`) | install.sh und einrichten.py nehmen `~/.local/bin/claude` zuerst, mit Hinweis. Befund Pi 09.10.2026: Optionen wurden mit 2.1.282 nicht gesetzt |
 | ✓ Plugin installiert, aber ausgeschaltet (`enabledPlugins` leer) | einrichten.py schaltet es ein; scheitern Einschalten oder Optionen, endet es mit FEHLER statt OK |
 | ✓ Kaputte `~/.claude/settings.json` | `einrichten.py` meldet Zeile/Spalte, ändert nichts; reparieren oder `settings.json.bak` zurückholen |
