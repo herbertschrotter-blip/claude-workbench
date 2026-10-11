@@ -12,3 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
+| audit | v0.54.0 | 16f080e | Zip (SKILL.md + references/grundsatz/home-assistant.md) | 2026-10-12 |
