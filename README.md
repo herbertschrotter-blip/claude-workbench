@@ -424,6 +424,7 @@ Projekt-Repos.
 | `chatgpt-reviews/` | CGR-Archiv dieses Repos (Serien `CGR-2026-09-23-ha-grundsatz`, `CGR-2026-09-24-skillsystem`) mit `INDEX.md` |
 | `fragilitaeten-und-fruehwarn.md` | 4 Fragilitäten mit Frühwarn-Indikatoren (INDEX-Invariante 10) |
 | `ha-grundsatz/` | HA-Grundsatzregeln für Home-Assistant-Projekte (im Aufbau, genutzt von `projekt-anlegen`; G-22 Oberfläche mit Lit) |
+| `offene-uploads.md` | Skill-Lieferungen, die noch bei claude.ai hochzuladen sind |
 | `skill-guard-v1.md` | Skill-Wächter: Hooks, die an der Aktion prüfen, ob der zuständige Skill geladen ist; lernbare Regeln |
 | `skill-log-v1.md` | Format, Einrichtung und Auswertung des Skill-Logs |
 | `skill-profile-v1.md` | Spezifikation Skill-Profil v1 (Abschnitt `## Skill-Profil` in der CLAUDE.md, Configs unter `.claude/skill-config/`) |
