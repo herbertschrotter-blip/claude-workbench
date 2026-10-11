@@ -15,5 +15,6 @@ jobs:
       - run: uv pip install --python .venv/bin/python -r requirements-ha.txt
       - run: .venv/bin/python -m ruff format --check .
       - run: .venv/bin/python -m ruff check .
+      - run: .venv/bin/python -m mypy
       - run: .venv/bin/python -m pytest -q -p no:cacheprovider tests/logik
       - run: .venv/bin/python -m pytest -q -p no:cacheprovider -n auto tests/integration

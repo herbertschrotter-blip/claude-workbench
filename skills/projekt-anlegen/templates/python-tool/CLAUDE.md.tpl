@@ -13,6 +13,7 @@ Python-Werkzeug mit Befehlszeile; Fachlogik getrennt von Befehlszeile (`{{packag
 ### Checks
 - format: python -m ruff format --check . [**/*.py; pyproject.toml]
 - lint: python -m ruff check . [**/*.py; pyproject.toml]
+- typen: python -m mypy [**/*.py; pyproject.toml]
 - tests: python -m pytest [**/*.py; pyproject.toml]
 - start: python -m {{package}} status [{{package}}/**; pyproject.toml]
 
@@ -22,7 +23,7 @@ Python-Werkzeug mit Befehlszeile; Fachlogik getrennt von Befehlszeile (`{{packag
 - Versionsquelle: pyproject.toml#project.version
 - Versionsregel: none
 - Push-Policy: allowed
-- Pre-Commit-Checks: format; lint; tests; start
+- Pre-Commit-Checks: format; lint; typen; tests; start
 - Doku-Check: Funktion geändert → CHANGELOG.md; Entscheidung geändert → docs/entscheidungen.md
 
 ### Code
@@ -30,7 +31,7 @@ Python-Werkzeug mit Befehlszeile; Fachlogik getrennt von Befehlszeile (`{{packag
 - Pflichtkontext: CLAUDE.md; docs/entscheidungen.md
 - Aufgabenquelle: none
 - Architekturregeln: none
-- Tests: format; lint; tests; start
+- Tests: format; lint; typen; tests; start
 - Auslieferung: none
 - Mockup-Policy: none
 - Befund-Ort: none

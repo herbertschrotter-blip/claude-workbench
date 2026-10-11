@@ -75,6 +75,14 @@
         ]
       },
       {
+        "name": "typen",
+        "befehl": [
+          "{venv_python}",
+          "-m",
+          "mypy"
+        ]
+      },
+      {
         "name": "logik",
         "befehl": [
           "{venv_python}",
