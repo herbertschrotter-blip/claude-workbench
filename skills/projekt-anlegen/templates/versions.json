@@ -1,8 +1,8 @@
 {
-  "homeassistant": "2026.9.4",
+  "homeassistant": "2026.10.1",
   "mypy": "2.4.0",
   "pytest": "9.1.1",
-  "pytest-homeassistant-custom-component": "0.13.367",
+  "pytest-homeassistant-custom-component": "0.13.372",
   "pytest-xdist": "3.8.0",
-  "ruff": "0.16.10"
+  "ruff": "0.17.0"
 }
