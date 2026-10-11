@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.52.1] — 2026-10-11
+
+- **skills/projekt-anlegen, Change:** Werkzeugversionen angehoben (`templates/versions.json`): ruff 0.16.10 → 0.17.0,
+  Home Assistant 2026.9.4 → 2026.10.1 zusammen mit `pytest-homeassistant-custom-component` 0.13.367 → 0.13.372 (das
+  Testpaket heftet genau diese HA-Version an); `hacs.json` neuer Projekte verlangt damit HA 2026.10.1. Übernommen nach
+  grüner CI des Generators. SKILL.md und references unverändert.
+
 ## [v0.52.0] — 2026-10-11
 
 - **skills/projekt-anlegen, Feature (Projekt-Generator P3):**
