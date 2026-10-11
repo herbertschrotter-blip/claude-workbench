@@ -7,6 +7,7 @@ Ergänzt den Schnellstart der [README](../README.md). Die Skripte: `tools/instal
 
 - Ablauf
 - Was sich selbst aktualisiert
+- Statuszeile (optional)
 - Entfernen
 - Fehlerquellen
 - Testanleitung Windows
@@ -68,6 +69,18 @@ Ein erneuter Start setzt nach einem Abbruch sauber fort: Jeder Schritt prüft vo
 | Python aus dem Microsoft Store | selbst über den Store (innerhalb 3.12) |
 | Codex CLI | Skript erneut starten: es vergleicht `codex --version` mit der neuesten Release und bietet das Update an (offizieller Installer) |
 | git (winget) | **nicht** – optional die geplante Aufgabe „workbench git-Update“ (montags 9 Uhr, holt nach, wenn der Rechner aus war). git ist maschinenweit installiert, deshalb kommt beim Lauf eine UAC-Abfrage; ohne Zustimmung bleibt es beim alten Stand. Sonst: Skript erneut starten, es prüft git auf Updates |
+
+## Statuszeile (optional)
+
+`tools/statusline.py` zeigt in der Statuszeile von Claude Code Modell, Repo@Branch und eine laufende Review-Serie
+(`CGR <thema> r<N> <n>/4 (<weg>)`, Skill chatgpt-review). Einrichten in `~/.claude/settings.json` mit dem Pfad des
+Klons:
+
+```json
+"statusLine": { "type": "command", "command": "python3 <klon>/tools/statusline.py" }
+```
+
+Wirksam ab der nächsten Sitzung. Das Installationsskript richtet sie nicht ein.
 
 ## Entfernen
 

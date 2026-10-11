@@ -255,7 +255,7 @@ claude-workbench/
 ├── quality/               ← Eval-Plugin: evals/ (Testfälle für claude plugin eval), skills → ../skills
 ├── reference/             ← Externe Referenz-Artefakte
 ├── skills/                ← 15 Skills, je ein Ordner mit SKILL.md
-└── tools/                 ← Installation (install.sh/.ps1, einrichten.py), Prüfskript, Auswertung des Skill-Logs
+└── tools/                 ← Installation (install.sh/.ps1, einrichten.py), Prüfskript, Auswertung des Skill-Logs, Statuszeile
 ```
 
 Die folgenden Kapitel erklären jeden dieser Ordner und die darin liegenden Dateien.
