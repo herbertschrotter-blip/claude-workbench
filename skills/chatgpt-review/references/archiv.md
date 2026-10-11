@@ -10,6 +10,7 @@ Ablauf des Review-Archivs im Detail; Kernregeln in `../SKILL.md#CGR-Ablagesystem
 - Globaler Index
 - Serie starten (vor Phase 1)
 - Rundenstand aus dem Archiv (Pflicht vor jeder Runde)
+- Statuszeile (Claude Code)
 - Runde starten (innerhalb laufender Serie)
 - Lifecycle pro Runde (4 Datei-Checkpoints)
 - Serie abschließen
@@ -127,6 +128,14 @@ Rundennummer und Status werden **aus dem Archiv gelesen, nicht aus dem Chat gez�
    fehlt in r<N> eine Datei → diese Runde ist offen, dort weitermachen
 4. Widerspricht der Chat dem Archiv (z.B. „Runde 3 erstellen“, aber r3 existiert schon mit 01) →
    Auswahlfrage „Archiv gilt / Chat gilt / Abbrechen“
+
+## Statuszeile (Claude Code)
+
+Wo sie eingerichtet ist (`tools/statusline.py` im Skill-Repo, Einrichtung in `docs/installation.md`), zeigt die
+Statuszeile von Claude Code die laufende Serie: `CGR <thema> r<N> <n>/4 (<weg>)`, wobei `<n>` die vorhandenen Dateien
+der höchsten Runde zählt. Laufend ist eine Serie, solange die README-Zeile `**Status:**` nicht mit „Abgeschlossen“
+beginnt; die Ablage liest das Skript aus der Review-Config des Repos. Die Statuszeile ist nur Anzeige – der
+Rundenstand kommt weiter aus dem Archiv (Abschnitt oben).
 
 ## Runde starten (innerhalb laufender Serie)
 

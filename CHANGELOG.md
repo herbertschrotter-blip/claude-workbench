@@ -8,6 +8,15 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.55.0] — 2026-10-12
+
+- **skills/chatgpt-review, Feature (Anzeige, Wunsch Herbert):** neuer Abschnitt „Anzeige im Chat“ – im Weg codex steht
+  die Antwort von ChatGPT als Markdown-Zitat unter „🟦 ChatGPT · Runde N“, die eigene Einschätzung unter „🟧 Claude ·
+  Einschätzung Runde N“; „Weg wählen“ und Stufe A verweisen darauf, neuer VERBOTEN-Punkt. `references/archiv.md`:
+  Abschnitt „Statuszeile (Claude Code)“ für `tools/statusline.py` (laufende Serie `CGR <thema> r<N> <n>/4 (<weg>)`,
+  nur Anzeige). Dazu (Tools, ohne eigene Nummer): `tools/statusline.py` liest die Ablage aus der Review-Config,
+  Einrichtung in `docs/installation.md`.
+
 ## [v0.54.0] — 2026-10-12
 
 - **skills/audit, Feature (Grundsatzregeln, CGR-2026-10-12-ha-grundsatz):** neues Modul 7 „Grundsatzregeln“ – prüft
