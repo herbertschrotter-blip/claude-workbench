@@ -12,3 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
+| chatgpt-review | v0.53.1 | 05d7b68 | Zip, 4 Dateien (`SKILL.md`, `references/`) | 11.10.2026 |
