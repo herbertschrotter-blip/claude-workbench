@@ -8,6 +8,17 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.54.0] — 2026-10-12
+
+- **skills/audit, Feature (Grundsatzregeln, CGR-2026-10-12-ha-grundsatz):** neues Modul 7 „Grundsatzregeln“ – prüft
+  ein Projekt gegen das Regelwerk aus `Modul.Grundsatzregeln`, je Modul-Manifest mit Ausbaustufe (deklariert oder
+  abgeleitet). Neutraler Abschnitt „Ergebnisvertrag“: vier Nachweisarten, fünf Ergebnisse mit Rangfolge (❌ > ⚠️ >
+  „Nachweis offen“ > ✅, dazu „nicht anwendbar“), Pflichtbelege, Budgetabbruch „Teilprüfung – Nachweise offen“. Profil-
+  Laden um `Modul.*`, Teilaudit „nur Grundsatz“, Report-Block, drei neue VERBOTEN-Punkte, Description nennt die Prüfung
+  gegen Grundsatzregeln. Neue Reference `references/grundsatz/home-assistant.md` (Stufe ermitteln, Vertrag, Prüftabelle
+  G-01 … G-22, Suchtreffer im Kontext, Ausführungsnachweise, Konfigurationsordner, Geheimnisse). Eval-Fall
+  `audit-grundsatz`.
+
 ## [v0.53.1] — 2026-10-11
 
 - **skills/chatgpt-review, Fix (Weg codex nach Review CGR-2026-10-11-skillsystem):**

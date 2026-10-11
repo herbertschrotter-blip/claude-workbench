@@ -5,8 +5,9 @@ description: >
   Doku- und Code-Profil des Repos (BPM: INDEX-Routing, Frontmatter, Quickloads;
   Heidi: Bauplan-Statusliste, Entitäts-Vertrag ↔ contract.ts, HANDOFF,
   PD-Register). Use when users want a consistency audit, a documentation-vs-code
-  check, a Frontmatter or Quickload validation, a Bauplan check, or a systematic
-  read-only review of project rules. Do not trigger for code
+  check, a Frontmatter or Quickload validation, a Bauplan check, a check of a
+  project against its ground rules (Grundsatzregeln, e.g. Home Assistant), or a
+  systematic read-only review of project rules. Do not trigger for code
   implementation, build debugging, or general code review without doc/context
   comparison.
 ---
@@ -58,7 +59,7 @@ für Doc-Fixes) oder als Aufgaben über **tracker** angelegt (Abschnitt
   | Situation | Optionen |
   |-----------|----------|
   | Modus-Auswahl (A oder B) | Vollaudit, Teilaudit, Abbrechen |
-  | Teilaudit: welches Modul | Modul-Namen aus dem Router des Profils (BPM: INDEX.md; Heidi: Karte/Backend/Doku/Tools) |
+  | Teilaudit: welches Modul | Modul-Namen aus dem Router des Profils (BPM: INDEX.md; Heidi: Karte/Backend/Doku/Tools); „nur Grundsatz“, wenn das Profil Grundsatzregeln nennt |
   | Vollaudit-Warnung vor Start | Starten, Als Teilaudit starten, Abbrechen |
   | Nach dem Report: was mit den Befunden | Als Tasks anlegen (tracker), An code-erstellen/doc-pflege, Nur Report |
 
@@ -83,6 +84,11 @@ Cowork: bei DC-Operationen Arbeitsverzeichnis nach **cc-steuerung**, Abschnitt �
 2. Stack-Referenzen `skills/code-erstellen/references/stacks/<key>.md` für jeden Schlüssel in `Stacks:`
 3. Fehlt das Doku-Profil: `INDEX.md` + `DOC-STANDARD.md` (BPM-Weg). Fehlt beides: Auswahlfrage
    „Profil anlegen (doc-pflege Modus 0)“ / „Ohne Profil, ich nenne die Docs“ – nie raten.
+4. Skill-Profil, Bereich `### Modul` (für Modul 7): `Grundsatzregeln` (Verweis auf das Regelwerk; `none` → Modul 7
+   entfällt), `Manifest` (Pfad oder Muster der Modul-Manifeste), `Prüfumfang` (Positivliste der lesbaren Bereiche),
+   `Nachweise` (optional: Zuordnung Check/Testfall → Teilnachweis). Ein Verweis, der nicht auflöst, ist ein Befund; ein
+   fehlender benötigter Wert wird erfragt, nie geraten. Beim Teilaudit „nur Grundsatz“ werden Doku- und Tracker-Werte
+   nicht verlangt.
 
 ## Doc-Laderegel
 
@@ -100,7 +106,8 @@ nur für die geprüften Schritte → 10/10a für Befunde und Register.
 ## 2 Modi
 
 ### Modus A — Vollaudit
-Alle 6 Module. Token-intensiv — vor Start per Auswahlfrage bestätigen lassen.
+Alle 7 Module (Modul 7 nur, wenn das Profil Grundsatzregeln nennt). Token-intensiv — vor Start per Auswahlfrage
+bestätigen lassen.
 
 ### Modus B — Teilaudit
 Nur relevantes Modul.
@@ -227,6 +234,24 @@ BPM-Kurzprüfung hier:
 
 ---
 
+### Modul 7 — Grundsatzregeln
+
+Neutral: Hält das Projekt die Grundsatzregeln ein, auf die `Modul.Grundsatzregeln` zeigt?
+
+- Läuft nur, wenn das Profil Grundsatzregeln nennt. Die Regeln liest audit zur Laufzeit aus dem Regelwerk; es führt
+  keine eigenen.
+- Je Modul-Manifest (aus `Modul.Manifest`) ein eigener Block mit Ausbaustufe (deklariert oder abgeleitet) und einer
+  Zeile je anwendbarer Regel; Regeln über der Stufe gesammelt als „nicht anwendbar“.
+- Ergebnisse und Belege nach dem Ergebnisvertrag (Abschnitt unten).
+- Wie die Regeln je Plattform nachgewiesen werden, steht in einer Reference je Stack-Schlüssel aus `Code.Stacks`. Für
+  einen Stack ohne Reference meldet audit „Prüfverfahren fehlt“ und rät keines.
+
+| Stack | Reference |
+|---|---|
+| `home-assistant` | [`references/grundsatz/home-assistant.md`](references/grundsatz/home-assistant.md) |
+
+---
+
 ## Report-Format
 
 Befunde immer mit Datei und Stelle (Zeile oder Abschnitt), damit der Fix-Skill direkt hinspringen kann.
@@ -238,6 +263,16 @@ Befunde immer mit Datei und Stelle (Zeile oder Abschnitt), damit der Fix-Skill d
 📊 Zusammenfassung: X ✅ | Y ⚠️ | Z ❌
 
 ─── Modul 1–5 ───
+
+──────────────────────────────────
+Modul 7 — Grundsatzregeln · <Modul> (Stufe <n>, deklariert|abgeleitet)
+──────────────────────────────────
+G-15 | Nachweis offen
+  Statisch: Entladepfad vorhanden — <Datei>:<Zeile>
+  Test vorhanden: Einrichten → Entladen → Neu laden — <Testdatei>:<Zeile>
+  Ausführung: offen (kein Lauf zum aktuellen Stand)
+G-18 | ❌ Token in <Datei>:<Zeile> (Wert nicht zitiert)
+Nicht anwendbar (Stufe): G-22
 
 ──────────────────────────────────
 Modul 6 — Frontmatter + Quickload
@@ -260,6 +295,40 @@ Modul 6 — Frontmatter + Quickload
 | ✅ | Konsistent | — |
 | ⚠️ | Inkonsistenz | Sollte korrigiert werden |
 | ❌ | Fehler | Muss korrigiert werden |
+
+---
+
+## Ergebnisvertrag
+
+Gilt für jede Prüfung gegen ein Regelwerk (Modul 7) und für jedes Projekt; die Reference des Stacks nutzt ihn.
+
+**Anwendbarkeit:** Eine Regel gilt, wenn ihre Mindeststufe erreicht und ihr Gegenstand vorhanden ist. Fehlt ein
+vorgeschriebener Bestandteil, ist das ein Befund, kein Grund für „nicht anwendbar“.
+
+**Nachweisarten** (je Regel nur die nötigen, getrennt bewertet):
+- **statisch:** Code oder Vertrag gelesen; Suchtreffer im Kontext geprüft
+- **Test vorhanden:** Testinhalt und Assertions decken den Prüffall ab
+- **Ausführung:** der zugeordnete Test lief erfolgreich, das Ergebnis gehört zum geprüften Stand aller Eingaben
+- **Urteil:** begründete Bewertung anhand benannter Belege
+
+| Ergebnis | Bedeutung |
+|---|---|
+| ✅ | alle nötigen Teilnachweise erfüllt, kein belegter Verstoß |
+| ⚠️ | belegte Inkonsistenz ohne nachgewiesenen Pflichtverstoß |
+| ❌ | konkreter Verstoß gegen eine anwendbare Pflicht nachgewiesen |
+| Nachweis offen | ein nötiger Nachweis fehlt, ist veraltet oder ungeprüft; kein belegter Verstoß |
+| nicht anwendbar | Stufe oder Gegenstand trifft nachweislich nicht zu |
+
+Rangfolge je Regel: ❌ vor ⚠️ vor „Nachweis offen“ vor ✅; offene Teilnachweise bleiben auch neben ❌ sichtbar. Ein
+ungeklärter Suchtreffer ist „Nachweis offen“. Verlangt die Regel einen Test und fehlt er nach Suche im Testbereich: ❌;
+ein passender Test ohne gültigen Lauf: „Ausführung offen“.
+
+**Pflichtbelege:** Regel, Modul, Stufe mit Herkunft, Bestandteil, Teilnachweis, Datei und Zeile bzw. Abschnitt,
+Begründung; bei Ausführung die Zuordnung Check/Test und der Bezug zum Stand; bei Fehlendem der erwartete Pfad und der
+durchsuchte Bereich. Geheime Werte werden nie zitiert.
+
+**Budget:** Ist das Budget erschöpft (Abschnitt „Tool-Strategie“), endet die Prüfung mit „Teilprüfung – Nachweise
+offen“: geprüfte Bereiche, offene Regeln, nächster nötiger Nachweis. Nicht gelesene Bereiche bekommen nie ✅.
 
 ---
 
@@ -308,3 +377,6 @@ Entscheidung offen) – eintragen tut doc-pflege, nicht audit.
 - Befunde ohne Datei und Stelle melden
 - Report beenden ohne Auswahlfrage „Tasks / Fix-Skill / Nur Report“
 - ClickUp direkt schreiben (Tasks nur über tracker, und nur nach Auswahlfrage)
+- **Eine Regel grün melden, weil ein Test existiert** – „Test vorhanden“ ist kein Ausführungsnachweis
+- **Geheime Werte im Report zitieren** oder gesperrte Bereiche öffnen, um darin zu suchen
+- **Außerhalb des Prüfumfangs lesen** (`Modul.Prüfumfang`), wo das Profil ihn begrenzt

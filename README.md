@@ -280,7 +280,7 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 | **projekt-anlegen** | Neue Projekte anlegen und einrichten: klären, Plan zeigen, lauffähiges und geprüftes Grundgerüst (Generator für unterstützte Stacks), Git, Skill-Profil, GitHub nach Rückfrage. | "neues Projekt", "ich will X bauen, weiß aber nicht wie", "Repo holen und einrichten" |
 | **ticket** | Fehler-Tickets eines Projekts einzeln und immer im selben Ablauf bearbeiten (acht Schritte). | "ticket liste", "ticket HT-0007", "nimm das nächste ticket" |
 | **chatgpt-review** | Strukturierte Cross-LLM-Review-Prompts zwischen Claude und ChatGPT. | "besprich das mit ChatGPT", "zweite Meinung", "Folgeprompt für Runde 3" |
-| **audit** | Strikt read-only Konsistenzprüfung zwischen Code, Docs, Frontmatter und Quickload. | "audit", "prüfe alles", "konsistenzcheck" |
+| **audit** | Strikt read-only Konsistenzprüfung zwischen Code, Docs, Frontmatter und Quickload; Prüfung gegen Grundsatzregeln (z. B. HA). | "audit", "prüfe alles", "konsistenzcheck", "Grundsatzregeln prüfen" |
 | **tracker** | Standardisierte Schreibschnittstelle zum ClickUp-Task-System. | "tracker neu: PM — Regex-Bug", "tracker done BPM-042", "tracker suche Regex" |
 | **git-commit-helper** | Fertige Git-Commit-Befehle im Format `[vX.Y.Z] Modul, Typ: Kurztitel` (Commit-Profil). | "commit bitte", "commit-message", "PATCH oder MINOR?" |
 | **chat-wechsel** | Handover-Prompt für die nächste Claude-Session. | "neuer chat", "nächster chat", "übergabe" |
@@ -624,7 +624,7 @@ claude-workbench/
 │   └── anthropic-skill-creator/
 │
 ├── skills/
-│   ├── audit/SKILL.md
+│   ├── audit/                             ← SKILL.md + references/ (grundsatz/home-assistant)
 │   ├── cc-steuerung/
 │   │   ├── SKILL.md
 │   │   └── references/desktop-commander.md
