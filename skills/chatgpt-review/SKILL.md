@@ -17,7 +17,7 @@ Der User kopiert Prompts zwischen beiden und entscheidet.
 
 Was projektspezifisch ist (Ablage, Themen, Repo, Pflicht-Block, Kontextquelle), steht im
 **Review-Profil** der CLAUDE.md des Repos (Abschnitt „Voraussetzung: Review-Profil“). Der Skill
-läuft im Cowork-Chat (DC, Artifact) und in Claude Code (Write, Bash, SendUserFile).
+läuft im Cowork-Chat (DC, Artifact) und in Claude Code (Write, Bash).
 
 ---
 
@@ -512,12 +512,12 @@ Gleichwertiger Gesprächspartner:
    ```
 
 2. **Zusätzlich: Copy-Paste-Hilfe** für den User. Damit der User den
-   Prompt schnell in ChatGPT pasten kann, liefert Claude den Prompt-Text
-   zusätzlich als Datei:
-   - **Cowork:** `/mnt/user-data/outputs/chatgpt-review-prompt.md` (Initial) bzw.
-     `chatgpt-review-runde-N.md` (Folgeprompt) via `create_file` + `present_files` als Dateikarte
-   - **Claude Code:** die Archivdatei `r<N>/01-claude-prompt.md` per `SendUserFile` (attach) –
-     dieselbe Datei, kein zweiter Ort
+   Prompt schnell in ChatGPT pasten kann, zeigt Claude den Prompt-Text
+   direkt im Chat in **einem** kopierbaren Codeblock, in jeder Umgebung
+   (Initial- und Folgeprompt). Enthält der Prompt selbst Codeblöcke, wird
+   der äußere Block mit vier Backticks geöffnet. Nie als Datei oder
+   Download – am Smartphone ist Kopieren aus dem Chat einfacher. Die
+   Archivdatei `r<N>/01-claude-prompt.md` entsteht trotzdem.
 
 Phase 2 Stufe A: direkt im Chat + Auswahlfrage.
 Datei erst in Stufe B.
@@ -544,3 +544,4 @@ Prompts in der Sprache des Users.
 - **INDEX.md-Status nicht aktualisieren** bei neuer Runde / Serie-Abschluss
 - **Alle 4 Dateien einer Runde gesammelt am Rundenende anlegen** — Archiv-Lücken bei Chat-Abbruch
 - **CGR-ID aus falschem Datum verwenden** — immer das aktuelle `YYYY-MM-DD` beim Serie-Start nehmen, auch wenn die Runde später läuft
+- **Prompt als Datei oder Download liefern** (Dateikarte, `SendUserFile`, `present_files`) statt als einen kopierbaren Codeblock im Chat

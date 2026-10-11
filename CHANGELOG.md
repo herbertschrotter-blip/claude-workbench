@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.52.2] — 2026-10-11
+
+- **skills/chatgpt-review, Fix:** Prompts an ChatGPT immer als einen kopierbaren Codeblock im Chat (äußerer Block mit
+  vier Backticks, wenn der Prompt Codeblöcke enthält), nie als Datei oder Download – auch in Claude Code nicht mehr per
+  `SendUserFile`; die Archivdatei `r<N>/01-claude-prompt.md` bleibt. Neuer VERBOTEN-Punkt. Befund: Herbert überträgt
+  am Smartphone, die Regel stand bisher nur im Memory eines Projekts.
+
 ## [v0.52.1] — 2026-10-11
 
 - **skills/projekt-anlegen, Change:** Werkzeugversionen angehoben (`templates/versions.json`): ruff 0.16.10 → 0.17.0,
