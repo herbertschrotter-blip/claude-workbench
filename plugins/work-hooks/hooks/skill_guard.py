@@ -50,6 +50,7 @@ _CP_MV = re.compile(r"^\s*(?:cp|mv|install)\s+(.*)")
 _PY_WRITE = re.compile(r"open\([^)]*['\"][wax]b?['\"]|\.write_text\(|\.write\(|shutil\.(?:copy|move)")
 _QUOTED_FILE = re.compile(r"['\"]([\w./~-]*[\w-]\.[A-Za-z0-9]{1,5}|[\w./~-]*/mockups/[\w./-]+)['\"]")
 _SEGMENT = re.compile(r"\s*(?:;|&&|\|\||\||\n)\s*")
+_CD = re.compile(r"^\s*(cd|pushd|popd)\b\s*(.*)$")
 _COMMAND_NAME = re.compile(r"<command-name>/?([\w:.-]+)</command-name>")
 _TIMESTAMP = re.compile(r'"timestamp":\s*"(\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d)')
 _PROJECT_ID = re.compile(r"^\s*-\s*Projekt-ID:\s*(\S+)", re.M)
@@ -295,14 +296,33 @@ def is_commit(command):
     return bool(_GIT_COMMIT.search(without_heredocs(command)))
 
 
-def bash_targets(command):
-    """Dateien, die ein Shell-Befehl schreibt: Umleitungen, tee, sed -i, Ziel von cp/mv, Schreiben in Python-Heredocs."""
-    targets = []
+def _cd(base, segment):
+    """Verzeichnis nach einem cd/pushd/popd-Teilbefehl, relativ zum Ausgangsordner ('' = dort); None = unbekannt."""
+    match = _CD.match(segment)
+    if not match:
+        return base
+    try:
+        args = [a for a in shlex.split(match.group(2)) if not a.startswith("-")]
+    except ValueError:
+        return None
+    if match.group(1) == "popd" or not args or "$" in args[0]:
+        return None
+    target = os.path.expanduser(args[0])
+    if os.path.isabs(target):
+        return target
+    return None if base is None else os.path.join(base, target)
+
+
+def bash_targets_at(command):
+    """Dateien, die ein Shell-Befehl schreibt, als (verzeichnis, ziel): Umleitungen, tee, sed -i, Ziel von cp/mv,
+    Schreiben in Python-Heredocs. verzeichnis folgt den cd davor ('' = Ausgangsordner, None = unbekannt)."""
+    found = []
     heredoc = command.find("<<")
     shell = command if heredoc < 0 else command[:heredoc] + command[heredoc:].split("\n", 1)[0]
-    targets += _REDIRECT.findall(shell)
-    targets += _TEE.findall(shell)
+    base = ""
     for segment in _SEGMENT.split(shell):
+        base = _cd(base, segment)
+        targets = _REDIRECT.findall(segment) + _TEE.findall(segment)
         match = _SED_I.search(segment)
         if match:
             try:
@@ -318,18 +338,28 @@ def bash_targets(command):
                 args = []
             if len(args) >= 2:
                 targets.append(args[-1])
+        found += [(base, t) for t in targets]
     if heredoc >= 0 or "python" in command:
         body = command if heredoc < 0 else command[heredoc:]
         if _PY_WRITE.search(body):
-            targets += _QUOTED_FILE.findall(body)
+            found += [(base, t) for t in _QUOTED_FILE.findall(body)]
     clean = []
-    for target in targets:
+    for where, target in found:
         target = target.strip("\"'")
-        # Ziele mit Shell-Variablen ($S/…) sind hier nicht auflösbar; lieber auslassen als falsch blocken
-        if not target or target.startswith(("/dev/", "&", "-")) or "://" in target or "$" in target or target in clean:
+        # Ziele mit Shell-Variablen ($S/…) sind hier nicht auflösbar; lieber auslassen als falsch blocken – ebenso
+        # relative Ziele nach einem cd, dessen Ziel unbekannt ist
+        if not target or target.startswith(("/dev/", "&", "-")) or "://" in target or "$" in target:
             continue
-        clean.append(target)
+        if where is None and not os.path.isabs(os.path.expanduser(target)):
+            continue
+        if (where, target) not in clean:
+            clean.append((where, target))
     return clean
+
+
+def bash_targets(command):
+    """Dateien, die ein Shell-Befehl schreibt (ohne Verzeichnis, siehe bash_targets_at)."""
+    return [target for _, target in bash_targets_at(command)]
 
 
 def actions(data):
@@ -349,8 +379,9 @@ def actions(data):
         command = tin.get("command") or ""
         if is_commit(command):
             result.append(("bash:commit", ""))
-        for target in bash_targets(command):
-            result.append(("bash:schreibt", os.path.normpath(os.path.join(cwd, os.path.expanduser(target)))))
+        for where, target in bash_targets_at(command):
+            full = os.path.join(cwd, os.path.expanduser(where or ""), os.path.expanduser(target))
+            result.append(("bash:schreibt", os.path.normpath(full)))
     elif _CLICKUP_WRITE.match(tool):
         result.append(("mcp:clickup-schreibt", ""))
     return result
@@ -429,6 +460,20 @@ def message(found, names=None):
     return "\n".join(lines)
 
 
+def plugin_stand(root=None):
+    """Stand des Plugins, aus dem Wächter und Regeln kommen: im Plugin-Cache der Ordnername (Commit), sonst ''."""
+    name = os.path.basename(os.path.abspath(root or os.path.join(HERE, "..", "..", "..")))
+    return name[:7] if re.fullmatch(r"[0-9a-f]{7,40}", name) else ""
+
+
+def stand_hinweis(stand=None):
+    stand = plugin_stand() if stand is None else stand
+    if not stand:
+        return ""
+    return (f"Die Regeln stammen aus dem Plugin-Stand {stand}. Ist der Skill geladen und die Blockade trotzdem da, "
+            "läuft die Sitzung womöglich mit einem alten Stand: `/plugin update` und Claude neu starten. ")
+
+
 # Ohne Präfix ordnet Claude Code den Namen womöglich einer abgeschalteten Kopie zu (skillOverrides, z. B. die Fassung
 # aus claude.ai) – Befund 09.10.2026: „Skill code-erstellen is disabled for model invocation“.
 NAME_HINWEIS = ("Den Skill mit dem vollen Namen samt Präfix laden, wie er in der Skill-Liste steht (z. B. "
@@ -463,7 +508,7 @@ def decide(data, rules=None, skills=None):
         err = ("Skill-Wächter: Diese Änderung braucht einen geladenen Skill, der dafür zuständig ist.\n" + text +
                "\nLade den passenden Skill mit dem Skill-Werkzeug und wiederhole dann die Aktion – auch wenn er früher in "
                "der Sitzung schon geladen war: Nach einem Commit, einem Aufgabenstart oder einer neuen Aufgaben-ID gilt "
-               "er als verbraucht. " + NAME_HINWEIS +
+               "er als verbraucht. " + NAME_HINWEIS + stand_hinweis() +
                "Ist die Regel hier falsch, sag es dem Nutzer (wird bei der Skill-Auswertung nachgeschärft).")
         return 2, "", err, entries
     ctx = ("Skill-Wächter (Hinweis): Diese Aktion lief ohne den zuständigen Skill.\n" + text +

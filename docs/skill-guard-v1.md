@@ -133,8 +133,12 @@ Tests: `python3 -m unittest plugins/work-hooks/hooks/test_skill_guard.py` (die M
 
 ## Grenzen
 
-- Schreiben per Shell erkennt der Wächter über Muster. Ziele mit Shell-Variablen (`$S/datei`) lässt er aus. Im
-  Python-Heredoc zählen alle genannten Dateien, auch gelesene, sobald das Skript schreibt.
+- Schreiben per Shell erkennt der Wächter über Muster. Ziele mit Shell-Variablen (`$S/datei`) lässt er aus. Relative
+  Ziele löst er gegen das Verzeichnis nach dem letzten `cd`/`pushd` davor auf; ist dessen Ziel unbekannt (`cd $X`,
+  `cd -`, `popd`), lässt er sie aus. Im Python-Heredoc zählen alle genannten Dateien, auch gelesene, sobald das Skript
+  schreibt.
+- Die Blockmeldung nennt den Plugin-Stand (Commit aus dem Ordnernamen im Plugin-Cache). Blockt der Wächter, obwohl der
+  Skill geladen ist, läuft die Sitzung womöglich mit einem alten Stand: `/plugin update` und Claude neu starten.
 - Dateien, die ein Build-Skript erzeugt (z. B. ein gebündeltes Mockup), sieht der Wächter nicht.
 - Ob `PreToolUse` in Subagenten feuert, ist in der Doku von Claude Code nicht beschrieben; das Skill-Log zeigt es.
 - Warnen geht nur nach der Aktion (`PostToolUse`); vor der Aktion kann ein Hook Claude keinen Hinweis geben.

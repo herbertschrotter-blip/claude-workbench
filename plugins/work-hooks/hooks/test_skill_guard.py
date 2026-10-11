@@ -114,6 +114,21 @@ class WarnenTest(unittest.TestCase):
                         "git -C /repo commit -m x"):
             self.assertTrue(g.is_commit(command), command)
 
+    def test_pfade_nach_cd(self):
+        # Befund 10.10.2026: nach cd wurden relative Ziele gegen den Ordner der Sitzung aufgelöst
+        def ziele(command):
+            return [t for a, t in g.actions(hook("PreToolUse", "Bash", {"command": command})) if a == "bash:schreibt"]
+        self.assertEqual(ziele("cd sub && echo x > a.txt; cd .. && echo y > b.txt"),
+                         ["/home/nutzer/projekte/demo/sub/a.txt", "/home/nutzer/projekte/demo/b.txt"])
+        self.assertEqual(ziele("cd /repo && sed -i 's/a/b/' docs/x.md"), ["/repo/docs/x.md"])
+        self.assertEqual(ziele("cd $REPO && echo x > a.txt > /tmp/log.txt"), ["/tmp/log.txt"])
+
+    def test_blockmeldung_nennt_plugin_stand(self):
+        self.assertEqual(g.plugin_stand("/x/cache/workbench/work/cc300ef2050c"), "cc300ef")
+        self.assertEqual(g.plugin_stand("/config/projekte/claude-workbench"), "")
+        self.assertIn("cc300ef", g.stand_hinweis("cc300ef"))
+        self.assertEqual(g.stand_hinweis(""), "")
+
     def test_blockregel_warnt_nicht_nochmal(self):
         data = hook("PostToolUse", "Edit", {"file_path": "logik/rechte.py"})
         self.assertEqual(g.decide(data, MECH, set())[1], "")
