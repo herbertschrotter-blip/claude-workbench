@@ -20,7 +20,8 @@ nachgetragen.
 - Fachlogik ohne Home Assistant in `custom_components/{{package}}/logik/`, mit eigenen Tests.
 - Verlauf über die Aufzeichnung von Home Assistant; keine eigene Datenbank.
 - GitHub mit automatischer Prüfung: `{{github}}`. Geheimnisse nie im Repo; Zugangsdaten nur im Einrichtungsdialog.
-- Auslieferung: Ordner nach `custom_components/` der HA-Konfiguration kopieren, dann Neustart durch den Nutzer.
+- Auslieferung: `python ausliefern.py` kopiert nach `custom_components/` der HA-Konfiguration und sichert die vorige
+  Fassung (Rückweg: `--zurueck`); danach Neustart durch den Nutzer.
 
 ## Offene Entscheidungen
 

@@ -41,6 +41,12 @@ Bei `delivery.github: true` kommt `ci-github-python` bzw. `ci-github-ha` dazu (a
 Push). Mit `lizenz` kommt `lizenz-mit` (`LICENSE`) bzw. `lizenz-apache` (`LICENSE` mit dem offiziellen Text und
 `NOTICE`) dazu; beide Projektarten kennen beide. Alles andere geht den Weg nach der Stack-Reference; nie eine Kombination improvisieren.
 
+Jedes `ha-integration`-Projekt bekommt `ausliefern.py`: Es kopiert `custom_components/<domain>` in die
+HA-Konfiguration, sichert die vorige Fassung im Projekt (`.auslieferung/vorher/`, nicht im Repo) und stellt sie mit
+`--zurueck` wieder her; das Profil des Projekts nennt es unter `Code.Auslieferung`. `custom_components/**` ist in der
+HA-Konfiguration meist geschützt: Claude führt das Skript nie ungefragt aus, nur der Nutzer oder Claude nach seiner
+Bestätigung; den Neustart macht der Nutzer.
+
 Bei `ha-integration` entscheidet die Quelle: `aufsatz`, wenn die Integration die Entitäten einer vorhandenen
 Integration nutzt (das Gerät ist schon in Home Assistant); `abruf`, wenn sie selbst ein Gerät oder einen Dienst
 abfragt. `package` ist zugleich die Domain und darf nicht wie eine vorhandene Integration heißen. Die Tests gegen

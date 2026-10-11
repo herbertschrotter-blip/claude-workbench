@@ -34,6 +34,10 @@
       "target": "hacs.json"
     },
     {
+      "source": "ha-integration/ausliefern.py.tpl",
+      "target": "ausliefern.py"
+    },
+    {
       "source": "ha-integration/cc/diagnostics.py.tpl",
       "target": "custom_components/{{package}}/diagnostics.py"
     },
@@ -64,6 +68,10 @@
     {
       "source": "ha-integration/tests/logik/test_status.py.tpl",
       "target": "tests/logik/test_status.py"
+    },
+    {
+      "source": "ha-integration/tests/logik/test_ausliefern.py.tpl",
+      "target": "tests/logik/test_ausliefern.py"
     }
   ]
 }

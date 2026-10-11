@@ -22,8 +22,14 @@ ist ein zusätzlicher Paketindex eingetragen). Die Fachlogik-Tests unter `tests/
 
 ## In Home Assistant laden
 
-Den Ordner `custom_components/{{package}}` in den Ordner `custom_components` der Home-Assistant-Konfiguration
-kopieren, Konfiguration prüfen und Home Assistant neu starten. Danach unter Einstellungen → Geräte & Dienste →
-Integration hinzufügen → „{{name}}“.
+```sh
+python ausliefern.py             # nach custom_components/{{package}} der HA-Konfiguration
+python ausliefern.py --zurueck   # vorige Fassung wiederherstellen
+```
+
+Das Skript kopiert `custom_components/{{package}}` in die Home-Assistant-Konfiguration: ohne `--ziel` in den Ordner
+zwei Ebenen über dem Projekt, wenn dort eine `configuration.yaml` liegt. Die vorige Fassung sichert es vorher unter
+`.auslieferung/vorher/` (nicht im Repo). Danach Konfiguration prüfen und Home Assistant neu starten. Beim ersten Mal
+unter Einstellungen → Geräte & Dienste → Integration hinzufügen → „{{name}}“.
 
 Grundentscheidungen: [docs/entscheidungen.md](docs/entscheidungen.md).

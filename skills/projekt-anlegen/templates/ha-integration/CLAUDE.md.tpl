@@ -14,8 +14,8 @@ Assistant liegt in `custom_components/{{package}}/logik/` und hat eigene Tests. 
 ### Checks
 - format: .venv/bin/python -m ruff format --check . [**/*.py; pyproject.toml]
 - lint: .venv/bin/python -m ruff check . [**/*.py; pyproject.toml]
-- typen: .venv/bin/python -m mypy [custom_components/{{package}}/logik/**; pyproject.toml]
-- logik: .venv/bin/python -m pytest -q -p no:cacheprovider tests/logik [custom_components/**; tests/logik/**]
+- typen: .venv/bin/python -m mypy [custom_components/{{package}}/logik/**; ausliefern.py; pyproject.toml]
+- logik: .venv/bin/python -m pytest -q -p no:cacheprovider tests/logik [custom_components/**; tests/logik/**; ausliefern.py]
 - integration: .venv/bin/python -m pytest -q -p no:cacheprovider -n auto tests/integration [custom_components/**; tests/integration/**; requirements-ha.txt]
 
 ### Commit
@@ -33,7 +33,7 @@ Assistant liegt in `custom_components/{{package}}/logik/` und hat eigene Tests. 
 - Aufgabenquelle: none
 - Architekturregeln: none
 - Tests: format; lint; typen; logik; integration
-- Auslieferung: none
+- Auslieferung: python ausliefern.py – nur durch den Nutzer oder nach seiner Bestätigung (schreibt in custom_components/ der HA-Konfiguration); danach Konfiguration prüfen, Neustart durch den Nutzer. Rückweg: python ausliefern.py --zurueck
 - Mockup-Policy: none
 - Befund-Ort: none
 

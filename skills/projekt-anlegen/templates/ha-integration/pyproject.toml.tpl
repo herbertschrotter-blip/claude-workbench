@@ -5,7 +5,8 @@ asyncio_default_fixture_loop_scope = "function"
 [tool.mypy]
 strict = true
 mypy_path = "custom_components/{{package}}"
-packages = ["logik"]
+explicit_package_bases = true
+files = ["custom_components/{{package}}/logik", "ausliefern.py"]
 
 [tool.ruff]
 line-length = 100
