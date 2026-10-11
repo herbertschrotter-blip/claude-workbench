@@ -7,8 +7,8 @@
 #               bzw. powershell -ExecutionPolicy Bypass -File tools\install.ps1 -Entfernen
 # Protokoll fuer das Entfernen: ~/.claude/workbench-einrichtung.json (was das Skript installiert hat, was schon da war).
 #
-# Ablauf: Bestandsaufnahme ohne Netz -> Hintergrund-Pruefungen starten -> ALLE Fragen auf einmal -> Bereinigung (altes
-# npm-claude) -> unbeaufsichtigt installieren (winget nacheinander, Claude-Installer als eigener Prozess parallel, danach optional die Codex CLI mit
+# Ablauf: Bestandsaufnahme ohne Netz -> Hintergrund-Pruefungen starten -> ALLE Fragen auf einmal -> unbeaufsichtigt
+# installieren (zu altes Claude durch die offizielle Fassung ersetzen, danach Bereinigung alter npm/winget-Fassungen) (winget nacheinander, Claude-Installer als eigener Prozess parallel, danach optional die Codex CLI mit
 # ihrem offiziellen Installer) -> Marketplace -> einrichten.py (Plugins, Optionen, autoUpdate, skillOverrides, Probe)
 # -> optional geplante Aufgabe fuer git-Updates -> Anmeldung (Claude, Codex).
 # Ein erneuter Start setzt sauber fort (jeder Schritt prueft vorher, ob er noetig ist). Fehlerquellen:
@@ -154,19 +154,17 @@ function Claude-Neueste {
 }
 
 $script:ClaudeVersionen = @()
-function Npm-Claude {
-    # Claude Code als globales npm-Paket, waehrend daneben eine andere, mindestens gleich neue Installation (winget,
-    # nativ) im PATH liegt. Ist die npm-Fassung die neueste, bleibt sie (sie ist dann die fuer diesen Lauf gewaehlte).
-    if (-not (Has 'npm') -or $script:ClaudeVersionen.Count -lt 2) { return $false }
-    try {
-        $npmDir = Norm ((& npm prefix -g 2>$null | Out-String).Trim())
-        & npm ls -g '@anthropic-ai/claude-code' --depth=0 *> $null
-        if ($LASTEXITCODE -ne 0 -or -not $npmDir) { return $false }
-        $npm = @($script:ClaudeVersionen | Where-Object { (Norm $_.Dir) -eq $npmDir }) | Select-Object -First 1
-        $andere = @($script:ClaudeVersionen | Where-Object { (Norm $_.Dir) -ne $npmDir })
-        if (-not $npm -or $andere.Count -eq 0) { return $false }
-        return (($andere | Sort-Object V -Descending | Select-Object -First 1).V -ge $npm.V)
-    } catch { return $false }
+function Claude-Aktuell {
+    # Ein aktuelles claude kennt "plugin configure" (setzt die Optionen der Plugins); alte zeigen es in der Hilfe nicht
+    try { return [bool]((& claude plugin --help 2>&1 | Out-String) -match '(?m)^\s*configure\s') } catch { return $false }
+}
+function Alte-Claude {
+    # Claude Code als npm-Paket oder winget-Paket. Neben der offiziellen Fassung (.local\bin, aktualisiert sich selbst)
+    # sind das Altlasten: sie liegen oft vorn im PATH und kennen nicht alle Befehle.
+    $alt = @()
+    if (Has 'npm') { try { & npm ls -g '@anthropic-ai/claude-code' --depth=0 *> $null; if ($LASTEXITCODE -eq 0) { $alt += 'npm' } } catch { } }
+    if ($wingetVersion) { try { & winget list -e --id Anthropic.ClaudeCode --accept-source-agreements --disable-interactivity *> $null; if ($LASTEXITCODE -eq 0) { $alt += 'winget' } } catch { } }
+    return ,$alt
 }
 
 function Codex-Version {
@@ -218,6 +216,12 @@ function Quote([string[]]$Argumente) {
 function Starte([string]$Name, [string]$Exe, [string[]]$Argumente) {
     # Eigener Prozess, Ausgabe in Dateien: haelt fremdes exit/StrictMode fern und laesst den Balken weiterlaufen
     $out = Join-Path $Temp "$Name.out.txt"; $err = Join-Path $Temp "$Name.err.txt"
+    if (-not [IO.Path]::IsPathRooted($Exe)) {
+        # Nur echte Programme: im npm-Ordner liegt neben claude.cmd eine Datei "claude" ohne Endung (Shell-Skript),
+        # die Start-Process sonst nimmt ("%1 ist keine zulaessige Win32-Anwendung")
+        $c = Get-Command $Exe -CommandType Application -All -ErrorAction SilentlyContinue | Where-Object { $_.Source -match '\.(exe|cmd|bat)$' } | Select-Object -First 1
+        if ($c) { $Exe = $c.Source }
+    }
     try {
         $p = Start-Process -FilePath $Exe -ArgumentList (Quote $Argumente) -NoNewWindow -PassThru `
             -RedirectStandardOutput $out -RedirectStandardError $err -ErrorAction Stop
@@ -329,10 +333,11 @@ if ((Test-Path (Join-Path $CodexBin 'codex.exe')) -and -not (Im-Pfad $CodexBin $
 $hatCodex = Has 'codex'
 $codexVersion = if ($hatCodex) { Codex-Version } else { '' }
 $angemeldet = $false; $marketplaceDa = $false; $plugins = @()
-$npmClaude = $false
+$claudeZuAlt = $false
 if ($hatClaude) {
     Claude-Neueste
-    $npmClaude = Npm-Claude
+    $claudeZuAlt = -not (Claude-Aktuell)
+    if ($claudeZuAlt) { Hinweis "Claude Code $((claude --version) -replace ' \(Claude Code\)', '') ist zu alt (kennt 'plugin configure' nicht)." }
     $status = Claude-Json @('auth', 'status')
     $angemeldet = [bool]($status -and $status.loggedIn)
     $marketplaceDa = [bool](Claude-Json @('plugin', 'marketplace', 'list', '--json') | Where-Object { $_.name -eq $Marketplace })
@@ -373,11 +378,7 @@ if ($wingetVersion) {
 Balken 8 'Fragen'
 Meldung ''
 Meldung '  Bitte einmal alles beantworten - danach laeuft die Einrichtung ohne weitere Fragen.' 'Cyan'
-$wollGit = $false; $wollPython = $false; $wollClaude = $false; $wollGitUpdate = $false; $wollNpmWeg = $false
-if ($npmClaude) {
-    # Bereinigung: ein altes npm-claude laeuft sonst in anderen Fenstern und kennt nicht alle Befehle
-    $wollNpmWeg = Frage 'Alte Claude-Installation ueber npm gefunden (neben der aktuellen). Zu Beginn entfernen (npm uninstall -g @anthropic-ai/claude-code)?' $true
-}
+$wollGit = $false; $wollPython = $false; $wollClaude = $false; $wollGitUpdate = $false; $altWeg = @()
 if (-not $hatGit) {
     if (-not $wingetVersion) { Fehler 'git fehlt und winget ist nicht da (App-Installer aus dem Microsoft Store). git von https://git-scm.com installieren und das Skript erneut starten.'; Fortschritt-Ende; return }
     $wollGit = Frage 'git fehlt. Mit winget installieren?'
@@ -397,6 +398,19 @@ if (-not $hatPython) {
 if (-not $hatClaude) {
     $wollClaude = Frage 'Claude Code fehlt. Mit dem offiziellen Installer installieren?'
     if (-not $wollClaude) { Fehler 'Ohne Claude Code geht es nicht.'; Fortschritt-Ende; return }
+} elseif ($claudeZuAlt) {
+    $wollClaude = Frage 'Claude Code ist zu alt. Aktuelle Fassung mit dem offiziellen Installer installieren (aktualisiert sich danach selbst)?'
+    if (-not $wollClaude) { Fehler 'Mit diesem Claude Code lassen sich die Optionen der Plugins nicht setzen.'; Fortschritt-Ende; return }
+}
+$nativVorn = $false  # die offizielle Fassung ist die fuer diesen Lauf gewaehlte (neueste) und aktuell
+if ($hatClaude -and -not $claudeZuAlt -and (Test-Path (Join-Path $LocalBin 'claude.exe'))) {
+    $erstes = Get-Command claude -ErrorAction SilentlyContinue | Select-Object -First 1
+    $nativVorn = [bool]($erstes -and $erstes.Source -and (Norm (Split-Path $erstes.Source)) -eq (Norm $LocalBin))
+}
+if ($hatClaude -and ($wollClaude -or $nativVorn)) {
+    # Bereinigung: neben der offiziellen Fassung sind npm- und winget-Pakete Altlasten
+    $alt = Alte-Claude
+    if ($alt.Count -gt 0 -and (Frage "Alte Claude-Installation gefunden ($($alt -join ', ')). Nach der aktuellen Fassung entfernen (Bereinigung)?" $true)) { $altWeg = $alt }
 }
 if (-not $Modus) {
     $desktop = Frage 'Laeuft Claude hier in der Claude-Desktop-App (Skills kommen aus claude.ai)?' $false
@@ -478,15 +492,6 @@ if ($wingetVersion -and -not (Get-ScheduledTask -TaskName 'workbench git-Update'
 
 # --- 4. Installieren (winget nacheinander, Claude parallel) -------------------------------------------------------------
 Meldung ''
-if ($wollNpmWeg) {
-    Balken 11 'Bereinigung'
-    $npmLog = Join-Path $Temp 'npm-claude.txt'
-    & npm uninstall -g '@anthropic-ai/claude-code' *> $npmLog
-    if ($LASTEXITCODE -eq 0) {
-        Ok 'Alte Claude-Installation (npm) entfernt'
-        $script:Protokoll += @{ was = 'claude-npm'; wert = '@anthropic-ai/claude-code'; aktion = 'entfernt' }
-    } else { Hinweis "npm-claude nicht entfernt: $((Get-Content $npmLog -ErrorAction SilentlyContinue | Select-Object -Last 2) -join ' | ')" }
-}
 Balken 12 'Installieren'
 $claudeJob = $null
 if ($wollClaude) {
@@ -524,7 +529,8 @@ if ($claudeJob) {
     Warte @($claudeJob) 42 46 'Claude Code wird installiert'
     Neu-Pfad
     if (Test-Path (Join-Path $LocalBin 'claude.exe')) { Pfad-Dauerhaft $LocalBin }
-    if (-not (Has 'claude')) {
+    Claude-Neueste  # die neue offizielle Fassung nach vorn, auch wenn alte Fassungen frueher im PATH stehen
+    if (-not (Test-Path (Join-Path $LocalBin 'claude.exe')) -or -not (Has 'claude')) {
         $text = Letzte $claudeJob
         Fehler "Claude Code nicht installiert: $text"
         if ($text -match 'region|supported-countries') { Meldung '      Der Download-Dienst ist in dieser Region nicht erreichbar.' }
@@ -532,8 +538,25 @@ if ($claudeJob) {
         Fortschritt-Ende; return
     }
     Ok "Claude Code: $((claude --version) -replace ' \(Claude Code\)', '')"
-    $script:Protokoll += @{ was = 'claude'; wert = 'claude'; aktion = 'installiert' }
+    $script:Protokoll += @{ was = 'claude'; wert = $(if ($hatClaude) { 'claude-nativ' } else { 'claude' }); aktion = 'installiert' }
+    if (-not (Claude-Aktuell)) { Fehler 'Claude Code ist auch nach der Installation zu alt - claude doctor pruefen.'; Fortschritt-Ende; return }
     $angemeldet = [bool]((Claude-Json @('auth', 'status')).loggedIn)
+}
+if ($altWeg.Count -gt 0) {
+    Balken 50 'Bereinigung'
+    $log = Join-Path $Temp 'alt-claude.txt'
+    if ($altWeg -contains 'npm') {
+        & npm uninstall -g '@anthropic-ai/claude-code' *> $log
+        if ($LASTEXITCODE -eq 0) { Ok 'Alte Claude-Installation (npm) entfernt'; $script:Protokoll += @{ was = 'claude-npm'; wert = '@anthropic-ai/claude-code'; aktion = 'entfernt' } }
+        else { Hinweis "npm-claude nicht entfernt: $((Get-Content $log -ErrorAction SilentlyContinue | Select-Object -Last 2) -join ' | ')" }
+    }
+    if ($altWeg -contains 'winget') {
+        & winget uninstall -e --id Anthropic.ClaudeCode --silent --disable-interactivity *> $log
+        if ($LASTEXITCODE -eq 0) { Ok 'Alte Claude-Installation (winget) entfernt'; $script:Protokoll += @{ was = 'claude-winget'; wert = 'Anthropic.ClaudeCode'; aktion = 'entfernt' } }
+        else { Hinweis "winget-claude nicht entfernt: $((Get-Content $log -ErrorAction SilentlyContinue | Select-Object -Last 2) -join ' | ')" }
+    }
+    Neu-Pfad; Claude-Neueste
+    if (-not (Has 'claude') -or -not (Claude-Aktuell)) { Fehler 'Nach der Bereinigung fehlt ein aktuelles Claude Code - Skript erneut starten.'; Fortschritt-Ende; return }
 }
 if ($wollCodex) {
     # Offizieller Installer im eigenen Prozess; optional, ein Fehlschlag bricht die Einrichtung nicht ab. Seinen Ordner

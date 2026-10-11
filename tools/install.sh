@@ -7,7 +7,7 @@
 #   Tests: WORKBENCH_REPO=<lokaler Ordner> HOME=<leerer Ordner> sh tools/install.sh --ja --ohne-login ...
 #   curl -fsSL https://raw.githubusercontent.com/herbertschrotter-blip/claude-workbench/main/tools/install.sh | sh
 #
-# Ablauf wie tools/install.ps1: Bestandsaufnahme -> alle Fragen auf einmal -> Bereinigung (altes npm-claude) -> installieren (Claude-Installer parallel
+# Ablauf wie tools/install.ps1: Bestandsaufnahme -> alle Fragen auf einmal -> installieren (zu altes Claude ersetzen, dann Bereinigung altes npm-claude) (Claude-Installer parallel
 # zu den Paketen) -> Codex CLI (optional, offizieller Installer) -> Marketplace -> einrichten.py (Plugins, Optionen,
 # autoUpdate, skillOverrides, Probe) -> Anmeldung (Claude, Codex).
 # Protokoll fuer --entfernen: ~/.claude/workbench-einrichtung.json. Fehlerquellen: docs/installation.md.
@@ -125,6 +125,7 @@ version_kleiner() {  # version_kleiner A B -> 0, wenn A älter als B (Zahlen je 
     awk -v a="$1" -v b="$2" 'BEGIN { n = split(a, x, "."); m = split(b, y, "."); if (m > n) n = m
         for (i = 1; i <= n; i++) { if (x[i] + 0 < y[i] + 0) exit 0; if (x[i] + 0 > y[i] + 0) exit 1 }; exit 1 }'
 }
+claude_aktuell() { claude plugin --help 2>/dev/null | grep -q '^ *configure '; }  # alte kennen "plugin configure" nicht
 eingeloggt() { claude auth status 2>/dev/null | python3 -I -c 'import json,sys; sys.exit(0 if json.load(sys.stdin).get("loggedIn") else 1)' 2>/dev/null; }
 marketplace_ort() {
     claude plugin marketplace list --json 2>/dev/null | python3 -I -c '
@@ -218,15 +219,8 @@ if has claude; then
     [ -n "$HAT_PY" ] && [ -n "$(marketplace_ort)" ] && MP_DA=1
     ok "Claude Code: $(claude --version 2>/dev/null | head -1)$([ -n "$ANGEMELDET" ] && echo ', angemeldet' || echo ', nicht angemeldet')"
 fi
-NPM_CLAUDE=""  # altes claude als globales npm-Paket neben ~/.local/bin/claude (das Add-on-claude ist keins)
-if [ -n "$HAT_CLAUDE" ] && [ -x "$LOCALBIN/claude" ] && has npm && npm ls -g @anthropic-ai/claude-code --depth=0 >/dev/null 2>&1; then
-    # nur anbieten, wenn die npm-Fassung nicht neuer ist als ~/.local/bin/claude
-    NPM_V=$("$(npm prefix -g 2>/dev/null)/bin/claude" --version 2>/dev/null | sed -n 's/^\([0-9][0-9.]*\).*/\1/p' | head -1)
-    LOCAL_V=$("$LOCALBIN/claude" --version 2>/dev/null | sed -n 's/^\([0-9][0-9.]*\).*/\1/p' | head -1)
-    if [ -n "$NPM_V" ] && [ -n "$LOCAL_V" ] && ! version_kleiner "$LOCAL_V" "$NPM_V"; then
-        NPM_CLAUDE=1; hinweis "Alte Claude-Installation über npm gefunden ($NPM_V neben $LOCALBIN/claude $LOCAL_V)."
-    fi
-fi
+CLAUDE_ZU_ALT=""
+[ -n "$HAT_CLAUDE" ] && ! claude_aktuell && CLAUDE_ZU_ALT=1 && hinweis "Claude Code ist zu alt (kennt 'plugin configure' nicht)."
 HAT_CODEX=""; CODEX_V=""
 [ -x "$LOCALBIN/codex" ] && ! has codex && { PATH="$LOCALBIN:$PATH"; export PATH; }
 if has codex; then
@@ -247,10 +241,22 @@ balken 5 "Bestandsaufnahme fertig"
 meldung ""
 meldung "  Bitte einmal alles beantworten - danach läuft die Einrichtung ohne weitere Fragen."
 WOLL_GIT=""; WOLL_PY=""; WOLL_CLAUDE=""; WOLL_NPM_WEG=""
-[ -n "$NPM_CLAUDE" ] && frage "Alte Claude-Installation (npm) zu Beginn entfernen (npm uninstall -g @anthropic-ai/claude-code)?" j && WOLL_NPM_WEG=1
 if [ -z "$HAT_GIT" ]; then frage "git fehlt. Installieren?" && WOLL_GIT=1 || { fehler "Ohne git geht es nicht."; exit 1; }; fi
 if [ -z "$HAT_PY" ]; then frage "Python 3 (ab 3.8) fehlt. Installieren?" && WOLL_PY=1 || { fehler "Ohne python3 laufen die Hooks nicht."; exit 1; }; fi
-if [ -z "$HAT_CLAUDE" ]; then frage "Claude Code fehlt. Mit dem offiziellen Installer installieren?" && WOLL_CLAUDE=1 || { fehler "Ohne Claude Code geht es nicht."; exit 1; }; fi
+if [ -z "$HAT_CLAUDE" ]; then frage "Claude Code fehlt. Mit dem offiziellen Installer installieren?" && WOLL_CLAUDE=1 || { fehler "Ohne Claude Code geht es nicht."; exit 1; }
+elif [ -n "$CLAUDE_ZU_ALT" ]; then
+    frage "Claude Code ist zu alt. Aktuelle Fassung mit dem offiziellen Installer installieren (aktualisiert sich danach selbst)?" && WOLL_CLAUDE=1 ||
+        { fehler "Mit diesem Claude Code lassen sich die Optionen der Plugins nicht setzen."; exit 1; }
+fi
+# Bereinigung: altes claude als globales npm-Paket neben der offiziellen Fassung in ~/.local/bin (das Add-on-claude ist
+# keins). Nur anbieten, wenn die offizielle Fassung gerade kommt oder nicht älter ist als die npm-Fassung.
+if [ -n "$HAT_CLAUDE" ] && has npm && npm ls -g @anthropic-ai/claude-code --depth=0 >/dev/null 2>&1; then
+    NPM_V=$("$(npm prefix -g 2>/dev/null)/bin/claude" --version 2>/dev/null | sed -n 's/^\([0-9][0-9.]*\).*/\1/p' | head -1)
+    LOCAL_V=$("$LOCALBIN/claude" --version 2>/dev/null | sed -n 's/^\([0-9][0-9.]*\).*/\1/p' | head -1)
+    if [ -n "$WOLL_CLAUDE" ] || { [ -n "$NPM_V" ] && [ -n "$LOCAL_V" ] && ! version_kleiner "$LOCAL_V" "$NPM_V"; }; then
+        frage "Alte Claude-Installation über npm gefunden${NPM_V:+ ($NPM_V)}. Nach der aktuellen Fassung entfernen (Bereinigung)?" j && WOLL_NPM_WEG=1
+    fi
+fi
 if [ -z "$MODUS" ]; then
     if frage "Läuft Claude hier in der Claude-Desktop-App (Skills kommen aus claude.ai)?" n; then MODUS=desktop; else MODUS=terminal; fi
 fi
@@ -306,12 +312,6 @@ if [ "$MODUS" = terminal ] && [ -z "$OHNE_OVERRIDES" ] && frage "Sind dieselben 
 
 # --- 3. Installieren (Claude-Installer parallel zu den Paketen) -------------------------------------------------------
 meldung ""
-if [ -n "$WOLL_NPM_WEG" ]; then  # Bereinigung zuerst
-    balken 10 "Bereinigung"
-    if npm uninstall -g @anthropic-ai/claude-code > "$TMP/npm.txt" 2>&1; then
-        ok "Alte Claude-Installation (npm) entfernt"; protokoll claude-npm "@anthropic-ai/claude-code" entfernt
-    else hinweis "npm-claude nicht entfernt: $(tail -1 "$TMP/npm.txt")"; fi
-fi
 balken 10 "Installieren"
 if [ -n "$WOLL_CLAUDE" ]; then (curl -fsSL https://claude.ai/install.sh | bash > "$TMP/claude.txt" 2>&1; echo $? > "$TMP/claude.rc") & fi
 if [ -n "$WOLL_GIT" ]; then
@@ -326,9 +326,19 @@ fi
 if [ -n "$WOLL_CLAUDE" ]; then
     teil 0 ""; balken 35 "Claude Code wird installiert"; teil 30 "Claude Code (offizieller Installer)"
     wait
-    [ -x "$LOCALBIN/claude" ] && pfad_dauerhaft
-    if has claude; then ok "Claude Code: $(claude --version 2>/dev/null | head -1)"; protokoll claude claude installiert
-    else fehler "Claude Code nicht installiert: $(tail -2 "$TMP/claude.txt" | tr '\n' ' ')"; exit 1; fi
+    [ -x "$LOCALBIN/claude" ] && { pfad_dauerhaft; PATH="$LOCALBIN:$PATH"; export PATH; }  # vor ältere Fassungen
+    if [ -x "$LOCALBIN/claude" ] && claude_aktuell; then
+        ok "Claude Code: $(claude --version 2>/dev/null | head -1)"
+        protokoll claude "$([ -n "$HAT_CLAUDE" ] && echo claude-nativ || echo claude)" installiert
+    else fehler "Claude Code nicht (aktuell) installiert: $(tail -2 "$TMP/claude.txt" | tr '\n' ' ')"; exit 1; fi
+fi
+if [ -n "$WOLL_NPM_WEG" ]; then  # Bereinigung, erst wenn die aktuelle Fassung da ist
+    balken 40 "Bereinigung"
+    if npm uninstall -g @anthropic-ai/claude-code > "$TMP/npm.txt" 2>&1; then
+        ok "Alte Claude-Installation (npm) entfernt"; protokoll claude-npm "@anthropic-ai/claude-code" entfernt
+    else hinweis "npm-claude nicht entfernt: $(tail -1 "$TMP/npm.txt")"; fi
+    PATH="$LOCALBIN:$PATH"; export PATH
+    has claude && claude_aktuell || { fehler "Nach der Bereinigung fehlt ein aktuelles Claude Code - Skript erneut starten."; exit 1; }
 fi
 if [ -n "$WOLL_CODEX" ]; then
     # Offizieller Installer (Paket je Plattform, SHA-256-Prüfung, ~/.local/bin + ~/.codex/packages); optional, ein
