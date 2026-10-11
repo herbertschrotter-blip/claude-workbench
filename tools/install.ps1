@@ -543,6 +543,8 @@ if ($claudeJob) {
     $angemeldet = [bool]((Claude-Json @('auth', 'status')).loggedIn)
 }
 if ($altWeg.Count -gt 0) {
+    # Erst warten, bis die Hintergrund-Aufgaben fertig sind: sie laufen evtl. noch ueber das alte claude.cmd
+    Warte @($bg.marketplace, $bg.claudeUpdate) 48 50 'Warte auf Marketplace-Update'
     Balken 50 'Bereinigung'
     $log = Join-Path $Temp 'alt-claude.txt'
     if ($altWeg -contains 'npm') {
