@@ -303,6 +303,7 @@
         "skill-pflege",
         "skill-neu",
         "skill-auswertung",
+        "doc-pflege",
         "projekt-anlegen"
       ],
       "modus": "blocken",
@@ -311,12 +312,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Startregel 07.10.2026; 08.10.2026 (Herbert): nur noch git-commit-helper oder ticket (dazu skill-pflege, skill-neu, skill-auswertung, die selbst committen), blocken – Befund ha-baustelle bc267f1c: alle Commits ohne git-commit-helper; 10.10.2026 (Herbert): projekt-anlegen ergänzt – Fehlalarm beim ersten Commit von ha-rasenmaeher (Praxistest projekt-anlegen); zweiter Fehlalarm am selben Tag (Text „git commit“ in einem Python-Heredoc) behebt die Erkennung in skill_guard.py",
+      "herkunft": "Startregel 07.10.2026; 08.10.2026 (Herbert): nur noch git-commit-helper oder ticket (dazu skill-pflege, skill-neu, skill-auswertung, die selbst committen), blocken – Befund ha-baustelle bc267f1c: alle Commits ohne git-commit-helper; 10.10.2026 (Herbert): projekt-anlegen ergänzt – Fehlalarm beim ersten Commit von ha-rasenmaeher (Praxistest projekt-anlegen); zweiter Fehlalarm am selben Tag (Text „git commit“ in einem Python-Heredoc) behebt die Erkennung in skill_guard.py; 11.10.2026 (Herbert): doc-pflege ergänzt – Fehlalarm beim Doku-Commit von docs/offene-uploads.md (doc-pflege committet im Sitzungsabschluss selbst)",
       "stand": {
         "seit": "2026-10-07",
         "treffer": 5,
-        "fehlalarm": 2,
-        "zuletzt": "2026-10-10",
+        "fehlalarm": 3,
+        "zuletzt": "2026-10-11",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 5,
