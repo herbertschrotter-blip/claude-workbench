@@ -14,7 +14,7 @@ Was das Modul für wen leistet.
 Was es ausdrücklich nicht tut.
 
 ## 3 Ausbaustufe
-Stufe 0–4 und warum keine niedrigere reicht (G-03).
+Stufe 0–5 und warum keine niedrigere reicht (G-03).
 
 ## 4 Abhängigkeiten
 Integrationen und Module, die vorhanden sein müssen.

@@ -24,7 +24,7 @@ oder `depends_on`. Daran prüft der Drift-Test: Jeder Eintrag unter `owns` gehö
 |---|---|
 | `schema` | immer `1` |
 | `module.id` | Name des Moduls bzw. der Integration (nach ihrer Aufgabe, nicht nach dem Gerät) |
-| `module.level` | Ausbaustufe 0–4 |
+| `module.level` | Ausbaustufe 0–5 |
 | `module.type` | z. B. `integration` |
 | `depends_on.integrations` | Integrationen, die vorhanden sein müssen |
 | `sources[]` | Eingänge: `key`, `owner` (wem der Wert gehört), `interface` (`entities`, `entity`), optional `domain`, `outage` |
@@ -72,7 +72,7 @@ schema: 1
 
 module:
   id: planer            # Platzhalter
-  level: 3
+  level: 5              # mit Herstelleradapter (Dreame)
   type: integration
 
 depends_on:

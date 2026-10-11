@@ -51,9 +51,9 @@ Ein Problem wird auf der niedrigsten ausreichenden Stufe gelöst (G-03). Die Stu
 | 2 | Eigenes Fachmodul als eigene Integration (`custom_components`) | Haus-Modul `haus` |
 | 3 | Eigene Karte (Custom Card) | Karte des Roboters |
 | 4 | Eigenes Panel bzw. eigener App-Bereich | Seiten-App in der Seitenleiste |
+| 5 | Herstelleradapter, nur wenn HA eine benötigte Fähigkeit nicht vereinheitlicht (G-06) | Raumreinigung je Raum beim Roboter |
 
-**Herstelleradapter** sind keine eigene Stufe: Ein Adapter kommt nur dazu, wenn HA eine benötigte Fähigkeit nicht
-vereinheitlicht (G-06), und erst nach den anderen Bausteinen – nicht automatisch mit der Integration.
+Der Adapter kommt zuletzt – nicht automatisch mit der Integration, sondern erst, wenn feststeht, welche Fähigkeit HA fehlt.
 
 ## HA-Grundsatzregeln
 
