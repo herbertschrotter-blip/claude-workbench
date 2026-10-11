@@ -95,6 +95,8 @@ Review-Serie [CGR-2026-09-24-skillsystem](./chatgpt-reviews/CGR-2026-09-24-skill
 ### Modul
 - Manifest: none | <pfad/muster>
 - Grundsatzregeln: none | ref:<pfad>#<überschrift>
+- Nachweise: none | <pfad>
+- Prüfumfang: none | <pfad-glob>; <pfad-glob>
 
 ### Projekte
 - Ablage: none | <pfad>
@@ -115,6 +117,11 @@ Bedeutung einzelner Felder:
 - **Projekte:** gilt für das Repo, in dem neue Projekte angelegt werden (z. B. den Konfigurationsordner von Home
   Assistant). `Ablage` ist der Ordner für neue Projekt-Repos, `Übersicht` die Datei mit einer Zeile je Projekt,
   `Geschützt` die Bereiche, die Claude dort nie ändert.
+- **Modul:** `Manifest` ist Pfad oder Muster der Modul-Manifeste (z. B. `**/module.yaml`), `Grundsatzregeln` der
+  Verweis auf das Regelwerk, gegen das audit prüft. `Nachweise` ist eine Config, die Checks und Testfälle den
+  Teilnachweisen der Regeln zuordnet (z. B. `G-15.lifecycle`); sie behauptet keinen Erfolg. `Prüfumfang` ist die
+  Positivliste der Bereiche, die audit dort lesen darf – nötig, wo das Repo mehr enthält als eigenen Code (etwa der
+  Konfigurationsordner von Home Assistant); `Projekte.Geschützt` regelt dagegen nur, was Claude nie ändert.
 - **Versionsquelle:** eine Datei mit Feld (z. B. `card/package.json#version`) oder `changelog:CHANGELOG.md`. Im
   zweiten Fall ist die Version die Nummer des obersten Eintrags. Die Nummer steht nie zusätzlich im Profil.
 
@@ -141,7 +148,7 @@ Grundfelder für alle: `Profil-Version`, `Projekt-ID`, `Repo`, `Branch-Policy`.
 
 | Skill | Pflichtfelder |
 |---|---|
-| audit | Doku.Router, Doku.Validierungsregeln; Code.Architekturregeln, wenn Code geprüft wird; Tracker.Config, wenn der Tracker geprüft wird |
+| audit | Doku.Router, Doku.Validierungsregeln; Code.Architekturregeln, wenn Code geprüft wird; Tracker.Config, wenn der Tracker geprüft wird; Modul.Grundsatzregeln, wenn gegen Grundsatzregeln geprüft wird (dann auch Modul.Manifest, Modul.Prüfumfang, wo der Umfang begrenzt ist; Modul.Nachweise optional) |
 | cc-steuerung | keine (nur Cowork-Chat mit ausdrücklichem Desktop-Commander-Auftrag) |
 | chat-wechsel | Doku.Sitzungsabschluss, Doku.Entscheidungs-Ort, Commit.Push-Policy; Tracker.Config, wenn Aufgaben eingebunden sind |
 | chatgpt-review | Review.Config, Commit.Push-Policy |
