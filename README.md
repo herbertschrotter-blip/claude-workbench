@@ -626,7 +626,7 @@ claude-workbench/
 │   │   ├── SKILL.md
 │   │   └── references/desktop-commander.md
 │   ├── chat-wechsel/                      ← SKILL.md + references/ (prompt-struktur, tracker-abgleich, cowork, neues-fenster)
-│   ├── chatgpt-review/SKILL.md
+│   ├── chatgpt-review/                    ← SKILL.md + references/ (codex, archiv, beispiele)
 │   ├── code-erstellen/
 │   │   ├── SKILL.md
 │   │   └── references/stacks/

@@ -8,6 +8,19 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.53.0] — 2026-10-11
+
+- **skills/chatgpt-review, Feature (Weg codex):** In Claude Code führt der Skill die Review-Runden selbst über die Codex
+  CLI (`codex exec`, Folgerunden mit `codex exec resume` im Thread der Serie), Anmeldung mit dem ChatGPT-Konto des
+  Users. Neuer Abschnitt „Weg wählen“ (codex / kopieren, Weg und Codex-Thread im README der Serie); Codex-Antwort
+  landet per `-o` direkt in `02-chatgpt-response.md` und wird im Chat vollständig gezeigt; Codex liest öffentliche
+  Repos über die Live-Websuche (Raw-Links), Dateiinhalt im Prompt nur bei privatem Repo oder Uncommittetem; Sandbox
+  bleibt `read-only`. Neues optionales Profilfeld `Codex-Optionen`, neue VERBOTEN-Punkte, Description nennt Codex.
+- **skills/chatgpt-review, Refactor:** neue references `codex.md` (Weg codex), `archiv.md` (CGR-Ablagesystem, wörtlich
+  verschoben) und `beispiele.md` (Profilwerte, Themen, Doc-Laderegel, Pflicht-Blöcke und Ergebnis-Ort von BPM und
+  Heidi, wörtlich verschoben); SKILL.md 547 → 387 Zeilen. Regel-Inventar:
+  `docs/skill-refactors/2026-10-11-chatgpt-review.md` (keine DROP-Zeilen).
+
 ## [v0.52.2] — 2026-10-11
 
 - **skills/chatgpt-review, Fix:** Prompts an ChatGPT immer als einen kopierbaren Codeblock im Chat (äußerer Block mit

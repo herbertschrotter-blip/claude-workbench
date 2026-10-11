@@ -19,7 +19,7 @@ wiederholt sie nicht.
 | **audit** | Konsistenz zwischen Code und Doku prüfen, read-only; Befunde → tracker oder Fix-Skill | "audit", "prüfe alles", "konsistenzcheck", "passt die Doku noch zum Code" |
 | **cc-steuerung** | Desktop Commander im Cowork-Chat (Modalität, WIE statt WAS); nie in Claude Code | im Cowork-Chat: "cc mach", "dc lies", "direkt auf den PC" |
 | **chat-wechsel** | Übergabe an die nächste Sitzung (Handover-Prompt; in Claude Code vorher Sitzungsabschluss über doc-pflege, mit tmux gleich neues Fenster im Projekt mit Remote Control) | "neuer chat", "übergabe", "chat wechsel" |
-| **chatgpt-review** | Review-Prompts für ChatGPT, Runden und Archiv (CGR) nach der Review-Config des Repos | "besprich mit ChatGPT", "zweite Meinung", "Runde N" |
+| **chatgpt-review** | Review-Gespräch mit ChatGPT: Prompts, Runden selbst über die Codex CLI (sonst Codeblock zum Kopieren), Archiv (CGR) nach der Review-Config des Repos | "besprich mit ChatGPT", "zweite Meinung", "lass Codex das reviewen", "Runde N" |
 | **code-erstellen** | Code planen und ändern nach dem Profil des Repos (Pflichtkontext, Aufgabenquelle, Stack-Referenzen, Tests, Auslieferung) | jede Anfrage, die Code-Erstellung oder -Änderung meint |
 | **doc-pflege** | Projektdoku anlegen, pflegen, validieren; Sitzungsabschluss | "pflege docs", "schreib ADR", "neues Konzept", "Sitzung abschließen" |
 | **git-commit-helper** | Commit-Befehle und -Messages im Format `[vX.Y.Z] Modul, Typ: Kurztitel`, Version-Bump | "commit", "git commit", "PATCH oder MINOR?" |

@@ -9,6 +9,7 @@ CLAUDE.md.
 - Übersicht: `docs/chatgpt-reviews/INDEX.md`
 - GitHub-Repo: `herbertschrotter-blip/claude-workbench`
 - Themen: `skillsystem`, `ha-grundsatz`
+- Codex-Optionen: keine (Vorgaben von Codex; Weg codex siehe `skills/chatgpt-review/references/codex.md`)
 
 ## Thema: skillsystem
 
