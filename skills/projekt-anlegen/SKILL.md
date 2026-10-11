@@ -101,6 +101,9 @@ Grundentscheidungen zuerst, Erklärungen im Ordnerbaum ohne Fachbegriffe (keine 
 Werkzeugnamen); die stehen danach im Projekt. Gezeigt heißt: als Text im Chat oder in der Vorschau der Auswahlfrage,
 bevor gefragt wird; ein Plan nur im eigenen Denken gilt nicht als gezeigt. Auswahlfrage: anlegen / anpassen / abbrechen.
 
+Bei einem öffentlichen GitHub-Repo wählt der Plan die Lizenz: MIT (Vorschlag) / Apache-2.0 / keine; ein privates Repo
+bekommt keine. Als Inhaber `git config user.name` nennen, sonst fragen.
+
 ### 5. Erzeugen
 
 - **Unterstützte Kombination** (Liste in `references/generator.md`): Claude baut den Erzeugungsauftrag, der Generator

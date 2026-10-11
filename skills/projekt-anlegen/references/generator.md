@@ -38,7 +38,8 @@ Nur was im Manifest freigegeben und in der CI des Generators geprüft ist:
 | `ha-integration` | 1 | `quelle`: `abruf` | common, ha-integration, quelle-abruf |
 
 Bei `delivery.github: true` kommt `ci-github-python` bzw. `ci-github-ha` dazu (automatische Prüfung bei jedem
-Push). Alles andere geht den Weg nach der Stack-Reference; nie eine Kombination improvisieren.
+Push). Mit `lizenz` kommt `lizenz-mit` (`LICENSE`) bzw. `lizenz-apache` (`LICENSE` mit dem offiziellen Text und
+`NOTICE`) dazu; beide Projektarten kennen beide. Alles andere geht den Weg nach der Stack-Reference; nie eine Kombination improvisieren.
 
 Bei `ha-integration` entscheidet die Quelle: `aufsatz`, wenn die Integration die Entitäten einer vorhandenen
 Integration nutzt (das Gerät ist schon in Home Assistant); `abruf`, wenn sie selbst ein Gerät oder einen Dienst
@@ -66,7 +67,8 @@ Minute).
   "project": {"name": "Stromzähler Übersicht", "slug": "stromzaehler", "package": "stromzaehler"},
   "template": {"id": "python-tool", "version": 1},
   "features": {"storage": "sqlite"},
-  "delivery": {"github": true}
+  "delivery": {"github": true},
+  "lizenz": {"art": "MIT", "inhaber": "Vorname Nachname", "jahr": 2026}
 }
 ```
 
@@ -77,6 +79,8 @@ Minute).
   Standardbibliothek. Claude leitet `slug` und `package` aus dem Namen ab (`Stromzähler` → `stromzaehler`).
 - `template`, `features`: aus der Tabelle oben; die Wahl leitet Claude aus den Grundentscheidungen ab.
 - `delivery.github`: die bestätigte Auswahl.
+- `lizenz` (freiwillig, fehlt = keine Lizenzdatei): `art` `MIT` oder `Apache-2.0`, `inhaber` nach denselben Regeln
+  wie `name`, `jahr` als Zahl. Inhaber und Jahr stehen im Auftrag, damit derselbe Auftrag dieselben Dateien ergibt.
 
 Ablage, GitHub-Owner, Branch- und Push-Policy und Prüfbefehle stehen nie im Auftrag.
 
@@ -115,7 +119,8 @@ behaupten.
 ## Pflege der Vorlagen
 
 - Vorlagen liegen unter `templates/<baustein>/`, UTF-8 ohne BOM, Zeilenenden LF, Platzhalter nur aus der festen Liste
-  (`{{name}}`, `{{slug}}`, `{{package}}`, `{{package_upper}}`, `{{github}}`, `{{v_<paket>}}`) und den Features der
+  (`{{name}}`, `{{slug}}`, `{{package}}`, `{{package_upper}}`, `{{github}}`, `{{v_<paket>}}`, in den
+  Lizenz-Bausteinen `{{lizenz_inhaber}}` und `{{lizenz_jahr}}`) und den Features der
   Projektarten (`{{storage}}`, `{{quelle}}`). Zeilen mit `{{package}}` oder `{{name}}` so schreiben, dass Ruff sie
   bei jeder erlaubten Länge gleich formatiert; `scripts/validate.py --erzeugen` prüft das nicht für jede Länge.
 - Prüfschritte stehen im Manifest der Projektart; ein Schritt mit `plattform` (z. B. `["linux"]`) läuft nur dort.

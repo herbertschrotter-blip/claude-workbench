@@ -10,8 +10,11 @@ Auftrag – die kommen aus dem Skill-Profil bzw. aus den Vorlagen.
       "project": {"name": "Beispiel Werkzeug", "slug": "beispiel-werkzeug", "package": "beispiel_werkzeug"},
       "template": {"id": "python-tool", "version": 1},
       "features": {"storage": "sqlite"},
-      "delivery": {"github": false}
+      "delivery": {"github": false},
+      "lizenz": {"art": "MIT", "inhaber": "Vorname Nachname", "jahr": 2026}
     }
+
+`lizenz` ist freiwillig; fehlt es, bekommt das Projekt keine Lizenzdatei.
 """
 
 import json
@@ -32,7 +35,10 @@ _KEYS = {
     "project": {"name", "slug", "package"},
     "template": {"id", "version"},
     "delivery": {"github"},
+    "lizenz": {"art", "inhaber", "jahr"},
 }
+_OPTIONAL = {"": {"lizenz"}}
+LIZENZEN = ("MIT", "Apache-2.0")
 
 
 class AuftragFehler(ValueError):
@@ -58,24 +64,24 @@ def _schluessel(obj, wo, fehler):
     if not isinstance(obj, dict):
         fehler.append(f"{wo or 'Auftrag'}: muss ein Objekt sein")
         return False
-    erlaubt = _KEYS[wo]
-    for key in sorted(set(obj) - erlaubt):
+    erlaubt, optional = _KEYS[wo], _OPTIONAL.get(wo, set())
+    for key in sorted(set(obj) - erlaubt - optional):
         fehler.append(f"{wo + '.' if wo else ''}{key}: unbekanntes Feld")
     for key in sorted(erlaubt - set(obj)):
         fehler.append(f"{wo + '.' if wo else ''}{key}: fehlt")
     return True
 
 
-def _name(value, fehler):
+def _name(value, fehler, wo="project.name"):
     if not isinstance(value, str) or not value.strip():
-        fehler.append("project.name: muss ein nicht leerer Text sein")
+        fehler.append(f"{wo}: muss ein nicht leerer Text sein")
         return
     if len(value) > 80:
-        fehler.append("project.name: höchstens 80 Zeichen")
+        fehler.append(f"{wo}: höchstens 80 Zeichen")
     if any(unicodedata.category(c).startswith("C") for c in value):
-        fehler.append("project.name: keine Steuerzeichen")
+        fehler.append(f"{wo}: keine Steuerzeichen")
     if any(s in value for s in ("/", "\\", "..", "{{", "}}", "`", "$(", '"')):
-        fehler.append("project.name: keine Pfad-, Platzhalter-, Anführungs- oder Befehlszeichen (/ \\ .. {{ }} ` $( \")")
+        fehler.append(f"{wo}: keine Pfad-, Platzhalter-, Anführungs- oder Befehlszeichen (/ \\ .. {{{{ }}}} ` $( \")")
 
 
 def pruefen(data, katalog=None):
@@ -133,6 +139,17 @@ def pruefen(data, katalog=None):
     if delivery is not None and _schluessel(delivery, "delivery", fehler):
         if "github" in delivery and not isinstance(delivery["github"], bool):
             fehler.append("delivery.github: true oder false")
+
+    lizenz = data.get("lizenz")
+    if lizenz is not None and _schluessel(lizenz, "lizenz", fehler):
+        arten = [x for x in LIZENZEN if manifest is None or x in manifest.get("lizenz", {})]
+        if "art" in lizenz and lizenz["art"] not in arten:
+            fehler.append(f"lizenz.art: »{lizenz['art']}« nicht erlaubt (erlaubt: {', '.join(arten) or 'keine'})")
+        if "inhaber" in lizenz:
+            _name(lizenz["inhaber"], fehler, "lizenz.inhaber")
+        jahr = lizenz.get("jahr")
+        if "jahr" in lizenz and (not isinstance(jahr, int) or isinstance(jahr, bool) or not 2000 <= jahr <= 2100):
+            fehler.append("lizenz.jahr: Jahreszahl zwischen 2000 und 2100")
 
     if fehler:
         raise AuftragFehler(fehler)

@@ -84,6 +84,17 @@ class ErzeugenTest(unittest.TestCase):
             self.assertEqual(r.returncode, 0, r.stderr)
             self.assertEqual(json.loads(r.stdout), {"status": "ready"})
 
+    def test_lizenz_mit_und_apache(self):
+        for art, dateien in (("MIT", {"LICENSE"}), ("Apache-2.0", {"LICENSE", "NOTICE"})):
+            with tempfile.TemporaryDirectory() as tmp:
+                daten = dict(auftrag(), lizenz={"art": art, "inhaber": "Vorname Nachname", "jahr": 2026})
+                erzeugt = set(g.erzeugen(daten, tmp))
+                self.assertEqual(erzeugt & {"LICENSE", "NOTICE"}, dateien, art)
+                text = (Path(tmp) / ("LICENSE" if art == "MIT" else "NOTICE")).read_text(encoding="utf-8")
+                self.assertIn("2026 Vorname Nachname", text)
+        _, dateien = self.erzeugen()
+        self.assertNotIn("LICENSE", dateien)
+
     def test_ordner_nicht_leer(self):
         with tempfile.TemporaryDirectory() as tmp:
             (Path(tmp) / "da.txt").write_text("x", encoding="utf-8")

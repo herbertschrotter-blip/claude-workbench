@@ -21,6 +21,14 @@
       "ci-github-ha"
     ]
   },
+  "lizenz": {
+    "MIT": [
+      "lizenz-mit"
+    ],
+    "Apache-2.0": [
+      "lizenz-apache"
+    ]
+  },
   "kombinationen": [
     {
       "quelle": "aufsatz"
