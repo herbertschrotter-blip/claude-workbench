@@ -435,10 +435,36 @@ Folgerung: Der echte Bedarf war eine HA-Integration, P2 ist der nächste Baustei
 **Nächste Bausteine:** HA-Integration (P2, mit Coordinator, Config Flow, Diagnose, Tests mit
 `pytest-homeassistant-custom-component`; vorher Abgleich mit `docs/ha-grundsatz/` und den Best-Practices des
 HA-MCP-Servers); danach Typprüfung, Lizenz bei öffentlichen Repos, vorbereitete Auslieferung.
+✅ Stand 11.10.2026 (Teil 5): **P2 HA-Integration** gemergt (PR #2, 232226e, projekt-anlegen v0.49.0): Projektart
+`ha-integration` mit `quelle: aufsatz | abruf`, Tests mit `pytest-homeassistant-custom-component`, HA-Tests nur unter
+Linux (`plattform` im Manifest); v0.49.1 (24d903b): HA-Projekt aus Windows über das Netzlaufwerk zum Pi, je Rechner in
+`~/.claude/CLAUDE.md` gemerkt. Abgleich mit den Best-Practices des HA-MCP-Servers gestrichen (Herbert): sie betreffen
+YAML, nicht Python-Integrationen. **P3** gemergt (PR #3, 9517f8a, v0.52.0): Typprüfung mit mypy (Check `typen`),
+freiwilliges Feld `lizenz` (MIT, Apache-2.0), `ausliefern.py` mit Rückweg für HA-Integrationen (nur durch Herbert
+oder nach Bestätigung), `scripts/versionen.py` meldet neuere Werkzeugversionen vor jedem Anlegen. Werkzeuge angehoben
+(PR #4, 800cba8, v0.52.1): ruff 0.17.0, HA 2026.10.1 mit Testpaket 0.13.372. ClickUp P1–P3 done; P4 (weitere
+Projektarten) bringt je Art den P3-Standard mit.
+
+### Stand 11.10.2026 (Teil 5) – Querschnitt
+
+- **Selbst-Review** (code-erstellen v0.50.0, v0.51.1): vor jedem Commit `code-review` auf den Diff (low, Deep medium);
+  das Review meldet nur, beheben und committen macht code-erstellen.
+- **Check-Skript** (git-commit-helper v0.51.0, `scripts/checks.py`): nur passende Checks, gleichzeitig, grüne Läufe
+  gemerkt, Tabelle; auf dem Pi meldet es `skill-validation` als „fehlt“ (kein `pwsh`), der Check läuft per CI.
+- **Skill-Wächter:** relative Pfade nach `cd` richtig aufgelöst, Blockmeldung nennt den Plugin-Stand (e6262c3);
+  volle Auswertung 07.–11.10. (58 Ereignisse; ac591dd): doc-pflege und chatgpt-review dürfen committen, Regel `doku`
+  gilt nicht in der Mockup-Ablage, Zähler nachgerechnet. Wirksam erst nach `/plugin update` und Neustart.
+- **chatgpt-review** v0.52.2 (819ac23): Prompts immer als kopierbarer Codeblock im Chat, nie als Datei.
+- **Offene Uploads** bei claude.ai stehen in [`offene-uploads.md`](./offene-uploads.md) (Herbert lädt am PC gesammelt
+  hoch; in Claude Code kommen die Skills aus dem Plugin).
+- **Codex CLI** am Pi (codex-cli 0.162.1 in `~/.local/bin`, Anmeldung mit Herberts ChatGPT-Konto, ohne API-Key): läuft
+  mit `codex exec` und `codex exec resume`; Codex' eigene Sandbox scheitert im HA-Add-on, deshalb schickt Claude die
+  Dateien im Prompt mit und die Sandbox bleibt zu (Entscheidung Herbert). Nächster Schritt: chatgpt-review auf Codex
+  umbauen, damit die Runden ohne Kopieren laufen (Plan zeigen, Freigabe).
 
 ## Was Herbert selbst tut
 
-- nach jeder Skill-Änderung die SKILL.md bzw. Zip bei claude.ai hochladen
+- nach jeder Skill-Änderung die SKILL.md bzw. Zip bei claude.ai hochladen (offen: [`offene-uploads.md`](./offene-uploads.md))
 - nach dem Pilot über die volle Grundmessung entscheiden
 - die echten Sitzungen für die Konflikte mit Anthropic-Skills starten
 
