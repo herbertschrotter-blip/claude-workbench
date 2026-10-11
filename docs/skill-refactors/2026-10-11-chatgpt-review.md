@@ -128,5 +128,7 @@ Keine.
 - **Alt→Neu:** R001–R059 haben einen Zustand; Neu-Orte per Suche bestätigt (wörtlich verschobene Blöcke per Skript aus
   dem alten Text übernommen, das bei fehlendem Original abbricht).
 - **Neu→Alt:** neue normative Aussagen sind N001–N014 zugeordnet.
-- **Prüfskript:** per GitHub Actions nach dem Push.
-- **Routing-Eval:** nach dem Commit (`--tag chatgpt-review`), Ergebnis wird hier nachgetragen.
+- **Prüfskript:** GitHub Actions nach d012dc8: 0 Fehler, 6 Warnungen (alle schon vor dem Umbau; Projektnamen in der
+  Description, Werkzeugname `SendUserFile` im VERBOTEN-Punkt), SKILL.md 388 Zeilen (Körper 376).
+- **Routing-Eval** (`--tag chatgpt-review`, 3 Läufe, d012dc8): 7 von 7 Fällen 1.00, auch der neue Fall
+  `chatgpt-review-codex`; Kosten $3.38.
