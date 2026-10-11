@@ -12,5 +12,3 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| projekt-anlegen | v0.52.0 | 9517f8a | Zip, 7 Dateien (`SKILL.md`, `references/`) | 11.10.2026 |
-| chatgpt-review | v0.53.0 | d012dc8 | Zip, 4 Dateien (`SKILL.md`, `references/`) | 11.10.2026 |
