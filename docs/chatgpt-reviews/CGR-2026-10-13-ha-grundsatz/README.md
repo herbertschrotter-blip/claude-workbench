@@ -6,7 +6,7 @@ HA-Integrationen, damit später eine Auswertung über alle möglich ist. Anlass:
 **Zeitraum:** 2026-10-13
 **Branch:** `main`
 **Weg:** codex
-**Codex-Thread:** –
+**Codex-Thread:** 01a135f0-04fd-7b72-b015-a0ee4abab069
 **Websuche:** live
 **Status:** Laufend
 **Ergebnis:** –

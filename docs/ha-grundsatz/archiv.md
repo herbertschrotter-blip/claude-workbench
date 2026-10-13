@@ -1,155 +1,241 @@
 # Langzeitarchiv eigener Integrationen (Entwurf, Vorschlag für G-24)
 
-Stand: 13.10.2026 · Status: **Entwurf zur Abnahme durch Herbert** · Anlass: Ticket WU-0002 in `ha-netzwerk`
-(„Log, wann ich welche Verbindung hatte, mit sämtlichen Daten zum Auswerten“).
+Stand: 13.10.2026, Fassung 2 (nach Review-Runde 1, CGR-2026-10-13-ha-grundsatz) · Status: **Entwurf zur Abnahme durch
+Herbert** · Anlass: Ticket WU-0002 in `ha-netzwerk` („Log, wann ich welche Verbindung hatte, mit sämtlichen Daten zum
+Auswerten“).
 
 ## Inhalt
 
 - Ziel
-- Was HA schon kann und was fehlt
-- Grundsatz: zwei Schichten
-- Ablage und Format
-- Arten-Katalog je Integration
-- Schreiben
+- Abgrenzung: Verlauf oder fachlicher Vorgang
+- Ablage
+- Zeilenformat
+- Arten-Katalog
+- Sitzungen und Messreihen
+- Schreiben und Wiederanlauf
 - Aufbewahrung, Größe, Sicherung
-- Auswerten über alle Integrationen
+- Auswerten
 - Datenschutz
+- Baustein und Integration
 - Erste Anwendung: Netzwerk
-- Was zum Standard gehört
-- Entscheidungen Herbert (13.10.2026)
+- Regel G-24
+- Entscheidungen Herbert
+- Offen
 
 ## Ziel
 
-Jede eigene Integration legt ihre Daten so ab, dass sie **über Jahre bleiben** und später **ohne Umbau zusammen mit allen
-anderen Integrationen ausgewertet** werden können – je Integration ein eigenes Archiv, aber alle im selben Format.
+Jede eigene Integration legt ihre fachlichen Vorgänge so ab, dass sie **über Jahre bleiben**, **ohne die Integration
+lesbar** sind und später **zusammen mit allen anderen Integrationen ausgewertet** werden können – je Integration ein
+eigenes Archiv, alle im selben Format.
 
-## Was HA schon kann und was fehlt
+## Abgrenzung: Verlauf oder fachlicher Vorgang
 
-| Weg | Was bleibt | Fehlt |
+| Was | Wohin | Beispiel |
 |---|---|---|
-| Recorder (Verlauf) | jede Zustandsänderung, ca. 10 Tage (`purge_keep_days`) | Dauer |
-| Langzeitstatistik (Sensoren mit `state_class`) | Stundenmittel/-min/-max, unbegrenzt, ohne Zusatzsoftware | Ereignisse, feinere Auflösung |
-| InfluxDB bzw. VictoriaMetrics + Grafana (Add-ons, Community-Weg) | jede Zustandsänderung, unbegrenzt, Dashboards über alles | **Ereignisse und Sitzungen**; zusätzliche Dienste am Pi |
+| **Normaler Verlauf einer Entität** | Recorder; bei passenden Sensoren (`state_class` mit passender Statistik-Bedeutung) die Langzeitstatistik von HA (Stundenwerte, unbegrenzt) | aktuelle Signalstärke, Geräte online |
+| **Fachlicher Vorgang** mit Zusammenhang, Ergebnis und Herkunft | Archiv der Integration | Mobilfunk-Verbindung von–bis mit Technik, Zelle und Grund des Endes; Speedtest-Ergebnis; Störung; Reinigungslauf |
 
-Keiner dieser Wege hält **Ereignisse und Sitzungen** mit ihren Daten fest – „14:02–18:40 LTE, Zelle X, Ø −98 dBm, endete
-mit Neueinwahl“, ein Reinigungslauf von Heidi, eine Speedtest-Serie. Das liegt heute in eigenen Datenbanken jeder
-Integration, in eigenem Format und mit begrenzter Aufbewahrung (Netzwerk: Journal 400 Tage).
+- Der Recorder kann Ereignisse länger halten, und es gibt Exporte (InfluxDB/VictoriaMetrics). Was beiden fehlt, ist ein
+  **gemeinsamer fachlicher Vertrag** über alle Integrationen. Den liefert das Archiv. Logbuch ist eine Ansicht, externe
+  Statistik-Importe sind nur für Zahlenreihen gedacht, eigene Tabellen in der Recorder-Datenbank sind ausgeschlossen.
+- **G-10 bleibt:** Den normalen Verlauf spiegelt das Archiv nicht. Eine Messreihe im Archiv (z. B. Signal je
+  Verbindung) braucht einen im Katalog genannten fachlichen Grund.
+- **G-01:** Das Archiv ist der maßgebliche historische Nachweis. Die eigene Datenbank einer Integration hält
+  Arbeitsdaten für die Oberfläche (mit Frist) und daraus abgeleitete Ansichten.
+- Zusätzliche Dienste (VictoriaMetrics, Grafana) kommen erst bei Bedarf und ändern keine Integration.
 
-## Grundsatz: zwei Schichten
+## Ablage
 
-1. **Zahlen über die Zeit** → Sensoren mit `state_class` (G-07, G-10). Die Langzeitstatistik von HA archiviert sie
-   unbegrenzt; wer später feiner auflösen will, ergänzt VictoriaMetrics + Grafana, ohne eine Integration zu ändern. Das
-   Archiv **spiegelt diesen Verlauf nicht** (G-10).
-2. **Ereignisse, Sitzungen und Ergebnisse** → das **Archiv** der Integration im gemeinsamen Format (unten): Dinge mit
-   Anfang, Ende oder Ergebnis, die kein einzelner Zustand sind.
-
-Die eigenen Datenbanken der Integrationen bleiben Arbeitsspeicher für die Oberfläche (schnelle Abfragen, Aufräumen nach
-Frist); das Archiv ist die dauerhafte, gemeinsame Ablage.
-
-## Ablage und Format
-
-- Ort: `<config>/archiv/<domain>/<JJJJ-MM>.jsonl` – eine Datei je Monat, eine Zeile je Eintrag (JSON Lines). Nicht unter
-  `/local` (G-18), nicht im Repo.
-- Abgeschlossene Monate werden zu `<JJJJ-MM>.jsonl.gz` gepackt.
-- Jede Zeile hat dieselben Felder (Format-Version 1):
-
-| Feld | Pflicht | Inhalt |
-|---|---|---|
-| `v` | ja | Format-Version, `1` |
-| `t` | ja | Beginn bzw. Zeitpunkt, ISO 8601 mit Zeitzone |
-| `bis` | nein | Ende einer Sitzung; fehlt sonst |
-| `quelle` | ja | Domain der Integration, z. B. `netzwerk` |
-| `art` | ja | Art aus dem Katalog der Integration, `<bereich>.<was>`, z. B. `mobil.sitzung` |
-| `stufe` | ja | `info`, `warnung` oder `kritisch` |
-| `text` | ja | ein Satz für Menschen |
-| `werte` | nein | Zahlen und Texte der Art; Einheit steht im Katalog, nicht im Wert |
-| `bezug` | nein | Kennungen, z. B. `{"geraet": "<gesalzene Kennung>"}` – nie MAC-Adresse oder Name |
-
-Beispiel:
-
-```json
-{"v":1,"t":"2026-10-13T14:02:11+02:00","bis":"2026-10-13T18:40:05+02:00","quelle":"netzwerk","art":"mobil.sitzung","stufe":"info","text":"LTE-Verbindung 4 h 38 min, endete mit Neueinwahl","werte":{"technik":"LTE","zellen":2,"rsrp_mittel":-98,"rsrp_min":-109,"speedtests":3,"down_median":41.2,"ende":"neueinwahl"}}
+```
+<config>/archiv/<domain>/
+  schema/<art>.v<art_v>.json     Katalog jeder Art, wie in module.yaml (bleibt mit dem Archiv erhalten)
+  <JJJJ-MM>.jsonl                laufender Monat, eine Zeile je Datensatz
+  <JJJJ-MM>.jsonl.gz             abgeschlossene Monate
 ```
 
-## Arten-Katalog je Integration
+- Die Monatsdatei richtet sich nach der **Schreibzeit** (`erfasst`), nicht nach dem fachlichen Zeitpunkt – damit nie ein
+  gepackter Monat wieder geöffnet wird.
+- Nicht unter `/local` (G-18), nicht im Repo.
 
-Neuer Abschnitt `archive:` in `module.yaml` beschreibt jede Art mit Bedeutung und Einheiten – die einzige Stelle, die
-ein Auswerter lesen muss:
+## Zeilenformat
+
+Format-Version `v: 1`. Pflichtfelder fett.
+
+| Feld | Inhalt |
+|---|---|
+| **`v`** | Format-Version des Archivs |
+| **`id`** | stabile Kennung des Datensatzes (UUID oder aus der Quelle abgeleitet); bei Wiederholung gleich |
+| **`quelle`** | Domain der Integration |
+| `instanz` | Kennung der Einrichtung, wenn eine Domain mehrere hat (ohne Gerätekennung) |
+| **`art`**, **`art_v`** | Art aus dem Katalog und ihre Version |
+| **`t`** | fachlicher Zeitpunkt bzw. Beginn, UTC mit `Z` |
+| `bis` | Ende eines Zeitraums, UTC |
+| **`erfasst`** | Schreibzeit, UTC |
+| **`stufe`** | `info`, `warnung` oder `kritisch` |
+| **`text`** | ein Satz für Menschen, ohne geschützte Daten |
+| `werte` | Felder der Art laut Katalog |
+| `bezug` | Verweise: `sitzung` (ID der Sitzung), `geraet` (pseudonyme Kennung) |
+| `ersetzt` | ID eines früheren Datensatzes, den dieser korrigiert |
+| `herkunft` | `live` (Vorgabe) oder `nachgetragen` |
+
+Regeln:
+- Zeiten immer UTC; lokale Zeit nur in der Anzeige.
+- Ein fehlender Wert fehlt oder ist `null`, **nie `0`**. `NaN` und Unendlich sind verboten.
+- Korrekturen sind neue Datensätze mit `ersetzt`. Bestehende Zeilen ändert niemand.
+- Die Reihenfolge der Zeilen hat keine Bedeutung. Leser sortieren nach `t` und behandeln gleiche `id` mit gleichem
+  Inhalt als einen Datensatz; gleiche `id` mit anderem Inhalt ist ein Fehler.
+- Dauern innerhalb eines Laufs aus monotoner Zeit; springt die Uhr, wird das als `werte.uhr_sprung: true` vermerkt.
+
+## Arten-Katalog
+
+Abschnitt `archive:` in `module.yaml`; beim Start schreibt die Integration jede Art als `schema/<art>.v<art_v>.json` ins
+Archiv (nur neue Versionen).
 
 ```yaml
 archive:
   version: 1
+  anwendbar: true            # false + grund, wenn eine Integration nichts archiviert
   arten:
     mobil.sitzung:
-      text: Eine Mobilfunk-Verbindung von Einwahl bis Abbruch
+      art_v: 1
+      text: Mobilfunk-Verbindung von Einwahl bis Ende
       sitzung: true
-      werte: {technik: text, zellen: anzahl, rsrp_mittel: dBm, rsrp_min: dBm, speedtests: anzahl, down_median: Mbit/s, ende: text}
+      felder:
+        technik:   {typ: text, werte: [LTE, 5G NSA, 5G SA, 3G]}
+        zellen:    {typ: ganzzahl, einheit: anzahl, min: 0}
+        rsrp_mittel: {typ: zahl, einheit: dBm, min: -150, max: -30}
+        ende:      {typ: text, werte: [neueinwahl, abbruch, luecke]}
+      datenschutz: [standortbezogen]
 ```
 
-Eine Art wird nie umgedeutet; ändert sich ihr Inhalt grundlegend, gibt es eine neue Art.
+- Felder sind abschließend; was nicht im Katalog steht, darf nicht in `werte`.
+- `owns.data[]` in `module.yaml` bekommt `storage: archiv`; Schema und Validator werden gemeinsam erweitert.
+- Eine Art wird nie umgedeutet. Eine geänderte Bedeutung bekommt eine neue `art_v` bzw. eine neue Art.
 
-## Schreiben
+## Sitzungen und Messreihen
 
-- Nur **anhängen**, nie ändern oder löschen. Eine Sitzung wird geschrieben, wenn sie zu Ende ist (eine Zeile mit `t` und
-  `bis`); ihr Anfang wird im Store gemerkt, damit sie einen HA-Neustart übersteht.
-- Ein Schreiber je Integration, im Executor, mit Sperre. Ein Schreibfehler stoppt die Integration nicht, sondern wird
-  als Reparatur-Hinweis gemeldet (G-17, G-21).
-- Die Fachlogik (`logik/`) baut die Zeilen ohne HA-Code und testbar (G-12); geschrieben wird außerhalb.
-- Ein gemeinsames kleines Modul kommt als Workbench-Baustein `archiv` in jede Integration (wie `tickets`).
+> **Offen für Runde 2** (Herbert: „ChatGPT fragen“): Vorschlag aus Runde 1.
+
+```
+mobil.sitzung.start   bezug.sitzung, t = Beginn
+mobil.signal          bezug.sitzung, t..bis = höchstens ein UTC-Tag, werte.reihe = 5-Minuten-Werte
+mobil.sitzung.ende    bezug.sitzung, t = Beginn, bis = Ende, Zusammenfassung, ende = neueinwahl | abbruch | luecke
+```
+
+- Die Messreihe nennt je Punkt den Messzeitpunkt, Anker und 5G getrennt, Aggregation (`5min`, beim Nachtrag `stunde`)
+  und Lücken.
+- Ein Neustart von HA beendet keine Verbindung. Ist nicht belegbar, dass sie durchlief, wird eine Lücke vermerkt.
+- Geräte-Sitzungen (`geraet.sitzung.start/ende`) folgen demselben Muster ohne Messreihe.
+
+## Schreiben und Wiederanlauf
+
+Entscheidung Herbert: **kurzes, dokumentiertes Verlustfenster** statt Pflicht zur vollen Vormerk-Kette.
+
+- Ein Schreiber **je Domain** (auch bei mehreren Einrichtungen), eine Warteschlange mit fester Größe, Schreiben im
+  Executor nacheinander. Jeder Schreibvorgang wird sofort auf den Datenträger gebracht (`flush` + `fsync`).
+- Verlustfenster: höchstens die Datensätze, die seit dem letzten Schreibvorgang anfielen (Netzwerk: ein Abruf). Es
+  steht im Steckbrief der Integration.
+- Hat die Integration eine eigene SQLite, darf sie Datensätze dort in derselben Transaktion vormerken (dann kein
+  Verlust); Pflicht ist das nicht.
+- Beim Start: eine abgebrochene letzte Zeile wird nach `defekt/` gesichert und abgeschnitten, nie übersprungen.
+- Monatswechsel: alte Datei als `.gz.tmp` packen, prüfen, umbenennen, erst dann die Quelle löschen.
+- Entladen/Neu laden: Warteschlange wird geleert, nie ein zweiter Schreiber.
+- Fehler: Die Integration läuft weiter, der Rückstand ist in der Diagnose sichtbar. Ein Reparatur-Hinweis kommt nur bei
+  dauerhaften, vom Benutzer lösbaren Ursachen (Datenträger voll, keine Schreibrechte).
+- Sicherung: Vor einer HA-Sicherung leert der Schreiber die Warteschlange und pausiert, danach läuft er weiter (wie die
+  SQLite in Netzwerk).
 
 ## Aufbewahrung, Größe, Sicherung
 
-- Unbegrenzt aufbewahren. Grobe Größe Netzwerk: einige hundert Zeilen im Monat, gepackt deutlich unter 1 MB im Jahr.
-- `<config>/archiv/` ist in den HA-Sicherungen enthalten; die Integration schließt es nicht aus.
-- Rückblickend füllen: einmalig aus vorhandenen Daten (z. B. Netzwerk-Journal der letzten 400 Tage), mit
-  `werte.nachgetragen: true`.
+- Unbegrenzt aufbewahren.
+- Größe Netzwerk (geschätzt, im Test gemessen): 105 120 Signalpunkte im Jahr à ca. 30 Byte → ca. 3 MB roh, gepackt ca.
+  0,5–1 MB; dazu Geräte-Sitzungen (je nach Gerätezahl einige MB roh).
+- `<config>/archiv/` ist Teil der HA-Sicherungen. Wohin die Sicherung geht (z. B. Cloud), bestimmt Herbert – dann
+  verlässt auch das Archiv den Pi. Ein Test sichert und stellt wieder her (Archiv, Schlüssel, Sitzungsanfänge).
 
-## Auswerten über alle Integrationen
+## Auswerten
 
-- **DuckDB** liest alle Archive direkt, auch gepackt:
-  `SELECT quelle, art, count(*) FROM read_json_auto('archiv/*/*.jsonl*') GROUP BY ALL` – und lässt sich mit der
-  HA-Langzeitstatistik verbinden (z. B. Verbindungsabbrüche gegen Temperatur oder Stromverbrauch).
-- Werkzeug `tools/archiv.py` im Baustein: CSV für Excel (Filter Integration, Art, Zeitraum).
-- Später möglich, nicht Teil des Standards: Grafana mit VictoriaMetrics (Sensoren) und einem DuckDB- bzw. JSON-Plugin
-  (Archive).
-- Die eigene Seite einer Integration darf ihr Archiv zeigen (z. B. Verbindungs-Log in Netzwerk) – über den WebSocket der
-  Integration, ohne Fachrechnung in der Seite.
+- Ein gemeinsamer **Leser** im Baustein: entfernt Duplikate, löst `ersetzt` auf, prüft gegen `schema/`.
+- `tools/archiv.py`: CSV je Art für Excel (Messreihen als eigene Tabelle). Freitext wird gegen Formeln abgesichert
+  (`=`, `+`, `-`, `@` am Anfang).
+- DuckDB als Weg für Auswertungen über alle Integrationen, mit festen Spaltentypen aus `schema/` statt automatischer
+  Erkennung.
+- Die eigene Seite einer Integration zeigt ihr Archiv über ihren WebSocket (nur für angemeldete Benutzer), ohne
+  Fachrechnung in der Seite. Andere Integrationen lesen fremde Archive nie direkt (G-05).
 
 ## Datenschutz
 
-- Keine MAC-Adressen, Gerätenamen, Kennwörter oder Koordinaten im Archiv. Geräte mit gesalzener Kennung (Muster
-  `verlauf.geraete_id` in Netzwerk); das Salz bleibt im Store, damit Kennungen über Jahre gleich bleiben.
-- Zellkennungen sind öffentliche Senderdaten und dürfen ins Archiv; der eigene Standort nicht.
-- Das Archiv verlässt den Pi nur, wenn Herbert es selbst kopiert.
+- Geräte: `HMAC-SHA256(schlüssel, normalisierte MAC)`, Schlüssel zufällig, im Store der Integration und in der
+  Sicherung. Geht er verloren, beginnen neue Kennungen; das ist dokumentiert.
+- Pseudonym ist nicht anonym: Online-Zeiten zeigen Anwesenheit. Geräte-Sitzungen sind deshalb im Katalog als
+  `personenbezogen` markiert.
+- Zellkennungen sind `standortbezogen` (bewusste Entscheidung); der eigene Standort selbst kommt nie ins Archiv.
+- Geprüft werden auch `text`, Fehlertexte, Serverangaben und Exporte. Die Diagnose zeigt keine Archivinhalte.
 
-## Erste Anwendung: Netzwerk (WU-0002)
+## Baustein und Integration
 
-| Art | Wann | Werte (Auswahl) |
-|---|---|---|
-| `mobil.sitzung` | Neueinwahl bzw. Ende der Verbindung | Technik, Zellen, Band, RSRP/RSRQ Ø und min (aus der Statistik), Speedtests in der Zeit, Grund des Endes |
-| `mobil.wechsel` | Technik- oder Zellenwechsel | von, nach, RSRP |
-| `internet.stoerung` | Ende einer Störung | Dauer, Ursache (Lage), Zusammenfassung |
-| `speedtest.messung` | jedes Ookla-Ergebnis | down, up, ping, Server, Anteil vom Tarif |
-| `speedtest.serie` | Ende einer Serie | Durchläufe, Median, Spanne |
-| `befund` | Befund neu bzw. erledigt | Schlüssel, Stufe |
-| `geraet.sitzung` | Gerät online → offline | gesalzene Kennung, Art, Verbindung (LAN/WLAN-Band), Dauer |
+| Workbench-Baustein `archiv` | Integration |
+|---|---|
+| Format prüfen, Zeiten normalisieren, Zeilen bauen | welche Vorgänge archiviert werden |
+| Schreiber, Warteschlange, Wiederanlauf, Monatswechsel | Sitzungsgrenzen und Zusammenfassung |
+| `schema/` schreiben, Leser (Duplikate, Korrekturen) | Arten-Katalog, Einheiten, Datenschutz-Markierung |
+| `tools/archiv.py` (CSV), gemeinsame Tests (Absturz, Wiederholung, Monatswechsel, Packen, Korrektur, Sicherung) | stabile IDs der Vorgänge, Fachtest je Art |
+| Anbindung an HA (Executor, Sicherung, Diagnose) | Texte für Reparatur-Hinweise, WebSocket für die eigene Seite |
 
-Danach Ansicht „Verbindungen“ im Reiter Funk aus dem Archiv, mit Filter und CSV-Knopf – vorher Mockup.
+projekt-anlegen setzt Baustein und `archive:` ein, code-erstellen baut die Arten, audit prüft die Nachweise. Ein
+eigener Skill ist nicht nötig.
 
-## Was zum Standard gehört
+## Erste Anwendung: Netzwerk
 
-1. Regel **G-24 Archiv**: „Ereignisse, Sitzungen und Ergebnisse, die über die Frist der eigenen Datenbank hinaus Wert
-   haben, schreibt eine Integration in ihr Archiv `<config>/archiv/<domain>/` im gemeinsamen Format; Zahlen über die
-   Zeit bleiben Sensoren mit `state_class`.“ Prüfbar durch `archive:` in `module.yaml` und einen Test je Art; ab Stufe 2.
-2. Baustein `archiv` in projekt-anlegen: Schreiber, `logik/archiv.py` (Zeile bauen, Format prüfen), `tools/archiv.py`
-   (CSV), Test-Vorlage; Abschnitt `archive:` in `module-yaml.md`; Zeile in der Audit-Tabelle.
-3. Nachziehen: Netzwerk zuerst, dann Baustrommanager und Baustelle; Heidi beim Neubau.
+| Art | Inhalt |
+|---|---|
+| `mobil.sitzung.start/ende`, `mobil.signal` | Verbindung, Technik, Zelle, Band, Grund des Endes; Signal 5 min |
+| `mobil.wechsel` | Technik- oder Zellenwechsel |
+| `internet.stoerung` | Dauer, Ursache, Zusammenfassung |
+| `speedtest.messung`, `speedtest.serie` | Ergebnisse, Median und Spanne |
+| `befund` | neu bzw. erledigt |
+| `geraet.sitzung.start/ende` | pseudonyme Kennung, Art, Verbindung (LAN/WLAN-Band) |
 
-## Entscheidungen Herbert (13.10.2026)
+**Nachtrag (einmalig, wiederholbar):** Aus dem Journal (400 Tage) lassen sich rekonstruieren:
+- Verbindungen: die Neueinwahl speichert die Dauer der vorigen Verbindung.
+- Technik- und Zellwechsel, letztere mit RSRP.
+- Störungen, Geräte online/offline, Befunde.
 
-1. **Geräte-Sitzungen** (`geraet.sitzung`) kommen ins Archiv – nur mit gesalzener Kennung.
-2. **Signal je Mobilfunk-Sitzung** mit 5-Minuten-Werten: die Zeile `mobil.sitzung` trägt in `werte.verlauf` die Reihe
-   `[[sekunden_seit_t, rsrp, rsrq], …]` (5 min, aus den eigenen Abrufen der Integration, nicht aus dem Recorder).
-3. **Rückblickend füllen** aus dem Netzwerk-Journal (bis 400 Tage) – ja, einmalig, `werte.nachgetragen: true`.
-4. **Grafana/VictoriaMetrics** erst bei Bedarf.
-5. Vor der Abnahme ein **ChatGPT-Review** des Entwurfs.
+Signal: 5-Minuten-Werte gibt es nur für etwa 10 Tage, davor Stundenwerte aus der Langzeitstatistik
+(`aggregation: stunde`). Fehlendes wird als Lücke ausgewiesen. IDs werden aus den Quelldatensätzen abgeleitet,
+`herkunft: nachgetragen`.
+
+Danach kommt die Ansicht „Verbindungen“ im Reiter Funk, mit Filter und CSV. Vorher gibt es ein Mockup.
+
+## Regel G-24
+
+> **G-24 Langzeitarchiv:** Jede eigene Integration legt in `module.yaml` fest, welche fachlichen Vorgänge (Ereignisse,
+> Sitzungen, Ergebnisse) langfristig erhalten bleiben, und schreibt sie im gemeinsamen, versionierten Archivformat nach
+> `<config>/archiv/<domain>/`. Den normalen Verlauf ihrer Entitäten hält der Recorder; Messreihen im Archiv brauchen
+> einen genannten fachlichen Grund. Das Archiv ist ohne die Integration lesbar. Neustarts, Schreibfehler und
+> Wiederherstellungen verursachen keine unbemerkten Verluste über das dokumentierte Fenster hinaus und keine doppelt
+> gezählten Einträge. Archiviert eine Integration nichts, steht der Grund in `module.yaml`.
+
+- **Prüfbar durch:**
+  - `archive:` vollständig (oder `anwendbar: false` mit Grund);
+  - `schema/` im Archiv passend zum Katalog;
+  - Fachtest je Art;
+  - die gemeinsamen Baustein-Tests (Absturz, Wiederholung, Monatswechsel, Packen, Korrektur);
+  - Entladen/Neu laden;
+  - Sicherung und Wiederherstellung;
+  - Datenschutzprüfung der Felder und Texte.
+- **Ab Stufe:** 2.
+
+## Entscheidungen Herbert
+
+13.10.2026, Runde 1 und davor:
+
+1. Geräte-Sitzungen kommen ins Archiv (pseudonym).
+2. Signal je Mobilfunk-Verbindung in 5-Minuten-Werten.
+3. Einmaliger Nachtrag aus dem Netzwerk-Journal.
+4. Grafana/VictoriaMetrics erst bei Bedarf.
+5. Stromausfall: kurzes, dokumentiertes Verlustfenster; die Vormerk-Kette ist keine Pflicht.
+
+## Offen
+
+- Form der Sitzungen (Beginn – Tagesblöcke – Ende oder eine Zeile am Ende), siehe „Sitzungen und Messreihen“.
