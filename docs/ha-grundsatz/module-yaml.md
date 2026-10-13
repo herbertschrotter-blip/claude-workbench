@@ -38,7 +38,8 @@ wird durch Lesen oder Anzeigen nicht zu Eigentum.
 | `depends_on.integrations` | Integrationen, die vorhanden sein müssen |
 | `sources[]` | Eingänge: `key`, `owner` (wem der Wert gehört), `interface` (`entities`, `entity`), optional `domain`, `outage` |
 | `owns.settings[]` | eigene Einstellungen: `key`, `storage` (`store`, `options`), `exposure` (`config_entity`, `websocket`), optional `domain`, `action` |
-| `owns.data[]` | eigene Fachdaten: `key`, `storage` (`sqlite`) |
+| `owns.data[]` | eigene Fachdaten: `key`, `storage` (`sqlite`, `store`, `archiv`) |
+| `archive` | Langzeitarchiv (G-24): `version`, `anwendbar` (+ `grund`, wenn `false`), `arten` mit `art_v`, `text`, `sitzung`, `felder`, optional `grund` und `datenschutz` – Aufbau in [`archiv.md`](./archiv.md#arten-katalog) |
 | `owns.entities[]` | eigene Ergebnis-Entitäten: `key`, `domain` |
 | `owns.actions[]` | eigene Aktionen |
 | `interfaces.websocket[]` | WebSocket-Bereiche der eigenen Oberfläche |

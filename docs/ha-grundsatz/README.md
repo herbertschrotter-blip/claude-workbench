@@ -8,7 +8,7 @@ vom Konzept bis zum fertigen Dashboard. Für Herbert verständlich, für Claude 
 eines HA-Repos, `audit` beim Prüfen dagegen. Einen eigenen Skill dafür gibt es nicht.
 
 **Herkunft:** erarbeitet im Review `CGR-2026-09-23-ha-grundsatz` (`docs/chatgpt-reviews/CGR-2026-09-23-ha-grundsatz/`,
-Runden 1–4), Endfassungen aus Runde 3 und 4; G-22 und G-23 direkt von Herbert. Referenzfall ist der Roboter Heidi (Repo
+Runden 1–4), Endfassungen aus Runde 3 und 4; G-22 und G-23 direkt von Herbert; G-24 aus dem Review `CGR-2026-10-13-ha-grundsatz`. Referenzfall ist der Roboter Heidi (Repo
 `HA_Dash_DreameX60`), der nach diesen Regeln neu gebaut wird – ohne Migration.
 
 ## Inhalt
@@ -24,10 +24,11 @@ Runden 1–4), Endfassungen aus Runde 3 und 4; G-22 und G-23 direkt von Herbert.
 
 | Datei | Inhalt |
 |---|---|
-| `README.md` | Leitsätze, Ausbaustufen, die Regeln G-01 … G-23, Begriffe |
+| `README.md` | Leitsätze, Ausbaustufen, die Regeln G-01 … G-24, Begriffe |
 | [`einstellungen.md`](./einstellungen.md) | Einstellungsmatrix: wo welche Einstellung liegt und wie sie bedient wird (G-09) |
 | [`wege.md`](./wege.md) | Kurzer Weg (Stufe 0–1), voller Weg (ab Stufe 2), Reihenfolge beim Planen, Einspielen |
 | [`module-yaml.md`](./module-yaml.md) | `module.yaml` Schema v1 mit Ausfallverhalten und Beispielen (G-19, G-21) |
+| [`archiv.md`](./archiv.md) | Langzeitarchiv: Format, Arten-Katalog, Sitzungen, Schreiben und Verlustfenster, Datenschutz (G-24) |
 | [`steckbrief-vorlage.md`](./steckbrief-vorlage.md) | Vorlage Modul-Steckbrief (G-19) |
 | `recherche-2026-09-23.md` | Recherche: offizielle HA-Vorgaben und bewährte Praxis, mit Quellen |
 
@@ -84,6 +85,7 @@ Der Adapter kommt zuletzt – nicht automatisch mit der Integration, sondern ers
 | **G-21 Ausfall** | Ein Modul erkennt fehlende, deaktivierte, nicht verfügbare oder unzulässig alte Quellen und verwendet sie nicht stillschweigend als aktuelle Daten. Für benötigte Quellen sind Sperr- oder Ersatzverhalten und Wiederanlauf festgelegt; betroffene Zustände zeigen den Ausfall richtig, und benutzerlösbare dauerhafte Fehler erhalten einen Reparatur-Hinweis. | Ausfalltest je kritischer Quelle: Quelle fehlt, ist deaktiviert, `unavailable` oder veraltet → keine unzulässige Aktion und richtiger sichtbarer Zustand; Quelle zurück → automatische Neubewertung und Erholung ohne Neustart. | 1; voller Vertrag ab 2 |
 | **G-22 Oberfläche mit Lit** | Eigene Oberflächen in HA (Karten, Panels, Dialoge) werden mit **Lit** als Web Components gebaut und zu einer ausgelieferten Datei gebündelt; kein HTML als Text mit `innerHTML`. Die Sprache folgt dem Stack des Projekts (TypeScript oder JavaScript); für Code gilt die Stack-Referenz `typescript-lit` von code-erstellen. Bestehende Oberflächen ohne Lit werden schrittweise umgestellt, nicht nebenbei. | Code-Profil führt den Stack; keine `innerHTML`-Vorlagen. | 3 |
 | **G-23 Tickets** | Jedes eigene Projekt sammelt Fehler, Wünsche und Anregungen als Tickets (FE/WU/AN-NNNN, Status `neu → … → geschlossen`, daneben `verworfen`) im eigenen Speicher, legt sie lesbar unter `<config>/<domain>/meldungen.*` ab und ändert sie nur über die Aktion `<domain>.ticket`; abgearbeitet wird mit `tools/ticket.py` und dem Skill `ticket` nach dem Ticket-Profil. Mit eigener Oberfläche gibt es dort einen Melden-Knopf mit Screenshots, der meldet, wie viele Bilder angekommen sind. Muster: `ha-netzwerk`. | Ticket-Profil in `CLAUDE.md`; Test über den ganzen Weg (melden → Datei → `tools/ticket.py zeige` → Aktion). | 2; Melden-Knopf ab 3 |
+| **G-24 Langzeitarchiv** | Jede eigene Integration legt in `module.yaml` fest, welche fachlichen Vorgänge (Ereignisse, Sitzungen, Ergebnisse) langfristig erhalten bleiben, und schreibt sie im gemeinsamen, versionierten Archivformat nach `<config>/archiv/<domain>/` ([`archiv.md`](./archiv.md)). Den normalen Verlauf ihrer Entitäten hält der Recorder; Messreihen im Archiv brauchen einen genannten fachlichen Grund. Bestätigte Schreibvorgänge bleiben erhalten, das Verlustfenster für unbestätigte steht im Steckbrief; Abweichungen werden angezeigt und Lücken gekennzeichnet, Wiederholungen nur einmal gezählt. Archiviert eine Integration nichts, steht der Grund in `module.yaml`. | `archive:` in `module.yaml` (oder `anwendbar: false` mit Grund) ↔ `schema/` im Archiv; Fachtest je Art; Baustein-Tests (Verlustfenster, Absturz, Wiederholung, volle Warteschlange, Neustart mit laufender Sitzung, Uhrsprung, Monatswechsel, Korrektur); Entladen/Neu laden; Sicherung und Wiederherstellung; Datenschutzprüfung. | 2 |
 
 ## Erläuterungen
 
