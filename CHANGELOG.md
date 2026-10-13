@@ -8,6 +8,21 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.56.0] — 2026-10-13
+
+- **skills/projekt-anlegen, Feature (Tickets als Standard, Wunsch Herbert):** neuer Baustein `tickets`, fest in jeder
+  `ha-integration` – Ticketsystem nach dem Muster `ha-netzwerk` 0.10.0 (dort aus dem Baustrommanager übernommen):
+  Fachlogik `logik/tickets.py` (Nummern FE/WU/AN, Status, Prüfung, Bilder, Markdown), `tickets.py` (Integrations-
+  Speicher, lesbare Ablage `<config>/<domain>/meldungen.*`, WebSocket `<domain>/meldung/*`, Aktion `<domain>.ticket`
+  nur Admin), `services.yaml`, `tools/ticket.py`, `tools/tickets-fenster.sh`, Tests über den ganzen Weg; Vorlagen
+  `quelle-*` melden die Tickets in `async_setup` an (mit `CONFIG_SCHEMA`), Übersetzungen für Aktion und Fehler;
+  `CLAUDE.md.tpl` mit Regel, `### Ticket` und Abschnitt `## Ticket-Profil`; `pyproject.toml.tpl` ignoriert E501 wie
+  die Projekte. `references/generator.md` und `references/stacks/home-assistant.md` (Abschnitt „Tickets (Standard)“,
+  Melden-Knopf mit der ersten eigenen Seite). Generator für `aufsatz` und `abruf` grün (format, lint, typen, logik,
+  HA-Tests).
+- **skills/audit, Change:** Prüftabelle um G-23 Tickets ergänzt. Dazu (ha-grundsatz, ohne eigene Nummer): neue Regel
+  **G-23 Tickets** in `docs/ha-grundsatz/README.md`.
+
 ## [v0.55.0] — 2026-10-12
 
 - **skills/chatgpt-review, Feature (Anzeige, Wunsch Herbert):** neuer Abschnitt „Anzeige im Chat“ – im Weg codex steht

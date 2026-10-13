@@ -1,0 +1,37 @@
+{
+  "id": "tickets",
+  "requires": [
+    "ha-integration"
+  ],
+  "conflicts": [],
+  "files": [
+    {
+      "source": "tickets/cc/logik/tickets.py.tpl",
+      "target": "custom_components/{{package}}/logik/tickets.py"
+    },
+    {
+      "source": "tickets/cc/tickets.py.tpl",
+      "target": "custom_components/{{package}}/tickets.py"
+    },
+    {
+      "source": "tickets/cc/services.yaml.tpl",
+      "target": "custom_components/{{package}}/services.yaml"
+    },
+    {
+      "source": "tickets/tools/ticket.py.tpl",
+      "target": "tools/ticket.py"
+    },
+    {
+      "source": "tickets/tools/tickets-fenster.sh.tpl",
+      "target": "tools/tickets-fenster.sh"
+    },
+    {
+      "source": "tickets/tests/logik/test_tickets.py.tpl",
+      "target": "tests/logik/test_tickets.py"
+    },
+    {
+      "source": "tickets/tests/integration/test_tickets.py.tpl",
+      "target": "tests/integration/test_tickets.py"
+    }
+  ]
+}

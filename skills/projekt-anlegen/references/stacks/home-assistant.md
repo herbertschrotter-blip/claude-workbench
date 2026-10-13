@@ -9,6 +9,7 @@ Pfade sind relativ zum Konfigurationsordner von Home Assistant (`/config`).
 - Zuerst: gibt es das schon?
 - Arten und Orte
 - Grunddateien je Art
+- Tickets (Standard)
 - Geschützte Bereiche
 - .gitignore für den Konfigurationsordner
 - Neu laden oder neu starten
@@ -64,6 +65,23 @@ Faustregeln aus den HA-Vorgaben (Details in `docs/ha-grundsatz/`):
   legt dafür `ausliefern.py` mit Rückweg (`--zurueck`) ins Projekt. Der
   Generator erzeugt sie lauffähig und geprüft (Projektart `ha-integration` in `references/generator.md`, Aufsatz auf
   vorhandene Entitäten oder eigener Abruf); von Hand nur, was er nicht kennt.
+
+## Tickets (Standard)
+
+Jedes eigene Projekt bekommt ein Ticketsystem (Herbert, 13.10.2026; HA-Grundsatz G-23), immer nach dem Muster des
+Projekts `ha-netzwerk`:
+
+- **Integration:** Meldungen im Integrations-Speicher, lesbare Kopie unter `<config>/<domain>/meldungen.json`,
+  `meldungen.md`, Bilder unter `meldungen/`; Aktion `<domain>.ticket` (nur Admin) und WebSocket `<domain>/meldung/*`.
+  Der Generator legt das mit dem Baustein `tickets` an, samt `tools/ticket.py`, `tools/tickets-fenster.sh`, Tests und
+  Ticket-Profil in der `CLAUDE.md`.
+- **Eigene Seite oder Karte:** Melden-Knopf mit Dialog (Fehler/Wunsch/Anregung, Text, Fenster, Version, Gerät, „Stand
+  der Seite“, bis 3 Screenshots – am Handy aus der Galerie, am PC auch Strg+V und „Fenster aufnehmen“), Bilder einzeln
+  nach der Meldung, Rückmeldung mit der Zahl der angekommenen Bilder; Liste der Tickets in den Einstellungen. Vorlage:
+  `ha-netzwerk/custom_components/netzwerk/frontend/src/ansichten/melden.js`. Kommt mit der ersten Seite, nach dem
+  Mockup des Projekts.
+- **Ohne eigene Integration** (Paket, Dashboard): kein eigener Speicher; Tickets dann im Projekt, zu dem es gehört,
+  oder per Auswahlfrage festlegen.
 
 ## Geschützte Bereiche
 

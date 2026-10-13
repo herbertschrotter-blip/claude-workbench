@@ -4,7 +4,8 @@
   "beschreibung": "Eigene Home-Assistant-Integration: Aufsatz auf vorhandene Entitäten oder eigener Abruf",
   "components": [
     "common",
-    "ha-integration"
+    "ha-integration",
+    "tickets"
   ],
   "features": {
     "quelle": {

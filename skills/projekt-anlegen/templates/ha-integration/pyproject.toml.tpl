@@ -14,3 +14,4 @@ target-version = "py314"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]  # lange Texte in Strings; Code bricht der Formatierer um

@@ -34,12 +34,17 @@ Nur was im Manifest freigegeben und in der CI des Generators geprüft ist:
 |---|---|---|---|
 | `python-tool` – Python-Werkzeug mit Befehlszeile | 1 | `storage`: `none` | common, python-tool, storage-memory |
 | `python-tool` | 1 | `storage`: `sqlite` | common, python-tool, storage-sqlite |
-| `ha-integration` – eigene Home-Assistant-Integration | 1 | `quelle`: `aufsatz` | common, ha-integration, quelle-aufsatz |
-| `ha-integration` | 1 | `quelle`: `abruf` | common, ha-integration, quelle-abruf |
+| `ha-integration` – eigene Home-Assistant-Integration | 1 | `quelle`: `aufsatz` | common, ha-integration, tickets, quelle-aufsatz |
+| `ha-integration` | 1 | `quelle`: `abruf` | common, ha-integration, tickets, quelle-abruf |
 
 Bei `delivery.github: true` kommt `ci-github-python` bzw. `ci-github-ha` dazu (automatische Prüfung bei jedem
 Push). Mit `lizenz` kommt `lizenz-mit` (`LICENSE`) bzw. `lizenz-apache` (`LICENSE` mit dem offiziellen Text und
 `NOTICE`) dazu; beide Projektarten kennen beide. Alles andere geht den Weg nach der Stack-Reference; nie eine Kombination improvisieren.
+
+Jedes `ha-integration`-Projekt bekommt das Ticketsystem (Baustein `tickets`, HA-Grundsatz G-23): Speicher und
+lesbare Ablage unter `<config>/<domain>/meldungen.*`, Aktion `<domain>.ticket`, WebSocket für eine spätere Seite,
+`tools/ticket.py`, `tools/tickets-fenster.sh`, Tests über den ganzen Weg und das Ticket-Profil in der `CLAUDE.md`. Den
+Melden-Knopf baut code-erstellen mit der ersten eigenen Seite (Stack-Reference, Abschnitt „Tickets“).
 
 Jedes `ha-integration`-Projekt bekommt `ausliefern.py`: Es kopiert `custom_components/<domain>` in die
 HA-Konfiguration, sichert die vorige Fassung im Projekt (`.auslieferung/vorher/`, nicht im Repo) und stellt sie mit

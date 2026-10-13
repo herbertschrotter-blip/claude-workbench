@@ -8,7 +8,7 @@ vom Konzept bis zum fertigen Dashboard. Für Herbert verständlich, für Claude 
 eines HA-Repos, `audit` beim Prüfen dagegen. Einen eigenen Skill dafür gibt es nicht.
 
 **Herkunft:** erarbeitet im Review `CGR-2026-09-23-ha-grundsatz` (`docs/chatgpt-reviews/CGR-2026-09-23-ha-grundsatz/`,
-Runden 1–4), Endfassungen aus Runde 3 und 4; G-22 direkt von Herbert. Referenzfall ist der Roboter Heidi (Repo
+Runden 1–4), Endfassungen aus Runde 3 und 4; G-22 und G-23 direkt von Herbert. Referenzfall ist der Roboter Heidi (Repo
 `HA_Dash_DreameX60`), der nach diesen Regeln neu gebaut wird – ohne Migration.
 
 ## Inhalt
@@ -24,7 +24,7 @@ Runden 1–4), Endfassungen aus Runde 3 und 4; G-22 direkt von Herbert. Referenz
 
 | Datei | Inhalt |
 |---|---|
-| `README.md` | Leitsätze, Ausbaustufen, die Regeln G-01 … G-22, Begriffe |
+| `README.md` | Leitsätze, Ausbaustufen, die Regeln G-01 … G-23, Begriffe |
 | [`einstellungen.md`](./einstellungen.md) | Einstellungsmatrix: wo welche Einstellung liegt und wie sie bedient wird (G-09) |
 | [`wege.md`](./wege.md) | Kurzer Weg (Stufe 0–1), voller Weg (ab Stufe 2), Reihenfolge beim Planen, Einspielen |
 | [`module-yaml.md`](./module-yaml.md) | `module.yaml` Schema v1 mit Ausfallverhalten und Beispielen (G-19, G-21) |
@@ -83,6 +83,7 @@ Der Adapter kommt zuletzt – nicht automatisch mit der Integration, sondern ers
 | **G-20 Arbeitsweise** | Vertrag vor Mockup, Tests vor dem Einspielen, Doku und Entscheidungen zusammen mit der Änderung. | Prüfung bei Commit und Abnahme. | 0 |
 | **G-21 Ausfall** | Ein Modul erkennt fehlende, deaktivierte, nicht verfügbare oder unzulässig alte Quellen und verwendet sie nicht stillschweigend als aktuelle Daten. Für benötigte Quellen sind Sperr- oder Ersatzverhalten und Wiederanlauf festgelegt; betroffene Zustände zeigen den Ausfall richtig, und benutzerlösbare dauerhafte Fehler erhalten einen Reparatur-Hinweis. | Ausfalltest je kritischer Quelle: Quelle fehlt, ist deaktiviert, `unavailable` oder veraltet → keine unzulässige Aktion und richtiger sichtbarer Zustand; Quelle zurück → automatische Neubewertung und Erholung ohne Neustart. | 1; voller Vertrag ab 2 |
 | **G-22 Oberfläche mit Lit** | Eigene Oberflächen in HA (Karten, Panels, Dialoge) werden mit **Lit** als Web Components gebaut und zu einer ausgelieferten Datei gebündelt; kein HTML als Text mit `innerHTML`. Die Sprache folgt dem Stack des Projekts (TypeScript oder JavaScript); für Code gilt die Stack-Referenz `typescript-lit` von code-erstellen. Bestehende Oberflächen ohne Lit werden schrittweise umgestellt, nicht nebenbei. | Code-Profil führt den Stack; keine `innerHTML`-Vorlagen. | 3 |
+| **G-23 Tickets** | Jedes eigene Projekt sammelt Fehler, Wünsche und Anregungen als Tickets (FE/WU/AN-NNNN, Status `neu → … → geschlossen`, daneben `verworfen`) im eigenen Speicher, legt sie lesbar unter `<config>/<domain>/meldungen.*` ab und ändert sie nur über die Aktion `<domain>.ticket`; abgearbeitet wird mit `tools/ticket.py` und dem Skill `ticket` nach dem Ticket-Profil. Mit eigener Oberfläche gibt es dort einen Melden-Knopf mit Screenshots, der meldet, wie viele Bilder angekommen sind. Muster: `ha-netzwerk`. | Ticket-Profil in `CLAUDE.md`; Test über den ganzen Weg (melden → Datei → `tools/ticket.py zeige` → Aktion). | 2; Melden-Knopf ab 3 |
 
 ## Erläuterungen
 
