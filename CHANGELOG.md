@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.56.1] — 2026-10-13
+
+- **skills/code-erstellen, Fix (Befund ha-netzwerk FE-0001):** `references/stacks/typescript-lit.md`, „Typische
+  Fehler“: Dateiauswahl in der Android-App von Home Assistant ohne `multiple` und ohne Vorab-Prüfung des MIME-Typs,
+  jeder Schritt sichtbar. **skills/projekt-anlegen:** Abschnitt „Tickets (Standard)“ der Stack-Reference verweist
+  darauf und verlangt vor der Abnahme eine Probemeldung mit Bild vom Handy.
+
 ## [v0.56.0] — 2026-10-13
 
 - **skills/projekt-anlegen, Feature (Tickets als Standard, Wunsch Herbert):** neuer Baustein `tickets`, fest in jeder

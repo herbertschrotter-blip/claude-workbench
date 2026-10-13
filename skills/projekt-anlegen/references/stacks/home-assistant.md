@@ -79,7 +79,9 @@ Projekts `ha-netzwerk`:
   der Seite“, bis 3 Screenshots – am Handy aus der Galerie, am PC auch Strg+V und „Fenster aufnehmen“), Bilder einzeln
   nach der Meldung, Rückmeldung mit der Zahl der angekommenen Bilder; Liste der Tickets in den Einstellungen. Vorlage:
   `ha-netzwerk/custom_components/netzwerk/frontend/src/ansichten/melden.js`. Kommt mit der ersten Seite, nach dem
-  Mockup des Projekts.
+  Mockup des Projekts. Bildauswahl ohne `multiple` und ohne Prüfung des Dateityps (Android-App von HA; Stack-Reference
+  `typescript-lit` von code-erstellen, „Typische Fehler“); vor der Abnahme einmal am Handy aus der Galerie melden und
+  prüfen, dass die Bilddatei unter `<config>/<domain>/meldungen/` liegt.
 - **Ohne eigene Integration** (Paket, Dashboard): kein eigener Speicher; Tickets dann im Projekt, zu dem es gehört,
   oder per Auswahlfrage festlegen.
 

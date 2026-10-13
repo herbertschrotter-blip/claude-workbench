@@ -76,3 +76,8 @@ Befehle und Pfade nennt das Profil (Feld Tests); die folgenden sind das Beispiel
 - `hass.entities` als Änderungssignal (wechselt nicht bei Register-Updates → Ereignis abonnieren)
 - Unused imports/vars → eslint rot; `any` in strict
 - Version nur in einer Quelle hochgezählt (package.json **und** Lock **und** Ressourcen-`?v=`)
+- Dateiauswahl (`<input type="file">`) in der Android-App von Home Assistant: **kein `multiple`** – mit Mehrfachauswahl
+  gibt die App das gewählte Bild nicht an die Seite weiter (kein `change`, nichts passiert); mehrere Bilder = mehrmals
+  wählen. **Den MIME-Typ nicht vorab prüfen** (Bilder aus der Galerie kommen oft ohne `type`); per
+  `URL.createObjectURL` laden und das Laden entscheiden lassen. Jeden Schritt sichtbar melden („wird geladen“, Fehler),
+  nie still verwerfen. Befund ha-netzwerk FE-0001 (13.10.2026); derselbe Fehler steckt im Baustrommanager (FE-0027)
