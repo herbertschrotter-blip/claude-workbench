@@ -12,5 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| projekt-anlegen | v0.56.1 | c1e9c46 | Zip (SKILL.md + 6 references) | 2026-10-13 |
 | code-erstellen | v0.56.1 | c1e9c46 | Zip (SKILL.md + 4 references) | 2026-10-13 |
