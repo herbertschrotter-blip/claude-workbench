@@ -12,5 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| git-commit-helper | v0.57.0 | 5866e4e | SKILL.md (scripts/ wird nicht hochgeladen) | 2026-10-19 |
 | audit | v0.57.0 | 5866e4e | Zip (SKILL.md + references/grundsatz/home-assistant.md) | 2026-10-19 |
