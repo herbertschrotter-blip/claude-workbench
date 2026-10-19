@@ -8,6 +8,20 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.57.0] — 2026-10-19
+
+- **skills/git-commit-helper, Feature (CGR-2026-10-12-ha-grundsatz r2/r3, ClickUp „checks.py mit Auswahl-/
+  Eingabemustern und Lauf-Datensatz“):** `scripts/checks.py` liest Checks im Format `[(allein)] [auswahl: …]
+  [eingaben: …]`; alte Zeilen `[<glob>; …]` gelten als Auswahl. Unbekannte, doppelte oder leere Angaben und offene
+  Klammern oder Anführungszeichen brechen vor jedem Lauf ab (Exit 3). Auslöser sind Auswahl- und Eingabemuster;
+  Eingabemuster hashen alle aktuellen passenden Dateien, so dass eine eingecheckte Änderung an Tests, Fixtures oder
+  Konfiguration einen alten Grün-Vermerk entwertet. Je grünem Lauf ein Datensatz in `.git/skill-checks.json` (Schema 2:
+  Definition, Eingaben, Umgebung, Zeiten, Exit-Code, Log als Ergebnisartefakt, `input_stable`); Merker im alten Format
+  zählen nicht. Tests ergänzt (27 grün). SKILL.md, Abschnitt „Prüfläufe vor dem Commit“, nennt Auswahl und Eingaben.
+- **skills/audit, Change:** `references/grundsatz/home-assistant.md`, „Ausführungsnachweise“: wann audit den Datensatz
+  als „Ausführung“ für den aktuellen Stand anerkennt. Dazu (skillsystem, ohne eigene Nummer): `docs/skill-profile-v1.md`,
+  Abschnitt „Checks“, mit Auswahl, Eingaben und Fehlerregeln.
+
 ## [v0.56.1] — 2026-10-13
 
 - **skills/code-erstellen, Fix (Befund ha-netzwerk FE-0001):** `references/stacks/typescript-lit.md`, „Typische

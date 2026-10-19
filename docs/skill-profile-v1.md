@@ -44,7 +44,7 @@ Review-Serie [CGR-2026-09-24-skillsystem](./chatgpt-reviews/CGR-2026-09-24-skill
 - Branch-Policy: current | fixed:<branch>
 
 ### Checks
-- <check-name>: <befehl; befehl> [(allein)] [<pfad-glob>; <pfad-glob>]
+- <check-name>: <befehl; befehl> [(allein)] [auswahl: <pfad-glob>; <pfad-glob>] [eingaben: <pfad-glob>; <pfad-glob>]
 
 ### Commit
 - Format: <format>
@@ -132,11 +132,21 @@ Ein Check ist ein benannter Befehl mit Geltungsbereich:
 ```markdown
 - card: npm test; npm run lint [card/**]
 - backend: python -m pytest [ha/prognose/**]
+- tests: python -m pytest (allein) [auswahl: custom_components/**; tests/**] [eingaben: custom_components/**; tests/**; pyproject.toml; requirements*.txt]
 ```
 
 - Ein Check gilt, wenn mindestens eine geänderte Datei zu einem seiner Pfad-Muster passt.
+- **Auswahl** (`[auswahl: …]`, oder eine Klammer ohne Schlüssel wie in den ersten beiden Zeilen) entscheidet, ob der
+  Check gilt. **Eingaben** (`[eingaben: …]`) sind alle Dateien, die das Ergebnis bestimmen: Code, Tests, Fixtures,
+  Konfiguration, Abhängigkeitsdefinitionen. Eine Änderung an einer Eingabe löst den Check ebenfalls aus.
+- Ein grüner Lauf gilt für den aktuellen Stand nur, wenn Eingaben angegeben sind: Das Prüfskript von git-commit-helper
+  hasht dann alle passenden aktuellen Dateien, nicht nur die geänderten, und legt je grünem Lauf einen Datensatz im
+  Git-Ordner ab (`skill-checks.json`). Ohne Eingaben gilt ein früherer grüner Lauf nur als vermerkt. Erzeugte Dateien
+  (Caches, Berichte) gehören in `.gitignore`, sonst ändert der Lauf seine eigenen Eingaben.
+- Angaben stehen am Zeilenende; unbekannte Schlüssel, doppelte oder leere Angaben und offene Klammern oder
+  Anführungszeichen sind Fehler, und es läuft kein Check.
 - Mehrere Befehle eines Checks laufen nacheinander in einer Shell (`cd` gilt für die folgenden), Abbruch beim ersten
-  Fehler. Checks laufen gleichzeitig; `(allein)` vor den Pfad-Mustern lässt einen Check für sich laufen, wenn er
+  Fehler. Checks laufen gleichzeitig; `(allein)` vor den Angaben lässt einen Check für sich laufen, wenn er
   alle Kerne, einen Port oder eine Test-Datenbank braucht.
 - `Pre-Commit-Checks` nennt die Checks, die vor einem Commit laufen; es laufen nur die, die gelten.
 - Checks mit echten Modellaufrufen wie `claude plugin eval` sind keine Pre-Commit-Checks, weil jeder Lauf das Kontingent

@@ -29,6 +29,8 @@ PROFIL = f"""# Demo
 - schwer: {PY} -c "print('allein')" (allein) [src/**]
 - kette: cd src && {PY} -c "import os; print(os.path.basename(os.getcwd()))"; {PY} -c "print('zwei')" [src/**]
 - fehlt: befehl-den-es-nicht-gibt-xyz [src/**]
+- stand: {PY} -c "print('stand')" (allein) [auswahl: src/**] [eingaben: src/**; tests/**; pyproject.toml]
+- nur-eingaben: {PY} -c "print('[x]')" [eingaben: tests/**]
 
 ### Commit
 - Pre-Commit-Checks: logik; doku; immer
@@ -54,6 +56,30 @@ class ProfilTest(unittest.TestCase):
         self.assertNotIn("fremd", p["checks"])
         self.assertEqual(len(p["checks"]["kette"]["befehle"]), 2)
         self.assertEqual(len(p["checks"]["doku"]["befehle"]), 1)  # Semikolon in Anführungszeichen
+        self.assertEqual(p["checks"]["logik"]["eingaben"], [])  # alte Zeile: Klammer ohne Schlüssel = Auswahl
+
+    def test_auswahl_und_eingaben(self):
+        p = c.profil_lesen(PROFIL)["checks"]
+        self.assertEqual(p["stand"]["muster"], ["src/**"])
+        self.assertEqual(p["stand"]["eingaben"], ["src/**", "tests/**", "pyproject.toml"])
+        self.assertTrue(p["stand"]["allein"])
+        self.assertEqual(p["nur-eingaben"]["muster"], [])
+        self.assertEqual(p["nur-eingaben"]["befehle"], [f"{PY} -c \"print('[x]')\""])  # Klammer im Befehl bleibt
+
+    def test_fehlerhafte_angaben_abgelehnt(self):
+        for zeile in ["- x: echo a [quelle: src/**]",          # unbekannter Schlüssel
+                      "- x: echo a [auswahl: src/**] [auswahl: b/**]",  # doppelt
+                      "- x: echo a [src/**] [auswahl: b/**]",  # alte Klammer und auswahl zugleich
+                      "- x: echo a []",                         # leer
+                      "- x: echo a [eingaben: ]",               # leer mit Schlüssel
+                      "- x: echo a src/**]",                    # ohne öffnende Klammer
+                      "- x: echo 'a [src/**]",                  # Anführungszeichen offen
+                      "- x: [src/**]",                          # kein Befehl
+                      "- x: echo a [auswahl: s/**] b",          # Angabe nicht am Ende
+                      "- x: echo ok && [ -f x ]",               # Shell-Klammer statt Muster
+                      "- x: echo a [src/** tests/**]"]:         # Leerzeichen im Muster
+            with self.subTest(zeile=zeile), self.assertRaises(c.ProfilFehler):
+                c.profil_lesen(f"## Skill-Profil\n\n### Checks\n{zeile}\n")
 
     def test_ohne_profil(self):
         with self.assertRaises(c.ProfilFehler):
@@ -142,8 +168,107 @@ class LaufTest(unittest.TestCase):
     def test_merker_liegt_in_git(self):
         self.lauf(["logik"])
         merker = Path(self.wurzel) / ".git" / c.MERKER
-        self.assertIn("logik", json.loads(merker.read_text(encoding="utf-8")))
+        daten = json.loads(merker.read_text(encoding="utf-8"))
+        self.assertEqual(daten["schema"], c.SCHEMA)
+        self.assertIn("logik", daten["checks"])
         self.assertNotIn(c.MERKER, " ".join(c.geaendert(self.wurzel)))
+        self.assertNotIn(c.ARTEFAKTE, " ".join(c.geaendert(self.wurzel)))
+
+    def test_alter_merker_zaehlt_nicht(self):
+        abdruck = c.fingerabdruck(self.wurzel, self.profil["checks"]["logik"], ["src/a.py"])
+        (Path(self.wurzel) / ".git" / c.MERKER).write_text(json.dumps({"logik": abdruck}), encoding="utf-8")
+        self.assertEqual(self.lauf(["logik"])["logik"]["ergebnis"], "grün")
+
+    def eingaben_repo(self):
+        """Stand nach einem Commit: tests/ und pyproject.toml unverändert, nur src/a.py geändert."""
+        (Path(self.wurzel) / "tests").mkdir()
+        (Path(self.wurzel) / "tests" / "test_a.py").write_text("assert True\n", encoding="utf-8")
+        (Path(self.wurzel) / "pyproject.toml").write_text("[tool]\n", encoding="utf-8")
+        git(self.wurzel, "add", "-A")
+        git(self.wurzel, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "start")
+        (Path(self.wurzel) / "src" / "a.py").write_text("x = 3\n", encoding="utf-8")
+
+    def test_unveraenderte_eingabe_entwertet_gruen(self):
+        self.eingaben_repo()
+        self.assertEqual(self.lauf(["stand"])["stand"]["ergebnis"], "grün")
+        self.assertEqual(self.lauf(["stand"])["stand"]["ergebnis"], "schon grün")
+        # Test geändert und eingecheckt: nicht mehr in git status, aber Eingabe – der alte Grün-Vermerk gilt nicht
+        (Path(self.wurzel) / "tests" / "test_a.py").write_text("assert 1\n", encoding="utf-8")
+        git(self.wurzel, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "test", "tests/test_a.py")
+        self.assertEqual(self.lauf(["stand"])["stand"]["ergebnis"], "grün")
+
+    def test_hinzufuegen_und_loeschen_aendert_abdruck(self):
+        self.eingaben_repo()
+        check = self.profil["checks"]["stand"]
+        vorher = c.eingaben_stand(self.wurzel, check)["digest"]
+        neu = Path(self.wurzel) / "tests" / "conftest.py"
+        neu.write_text("\n", encoding="utf-8")
+        mit = c.eingaben_stand(self.wurzel, check)["digest"]
+        neu.unlink()
+        (Path(self.wurzel) / "pyproject.toml").unlink()
+        ohne = c.eingaben_stand(self.wurzel, check)["digest"]
+        self.assertEqual(len({vorher, mit, ohne}), 3)
+
+    def test_nur_eingaben_loest_aus(self):
+        self.eingaben_repo()
+        self.assertEqual(self.lauf(["nur-eingaben"])["nur-eingaben"]["ergebnis"], "übersprungen")
+        (Path(self.wurzel) / "tests" / "test_a.py").write_text("assert 2\n", encoding="utf-8")
+        self.assertEqual(self.lauf(["nur-eingaben"])["nur-eingaben"]["ergebnis"], "grün")
+
+    def test_datensatz(self):
+        self.eingaben_repo()
+        self.lauf(["stand", "logik"])
+        daten = json.loads((Path(self.wurzel) / ".git" / c.MERKER).read_text(encoding="utf-8"))["checks"]
+        d = daten["stand"]
+        for feld in ("schema", "check", "definition_digest", "inputs", "environment", "started_at", "finished_at",
+                     "exit_code", "result_artifact", "input_stable"):
+            self.assertIn(feld, d)
+        self.assertEqual(d["inputs"]["patterns"], ["src/**", "tests/**", "pyproject.toml"])
+        self.assertEqual([f["path"] for f in d["inputs"]["files"]], ["pyproject.toml", "src/a.py", "tests/test_a.py"])
+        self.assertTrue(d["input_stable"])
+        self.assertEqual(d["exit_code"], 0)
+        self.assertEqual(d["definition_digest"], c.definition_digest(self.profil["checks"]["stand"]))
+        artefakt = Path(self.wurzel) / d["result_artifact"]["path"]
+        self.assertEqual(c.datei_hash(artefakt), d["result_artifact"]["sha256"])
+        self.assertIn("stand", artefakt.read_text(encoding="utf-8"))
+        self.assertEqual(daten["logik"]["inputs"]["patterns"], [])  # ohne Eingabemuster kein Gesamtstand
+        self.assertIsNone(daten["logik"]["inputs"]["digest"])
+
+    def test_allein_ohne_leerzeichen_gehoert_zum_befehl(self):
+        p = c.profil_lesen("## Skill-Profil\n\n### Checks\n- x: echo foo(allein) [src/**]\n")["checks"]["x"]
+        self.assertFalse(p["allein"])
+
+    def test_instabiler_lauf_traegt_kein_schon_gruen(self):
+        self.eingaben_repo()
+        self.lauf(["stand"])
+        datei = Path(self.wurzel) / ".git" / c.MERKER
+        daten = json.loads(datei.read_text(encoding="utf-8"))
+        daten["checks"]["stand"]["input_stable"] = False
+        datei.write_text(json.dumps(daten), encoding="utf-8")
+        self.assertEqual(self.lauf(["stand"])["stand"]["ergebnis"], "grün")
+
+    def test_fehlendes_artefakt_traegt_kein_schon_gruen(self):
+        self.eingaben_repo()
+        self.lauf(["stand"])
+        (Path(self.wurzel) / ".git" / c.ARTEFAKTE / "stand.log").write_text("anders", encoding="utf-8")
+        self.assertEqual(self.lauf(["stand"])["stand"]["ergebnis"], "grün")
+
+    def test_branchwechsel_entwertet_ohne_eingaben(self):
+        self.eingaben_repo()
+        self.lauf(["logik"])
+        self.assertEqual(self.lauf(["logik"])["logik"]["ergebnis"], "schon grün")
+        (Path(self.wurzel) / "README.md").write_text("neu\n", encoding="utf-8")
+        git(self.wurzel, "add", "README.md")
+        git(self.wurzel, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qm", "anderer Stand")
+        self.assertEqual(self.lauf(["logik"])["logik"]["ergebnis"], "grün")
+
+    def test_datei_weg_beim_hashen(self):
+        self.assertIsNone(c.datei_hash(Path(self.wurzel) / "gibtsnicht"))
+
+    def test_rot_loescht_datensatz(self):
+        self.lauf(["rot"])
+        daten = json.loads((Path(self.wurzel) / ".git" / c.MERKER).read_text(encoding="utf-8"))
+        self.assertNotIn("rot", daten["checks"])
 
     def test_tabelle(self):
         r = c.laufen(self.wurzel, self.profil, ["logik", "doku"], c.geaendert(self.wurzel))

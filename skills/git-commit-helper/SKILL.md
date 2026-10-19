@@ -214,6 +214,11 @@ die Ausgabe aus der Log-Datei lesen. Läuft das Skript nicht (kein Python), gelt
   einem seiner Pfad-Muster passt (gestaged, ungestaged und neu, laut `git status --short`). Ein Check ohne
   Pfad-Muster läuft immer. Jeden übersprungenen Check ausdrücklich melden: `übersprungen: <check> – keine passende
   Datei`.
+- **Auswahl und Eingaben:** Pfad-Muster sind die Auswahl (`[auswahl: …]` oder eine Klammer ohne Schlüssel);
+  `[eingaben: …]` nennt alle Dateien, die das Ergebnis bestimmen, und löst den Check ebenfalls aus. Mit Eingaben
+  gilt „schon grün“ nur, solange keine dieser Dateien sich geändert hat, auch eine eingecheckte nicht; je grünem Lauf
+  legt das Skript einen Datensatz im Git-Ordner ab, den audit als Ausführungsnachweis liest
+  (`docs/skill-profile-v1.md`, Abschnitt „Checks“). Fehlerhafte Angaben im Profil: kein Check läuft, Exit 3.
 - **Gleichzeitig oder nacheinander:** Unabhängige Checks gleichzeitig starten, wenn sie sich nicht um Kerne, Dateien,
   Ports oder Datenbanken streiten. Zwei Läufe, die beide alle Kerne nutzen oder dieselbe Test-Datenbank schreiben,
   laufen nacheinander, die schnellen zuerst, damit ein rotes Ergebnis früh kommt.

@@ -100,9 +100,16 @@ Ein Treffer ist ein Kandidat, kein Befund. Erst der Kontext entscheidet; ein ung
 
 - Zuordnung Check/Testfall → Teilnachweis (z. B. `G-15.lifecycle`) steht in der Config aus `Modul.Nachweise`; sie
   behauptet keinen Erfolg. audit liest Testinhalt und Assertions selbst.
-- „Ausführung“ gilt nur, wenn ein Laufergebnis eindeutig zum geprüften Stand aller Eingaben des Tests gehört. Der
-  Grün-Vermerk des Prüfskripts von git-commit-helper erfüllt das erst, wenn er Eingabemuster und Ergebnisartefakt führt;
-  bis dahin meldet audit „früherer grüner Lauf vermerkt – Ausführung für den aktuellen Stand offen“.
+- „Ausführung“ gilt nur, wenn ein Laufergebnis eindeutig zum geprüften Stand aller Eingaben des Tests gehört. Quelle
+  ist der Datensatz des Prüfskripts von git-commit-helper im Git-Ordner (`git rev-parse --git-path skill-checks.json`,
+  Schema 2, Eintrag je Check). audit erkennt ihn als „Ausführung“ nur an, wenn alles zutrifft:
+  - der Check hat im Profil Eingabemuster (`[eingaben: …]`), und `inputs.patterns` stimmt mit ihnen überein
+  - `definition_digest` passt zur heutigen Profilzeile (Befehle, Auswahl, Eingaben, `(allein)`)
+  - die heute passenden Dateien und ihre Hashes entsprechen `inputs.files`, nachgerechnet, nicht nur verglichen
+  - `exit_code` ist 0, `input_stable` ist wahr, und `result_artifact` existiert mit dem genannten Hash; aus ihm geht
+    hervor, dass die zugeordneten Testfälle liefen und nicht übersprungen wurden
+- Fehlt eines davon, meldet audit „früherer grüner Lauf vermerkt – Ausführung für den aktuellen Stand offen“; ohne
+  Datensatz „Ausführung offen“. Checks ohne Eingabemuster liefern nie mehr als „früherer Lauf vermerkt“.
 - audit führt keine Tests aus und startet HA nicht neu. Manuelle Kurztests (z. B. nach einem Neustart) zählen nur, wenn
   sie als manueller Nachweis mit Datum festgehalten sind.
 
