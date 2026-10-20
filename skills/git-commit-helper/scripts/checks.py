@@ -7,6 +7,7 @@ Regeln: skills/git-commit-helper/SKILL.md, Abschnitt „Prüfläufe vor dem Comm
 
     python3 checks.py --vor-commit            # Pre-Commit-Checks, die für die Änderung gelten
     python3 checks.py --checks logik,lint     # bestimmte Checks (auch nur, wenn sie gelten)
+    python3 checks.py --checks logik --immer  # genannte Checks auf jeden Fall, auch ohne Änderung (Nachweis für den Stand)
     python3 checks.py --vor-commit --json     # Ergebnis als JSON
 
 - Befehle eines Checks laufen nacheinander in einer Shell (`cd` gilt für die folgenden), Abbruch beim ersten Fehler.
@@ -370,8 +371,11 @@ def ausfuehren(name, check, wurzel, ordner):
             "ausgabe": letzte}
 
 
-def laufen(wurzel, profil, namen, dateien, immer=False, ordner=None):
-    """Wählt, überspringt und führt aus. Ergebnisliste in der Reihenfolge der Namen."""
+def laufen(wurzel, profil, namen, dateien, immer=False, ordner=None, ohne_auswahl=False):
+    """Wählt, überspringt und führt aus. Ergebnisliste in der Reihenfolge der Namen.
+
+    `ohne_auswahl`: genannte Checks laufen auch ohne passende geänderte Datei (Nachweis für einen sauberen Stand).
+    """
     ordner = ordner or tempfile.mkdtemp(prefix="checks-")
     merker_datei = merker_pfad(wurzel)
     merker = merker_lesen(merker_datei)
@@ -383,7 +387,7 @@ def laufen(wurzel, profil, namen, dateien, immer=False, ordner=None):
             continue
         ausloeser = check["muster"] + check.get("eingaben", [])
         treffer = passende(dateien, ausloeser)
-        if ausloeser and not treffer:
+        if ausloeser and not treffer and not ohne_auswahl:
             ergebnisse[name] = {"name": name, "ergebnis": "übersprungen", "grund": "keine passende Datei"}
             continue
         eingaben = eingaben_stand(wurzel, check)
@@ -460,7 +464,7 @@ def main(argv=None):
     wahl.add_argument("--vor-commit", action="store_true", help="die Pre-Commit-Checks des Profils")
     wahl.add_argument("--checks", help="Namen, durch Komma getrennt")
     parser.add_argument("--profil", help="CLAUDE.md (Standard: in der Repo-Wurzel)")
-    parser.add_argument("--immer", action="store_true", help="auch Checks, die mit diesem Stand schon grün waren")
+    parser.add_argument("--immer", action="store_true", help="auch Checks, die mit diesem Stand schon grün waren; mit --checks auch ohne passende geänderte Datei")
     parser.add_argument("--json", action="store_true", help="Ergebnis als JSON")
     args = parser.parse_args(argv)
     try:
@@ -475,7 +479,8 @@ def main(argv=None):
     except (OSError, ProfilFehler) as exc:
         print(json.dumps({"fehler": str(exc)}, ensure_ascii=False) if args.json else f"Fehler: {exc}")
         return 3
-    ergebnisse = laufen(wurzel, profil, namen, dateien, immer=args.immer)
+    ergebnisse = laufen(wurzel, profil, namen, dateien, immer=args.immer,
+                        ohne_auswahl=bool(args.checks) and args.immer)
     code = exit_code(ergebnisse)
     if args.json:
         print(json.dumps({"ok": code == 0, "exit": code, "checks": ergebnisse}, ensure_ascii=False, indent=2))

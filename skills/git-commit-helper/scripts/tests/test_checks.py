@@ -7,6 +7,8 @@ import sys
 import tempfile
 import time
 import unittest
+from contextlib import redirect_stdout
+from io import StringIO
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -269,6 +271,29 @@ class LaufTest(unittest.TestCase):
         self.lauf(["rot"])
         daten = json.loads((Path(self.wurzel) / ".git" / c.MERKER).read_text(encoding="utf-8"))
         self.assertNotIn("rot", daten["checks"])
+
+    def test_genannt_und_immer_laeuft_ohne_aenderung(self):
+        self.eingaben_repo()
+        git(self.wurzel, "-c", "user.name=t", "-c", "user.email=t@t", "commit", "-qam", "sauber")
+        profil = Path(self.tmp.name).parent / f"{Path(self.tmp.name).name}-profil.md"
+        profil.write_text(PROFIL, encoding="utf-8")
+        self.addCleanup(profil.unlink)
+        alt = os.getcwd()
+        os.chdir(self.wurzel)
+        self.addCleanup(os.chdir, alt)
+
+        def haupt(*args):
+            puffer = StringIO()
+            with redirect_stdout(puffer):
+                c.main([*args, "--profil", str(profil), "--json"])
+            return {e["name"]: e for e in json.loads(puffer.getvalue())["checks"]}
+
+        self.assertEqual(haupt("--checks", "stand")["stand"]["ergebnis"], "übersprungen")
+        self.assertEqual(haupt("--vor-commit", "--immer")["logik"]["ergebnis"], "übersprungen")
+        self.assertEqual(haupt("--checks", "stand", "--immer")["stand"]["ergebnis"], "grün")
+        d = json.loads((Path(self.wurzel) / ".git" / c.MERKER).read_text(encoding="utf-8"))["checks"]["stand"]
+        self.assertEqual([f["path"] for f in d["inputs"]["files"]], ["pyproject.toml", "src/a.py", "tests/test_a.py"])
+        self.assertTrue(d["input_stable"])
 
     def test_tabelle(self):
         r = c.laufen(self.wurzel, self.profil, ["logik", "doku"], c.geaendert(self.wurzel))

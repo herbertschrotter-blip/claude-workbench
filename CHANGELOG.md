@@ -8,6 +8,14 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.57.1] — 2026-10-20
+
+- **skills/git-commit-helper, Fix (Probelauf HA-Grundsatz Phase 2, ha-netzwerk):** `scripts/checks.py` ließ bei
+  sauberem Arbeitsbaum auch mit `--checks … --immer` keinen Check laufen, so dass für einen committeten Stand kein
+  Lauf-Datensatz entstand. Jetzt laufen ausdrücklich genannte Checks mit `--immer` auch ohne passende geänderte Datei;
+  `--checks` ohne `--immer` und `--vor-commit` wählen weiter nach Pfad-Mustern. Test ergänzt (28 grün). SKILL.md,
+  „Prüfläufe vor dem Commit“, nennt den Aufruf für einen Nachweis.
+
 ## [v0.57.0] — 2026-10-19
 
 - **skills/git-commit-helper, Feature (CGR-2026-10-12-ha-grundsatz r2/r3, ClickUp „checks.py mit Auswahl-/

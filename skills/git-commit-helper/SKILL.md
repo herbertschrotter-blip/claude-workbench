@@ -219,6 +219,7 @@ die Ausgabe aus der Log-Datei lesen. Läuft das Skript nicht (kein Python), gelt
   gilt „schon grün“ nur, solange keine dieser Dateien sich geändert hat, auch eine eingecheckte nicht; je grünem Lauf
   legt das Skript einen Datensatz im Git-Ordner ab, den audit als Ausführungsnachweis liest
   (`docs/skill-profile-v1.md`, Abschnitt „Checks“). Fehlerhafte Angaben im Profil: kein Check läuft, Exit 3.
+  Einen Nachweis für einen Stand ohne offene Änderung erzeugt `--checks <name> --immer`.
 - **Gleichzeitig oder nacheinander:** Unabhängige Checks gleichzeitig starten, wenn sie sich nicht um Kerne, Dateien,
   Ports oder Datenbanken streiten. Zwei Läufe, die beide alle Kerne nutzen oder dieselbe Test-Datenbank schreiben,
   laufen nacheinander, die schnellen zuerst, damit ein rotes Ergebnis früh kommt.
