@@ -359,6 +359,7 @@ Entscheidung offen) – eintragen tut doc-pflege, nicht audit.
 - Content: Cowork `start_search`, Claude Code `Grep` (Muster: Entitäts-IDs, `shouldUpdate`, `callService`, `access_token`, `latitude`)
 - ClickUp (Modul 5): read-only über tracker (`clickup_filter_tasks` mit `include_closed: true`)
 - Teilaudit: max 10 Tool-Calls (Claude Code: Grep-Läufe zählen je einer)
+- Teilaudit „nur Grundsatz“ (Modul 7): max 30 Tool-Calls je Modul-Manifest; Suchen mehrerer Regeln in einem Lauf bündeln
 - Vollaudit: max 35 Tool-Calls; bei Heidi vorher `npm test`-Ergebnis vom User erfragen statt selbst zu bauen (read-only)
 
 ---

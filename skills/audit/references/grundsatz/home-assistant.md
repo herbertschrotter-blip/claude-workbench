@@ -107,7 +107,8 @@ Ein Treffer ist ein Kandidat, kein Befund. Erst der Kontext entscheidet; ein ung
   - `definition_digest` passt zur heutigen Profilzeile (Befehle, Auswahl, Eingaben, `(allein)`)
   - die heute passenden Dateien und ihre Hashes entsprechen `inputs.files`, nachgerechnet, nicht nur verglichen
   - `exit_code` ist 0, `input_stable` ist wahr, und `result_artifact` existiert mit dem genannten Hash; aus ihm geht
-    hervor, dass die zugeordneten Testfälle liefen und nicht übersprungen wurden
+    hervor, dass die zugeordneten Testfälle liefen und nicht übersprungen wurden (pytest etwa mit `-rA`; `-q` allein
+    nennt keine Testfälle)
 - Fehlt eines davon, meldet audit „früherer grüner Lauf vermerkt – Ausführung für den aktuellen Stand offen“; ohne
   Datensatz „Ausführung offen“. Checks ohne Eingabemuster liefern nie mehr als „früherer Lauf vermerkt“.
 - audit führt keine Tests aus und startet HA nicht neu. Manuelle Kurztests (z. B. nach einem Neustart) zählen nur, wenn

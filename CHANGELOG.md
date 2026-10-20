@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.57.2] — 2026-10-20
+
+- **skills/audit, Fix (Probelauf HA-Grundsatz Phase 2, ha-netzwerk):** Tool-Strategie – eigenes Budget für den
+  Teilaudit „nur Grundsatz“ (Modul 7): max 30 Tool-Calls je Modul-Manifest, Suchen mehrerer Regeln gebündelt; der
+  Probelauf (Stufe 4) brauchte rund 24 Aufrufe. `references/grundsatz/home-assistant.md`, Ausführungsnachweise:
+  Hinweis, dass das Log die Testfälle nennen muss (pytest etwa mit `-rA`; `-q` allein nennt keine).
+
 ## [v0.57.1] — 2026-10-20
 
 - **skills/git-commit-helper, Fix (Probelauf HA-Grundsatz Phase 2, ha-netzwerk):** `scripts/checks.py` ließ bei
