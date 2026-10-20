@@ -12,4 +12,3 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| git-commit-helper | v0.57.1 | f1b63d4 | SKILL.md (scripts/ wird nicht hochgeladen) | 2026-10-20 |
