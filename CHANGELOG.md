@@ -19,6 +19,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
   die Ausnahme `*/.claude/*` zu fallen; Subagenten (`agent_id`) zählen nur selbst geladene Skills (Feld
   `erbt_hauptsitzung`, Standard aus); neue Grenze `prompt` mit Warnregel `code-prompt` (`ergaenzt: code`); Skill-Log
   schreibt `agent`. 22 neue Tests, `docs/skill-guard-v1.md`, `docs/skill-log-v1.md`.
+- **plugins/work-hooks und tools/skill-log (Skill-Auswertung 21.10.2026, keine neue Nummer – Tools):** im Skript zählen
+  nur Ziele von Schreibaufrufen statt jedes Dateinamens (Fehlalarme bei Zip und Literalen im Inhalt); neue Warnregel
+  `merge` (`gh pr merge`, `git merge`); Hooks lesen stdin als UTF-8 (Umlaute vom Windows-PC); Projekt-ID im Worktree
+  aus dem Repo; die Auswertung repariert doppelt kodierte Umlaute alter Einträge. `stand` aller Regeln nachgerechnet,
+  10 Eval-Fälle aus echten Prompts (Tag `real`; erste Messung 8 grün, Ziel-Fälle `mockup-erstellen-real-abnahme` 2/3 und `sitzung-real-neustart-kein-skill` Score 0.50), 4 fehlende Fälle in der Tabelle von
+  `quality/README.md` nachgetragen.
 
 ## [v0.57.1] — 2026-10-20
 

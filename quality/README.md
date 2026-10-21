@@ -77,7 +77,7 @@ Grenze sie prüfen.
 
 ## Fälle
 
-Stand 08.10.2026, 87 Fälle.
+Stand 21.10.2026, 111 Fälle.
 
 | Fall | Skill | Testsatz | soll auslösen | darf nicht auslösen | Art |
 |---|---|---|---|---|---|
@@ -92,6 +92,8 @@ Stand 08.10.2026, 87 Fälle.
 | `code-refactor` | code-erstellen | Refaktoriere den PlanParser: Die drei fast gleichen Parse-Methoden sollen eine gemeinsame Hilfsmethode nutzen. | code-erstellen | – | normal |
 | `code-ha-automation` | code-erstellen | Schreib mir eine Home-Assistant-Automation in YAML: Wenn alle das Haus verlassen haben, soll der Saugroboter starten. | code-erstellen | – | normal |
 | `code-generic-change` | code-erstellen | Ändere die Zeitüberschreitung beim Upload von 30 auf 60 Sekunden. | code-erstellen | doc-pflege | normal |
+| `code-erstellen-real-recherche-frage` | code-erstellen | Welche anderen Dienste gibt es noch, die man in meiner Integration statt des aktuellen Speedtest-Anbieters nutzen könnte? | keiner | code-erstellen, projekt-anlegen | normal, echt |
+| `code-erstellen-real-mcp-frage` | code-erstellen | Wozu brauche ich eigentlich den MCP-Server? | keiner | code-erstellen, projekt-anlegen | normal, echt |
 | `doc-write` | doc-pflege | Pflege die Projektdoku: Der Architekturabschnitt ist seit der letzten Änderung veraltet – bring ihn auf den neuen Stand. | doc-pflege | audit | kritisch, Pilot |
 | `doc-adr` | doc-pflege | Schreib ein ADR zur Entscheidung, dass SQLite die einzige Quelle für Projektdaten ist. | doc-pflege | code-erstellen | normal |
 | `doc-concept` | doc-pflege | Leg ein neues Konzept-Dokument für den Foto-Import an: Zweck, Ablauf und offene Fragen. | doc-pflege | code-erstellen | normal |
@@ -107,6 +109,7 @@ Stand 08.10.2026, 87 Fälle.
 | `audit-generic-check` | audit | Prüf mal alles durch, ob im Projekt noch alles zusammenpasst. | audit | doc-pflege, code-erstellen | kritisch |
 | `audit-no-trigger-code-review` | audit | Schau dir diese Funktion an und sag mir, ob sie einen Fehler hat: (dazu eine kurze Python-Funktion) | – | audit | normal |
 | `audit-findings-fix` | audit | Das Audit hat ergeben, dass die Kapitel 3 und 5 der Architektur-Doku noch den alten Import-Ablauf beschreiben. Bring die beiden Kapitel auf den neuen Stand. | doc-pflege | audit | kritisch |
+| `audit-grundsatz` | audit | Prüf mal, ob meine neue Home-Assistant-Integration die Grundsatzregeln einhält. Nur prüfen, nichts ändern. | audit | code-erstellen, doc-pflege | normal |
 | `mockup-new-dialog` | mockup-erstellen | Mach mir ein Mockup für den neuen Einstellungen-Dialog, am besten zwei Varianten. | mockup-erstellen | code-erstellen | normal |
 | `mockup-sketch-dashboard` | mockup-erstellen | Wie könnte das Dashboard für den Saugroboter aussehen? Skizzier es mir als HTML-Entwurf, bevor wir etwas bauen. | mockup-erstellen | code-erstellen | normal |
 | `mockup-then-implement` | mockup-erstellen | Entwirf zuerst ein Mockup für die Projektliste, danach bauen wir sie ein. | mockup-erstellen | – | normal |
@@ -115,6 +118,8 @@ Stand 08.10.2026, 87 Fälle.
 | `mockup-erstellen-real-zustand-varianten` | mockup-erstellen | Mach mir 3 Versionen vom Container-Symbol für Tür offen, Fenster gekippt, Fenster offen und Licht an, damit ich aussuchen kann. | mockup-erstellen | code-erstellen | normal, echt |
 | `mockup-no-trigger-component` | mockup-erstellen | Bau die Lit-Komponente für die Raumkarte. Das Design ist schon abgenommen. | code-erstellen | mockup-erstellen | normal |
 | `mockup-no-trigger-db-schema` | mockup-erstellen | Entwirf das Datenbankschema für die Zeiterfassung: Tabellen, Schlüssel und Beziehungen. | – | mockup-erstellen | normal |
+| `mockup-erstellen-real-generator-quelle` | mockup-erstellen | Pass im Mockup-Generator mockups/quelle/uebersicht.js die Kartenbreite an und bau das Mockup neu. | mockup-erstellen | code-erstellen | normal, echt |
+| `mockup-erstellen-real-abnahme` | mockup-erstellen | Variante 2 ist abgenommen – trag die Abnahme im README des Mockup-Ordners ein. | mockup-erstellen | doc-pflege | normal, echt, Ziel |
 | `skill-update` | skill-pflege | Ergänze im bestehenden chat-wechsel-Skill eine Regel, dass tote Dateiverweise vor der Übergabe gemeldet werden. | skill-pflege | skill-neu | kritisch, Pilot |
 | `skill-pflege-description` | skill-pflege | Schärf die Description des tracker-Skills, damit „Aufgabe anlegen“ zuverlässig auslöst. | skill-pflege | skill-neu, tracker | kritisch |
 | `skill-pflege-typo` | skill-pflege | In der SKILL.md von git-commit-helper sind zwei Tippfehler. Korrigier die bitte. | skill-pflege | git-commit-helper | normal |
@@ -130,10 +135,14 @@ Stand 08.10.2026, 87 Fälle.
 | `chat-wechsel-new-chat` | chat-wechsel | neuer chat bitte, wir machen morgen weiter | chat-wechsel | – | normal |
 | `chat-wechsel-no-trigger-goodbye` | chat-wechsel | Danke dir, gute Nacht! | – | chat-wechsel | normal |
 | `chat-wechsel-no-trigger-other-prompt` | chat-wechsel | Schreib mir einen Prompt, mit dem ich in einem Bildgenerator ein Logo für mein Projekt erzeugen kann. | – | chat-wechsel, chatgpt-review | normal |
+| `chat-wechsel-real-uebergabe-ohne-auftrag` | chat-wechsel | Eingefügter Übergabe-Prompt „Weiterführung aus Teil 6“ mit Stand, offenen Punkten und Regeln | keiner | chat-wechsel | normal, echt |
 | `chatgpt-review-prompt` | chatgpt-review | Dazu will ich eine zweite Meinung von ChatGPT. Mach mir den Review-Prompt. | chatgpt-review | chat-wechsel | normal |
 | `chatgpt-review-next-round` | chatgpt-review | Hier ist die Antwort von ChatGPT auf Runde 2: Er hält den Ansatz für zu kompliziert und schlägt eine Konfigurationsdatei vor. Mach den Folgeprompt für Runde 3. | chatgpt-review | chat-wechsel | normal |
 | `chatgpt-review-no-trigger-claude-handover` | chatgpt-review | Fass den Stand für die nächste Claude-Sitzung zusammen, damit ich dort weitermachen kann. | chat-wechsel | chatgpt-review | normal |
 | `chatgpt-review-no-trigger-vague` | chatgpt-review | Was meinst du, passt das so? | – | chatgpt-review, chat-wechsel | normal |
+| `chatgpt-review-real-antwort-eingefuegt` | chatgpt-review | Eingefügte Antwort „### Review Runde 4“ von ChatGPT mit drei Punkten | chatgpt-review | doc-pflege, chat-wechsel | normal, echt |
+| `chatgpt-review-real-antwort-anhang` | chatgpt-review | Anhang: Review_Runde_4.md – das ist die Antwort von ChatGPT auf Runde 4. | chatgpt-review | doc-pflege | normal, echt |
+| `chatgpt-review-codex` | chatgpt-review | Lass Codex das einmal kritisch reviewen und zeig mir dann, was er dazu sagt. | chatgpt-review | chat-wechsel | normal |
 | `tracker-new` | tracker | tracker neu: PM — Umlaute im Dateinamen brechen den Plan-Import | tracker | code-erstellen | kritisch |
 | `tracker-issue` | tracker | Leg ein Skill-Issue für doc-pflege an: Modus 6 erkennt tote Links nicht. | tracker | skill-pflege, doc-pflege | kritisch |
 | `tracker-done` | tracker | tracker done: BPM-082, der Commit ist drin. | tracker | ticket, git-commit-helper | kritisch |
@@ -166,6 +175,10 @@ Stand 08.10.2026, 87 Fälle.
 | `projekt-anlegen-no-session` | projekt-anlegen | öffne mein Projekt ha-baustelle | sitzung | projekt-anlegen | normal |
 | `projekt-anlegen-no-commit` | projekt-anlegen | commit und push das neue Repo | git-commit-helper | projekt-anlegen | normal |
 | `projekt-anlegen-no-feature` | projekt-anlegen | In meiner bestehenden Integration fehlt noch die Berechnung der Baustellenstunden. Bau die ein. | code-erstellen | projekt-anlegen | kritisch |
+| `projekt-anlegen-real-altbestand-ueberarbeiten` | projekt-anlegen | Heizungssteuerung überarbeiten: neue Oberfläche, Funktionen gehen nicht; bisher nur YAML-Pakete und eine Karte im Konfigurationsordner, kein Projekt | projekt-anlegen | code-erstellen | normal, echt |
+| `projekt-anlegen-real-altbestand-neu` | projekt-anlegen | Die alte Bewässerung (Paket unter packages/, Karte unter www/) neu machen, mit eigener Seite in der Seitenleiste | projekt-anlegen | code-erstellen | normal, echt |
+| `projekt-anlegen-ha-abruf` | projekt-anlegen | Ich brauche eine neue Home-Assistant-Integration für meinen Wechselrichter, die ihn jede Minute über das lokale Netz abfragt. Leg sie mir an. | projekt-anlegen | code-erstellen | normal |
+| `projekt-anlegen-ha-aufsatz` | projekt-anlegen | Mein Mähroboter ist schon über seine Integration in Home Assistant. Ich will eine eigene Integration dazu bauen, die seine Entitäten nutzt und daraus einen Mähplaner macht. Wie fangen wir an? | projekt-anlegen | code-erstellen | normal |
 | `skill-auswertung-log` | skill-auswertung | Werte bitte das Skill-Log der letzten zwei Wochen aus: Welche Skills haben gezündet, wo hätte einer zünden müssen und hat nicht, und wo haben zwei gleichzeitig ausgelöst? | skill-auswertung | skill-pflege | kritisch |
 | `skill-auswertung-waechter` | skill-auswertung | Schau dir an, wie oft der Skill-Wächter in den letzten zwei Wochen geblockt oder gewarnt hat, und schlag vor, welche Regeln wir verschärfen oder lockern sollten. | skill-auswertung | skill-pflege | normal |
 | `skill-auswertung-kurz` | skill-auswertung | skills auswerten | skill-auswertung | – | normal |
@@ -178,3 +191,4 @@ Stand 08.10.2026, 87 Fälle.
 | `sitzung-real-wo-sitzungen` | sitzung | Wo sind meine ganzen Sitzungen? | sitzung | – | normal, echt |
 | `sitzung-no-trigger-handover` | sitzung | Wir machen morgen weiter. Mach mir den Übergabe-Prompt für den nächsten Chat und richte dafür gleich ein neues Fenster im Projekt ein. | chat-wechsel | sitzung | kritisch |
 | `sitzung-no-trigger-tmux-config` | sitzung | Stell in meiner tmux.conf ein, dass die Statusleiste oben steht und Strg+a statt Strg+b der Präfix ist. | – | sitzung | normal |
+| `sitzung-real-neustart-kein-skill` | sitzung | Mach bitte einen Neustart. | keiner | sitzung, code-erstellen | normal, echt, Ziel |

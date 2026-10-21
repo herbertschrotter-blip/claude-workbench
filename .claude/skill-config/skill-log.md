@@ -14,9 +14,9 @@ Befunde gehen. Format des Logs: [docs/skill-log-v1.md](../../docs/skill-log-v1.m
 | Rechner (`host`) | Ordner | Anmerkung |
 |---|---|---|
 | ha-pi | `/data/home/.claude/skill-log` | Home Assistant, Terminal-App; Log läuft seit 29.09.2026 |
-| desktop-pc | `~/.claude/skill-log` am Desktop-PC (Windows) | Plugin `work-hooks@workbench` seit 07.10.2026; Desktop-App: `!`-Zeilen sind dort normale Prompts (Art `befehl`); zur Auswertung die Dateien neben das HA-Log kopieren |
+| desktop-pc | `~/.claude/skill-log` am Desktop-PC (Windows) | Plugin `work-hooks@workbench` seit 07.10.2026; Desktop-App: `!`-Zeilen sind dort normale Prompts (Art `befehl`); im Sammel-Repo unter `logs/desktop-pc/` seit 21.10.2026 (`log_repo` nachgetragen); Umlaute bis zum Plugin-Update nach 21.10. doppelt kodiert (die Auswertung repariert sie beim Lesen) |
 | surface7 | `~/.claude/skill-log` am Surface (Windows) | eingerichtet 08.10.2026 mit `tools/install.ps1`, Plugin `work-hooks` (Desktop-App) seit 09.10.2026; im Sammel-Repo unter `logs/surface7/` |
-| firmen-laptop | fehlt | Hooks nach `docs/skill-log-v1.md` einrichten; Ordner hier eintragen oder die Dateien zur Auswertung neben das HA-Log kopieren |
+| Firmenlaptop | `~/.claude/skill-log` am Firmenlaptop (Windows) | im Sammel-Repo unter `logs/Firmenlaptop/` (Rechnername so im Log); bisher nur ein Abgleich am 11.10.2026 |
 
 Sammel-Repo: `herbertschrotter-blip/skill-log` (privat, seit 08.10.2026; Klon `~/.claude/skill-log-sammel/logs/<rechner>/`). Rechner, die `log_repo` gesetzt haben, sind dort mit drin. Wird auf einem Rechner ausgewertet, der die Ordner der anderen nicht sieht, nur die erreichbaren auswerten und die
 fehlenden im Bericht nennen.
@@ -25,10 +25,10 @@ fehlenden im Bericht nennen.
 
 | Rechner | ausgewertet bis (UTC) |
 |---|---|
-| ha-pi | 2026-10-09T10:11:53Z |
-| surface7 | 2026-10-09T10:05:02Z (bis dahin nur Testprompt im Projekt `home`) |
-| desktop-pc | – |
-| firmen-laptop | – |
+| ha-pi | 2026-10-21T15:55:36Z |
+| surface7 | 2026-10-14T19:55:13Z |
+| desktop-pc | – (Log seit 21.10.2026 im Sammel-Repo; nächste Auswertung) |
+| Firmenlaptop | 2026-10-11T22:31:53Z |
 
 `–` heißt: noch nie ausgewertet, „seit letzter Auswertung“ bedeutet dann „alles“.
 
