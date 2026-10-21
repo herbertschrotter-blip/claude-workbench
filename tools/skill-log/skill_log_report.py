@@ -36,11 +36,14 @@ _GUARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".."
 
 
 def load_guard():
-    """Wächter-Modul und Grenzen aus regeln.json; ohne Wächter (None, {}) – dann verfällt nichts."""
+    """Wächter-Modul und Grenzen aus regeln.json; ohne Wächter (None, {}) – dann verfällt nichts. Es zählen nur Grenzen
+    der Grundregeln: eine Grenze, die nur ergänzende Regeln nutzen (prompt für code-prompt), verbraucht im Bericht nichts."""
     sys.path.insert(0, os.path.abspath(_GUARD_DIR))
     try:
         import skill_guard
-        return skill_guard, skill_guard.load_rules().get("grenzen", {})
+        rules = skill_guard.load_rules()
+        used = {b for rule in rules.get("regeln", []) if not rule.get("ergaenzt") for b in rule.get("gilt_bis", [])}
+        return skill_guard, {k: v for k, v in rules.get("grenzen", {}).items() if k in used}
     except Exception:  # noqa: BLE001 – Auswertung läuft auch ohne Wächter
         return None, {}
     finally:
