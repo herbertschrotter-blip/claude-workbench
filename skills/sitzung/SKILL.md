@@ -1,15 +1,16 @@
 ---
 name: sitzung
 description: >
-  Verwaltet Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü, auch am Smartphone: erst Projekt wählen, dann
-  dessen Gespräche; ein Gespräch im richtigen Ordner in eigenem Fenster mit Remote Control fortsetzen oder hinwechseln,
+  Verwaltet Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü: erst Projekt wählen, dann
+  dessen Gespräche; ein Gespräch im richtigen Ordner mit Remote Control fortsetzen oder hinwechseln,
   Vorschau, Suche, Abzweigen; Fenster wechseln, umbenennen, verschieben, holen, schließen, Claude neu
   starten; nach einem Neustart die offenen Fenster wiederherstellen; alte Gespräche archivieren oder löschen. Use when
   users type "sitzung" or "sitzungen", want an old chat or session found, resumed or reopened in its folder, ask where
   their sessions went, want Remote Control back on a chat, want tmux windows listed, switched, renamed, moved or
   closed, want windows restored after a terminal or add-on restart, or want old chats cleaned up. Do not trigger for
   handover prompts or "neuer chat" with handover (chat-wechsel), creating a new project (projekt-anlegen), editing
-  tmux config or key bindings, skill-log analysis (skill-auswertung), or work inside the chat's project itself.
+  tmux config or key bindings, skill-log analysis (skill-auswertung), restarting Home Assistant or a device, or work
+  inside the chat's project itself.
 ---
 
 # sitzung – Gespräche und Fenster per Auswahl

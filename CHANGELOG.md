@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.57.3] — 2026-10-21
+
+- **skills/sitzung, Fix (sitzung-001, Skill-Auswertung 21.10.2026):** Description – „Mach bitte einen Neustart.“ ohne
+  Bezug auf Claude oder Fenster zündete sitzung (Eval `sitzung-real-neustart-kein-skill`); Do-not um „restarting Home
+  Assistant or a device“ ergänzt. Damit die Description bei 1012 Zeichen bleibt, entfallen „auch am Smartphone“ und
+  „in eigenem Fenster“ (beides steht weiter im Text des Skills).
+
 ## [v0.57.2] — 2026-10-20
 
 - **skills/audit, Fix (Probelauf HA-Grundsatz Phase 2, ha-netzwerk):** Tool-Strategie – eigenes Budget für den
