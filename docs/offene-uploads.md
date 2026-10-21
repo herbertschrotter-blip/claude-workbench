@@ -12,3 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
+| sitzung | v0.57.3 | ab4b998 | SKILL.md (scripts/ wird nicht hochgeladen) | 2026-10-21 |
