@@ -84,6 +84,20 @@ PAUSE = 15 * 60  # Lücke ab 15 Minuten gilt als Pause (Arbeitszeit)
 RUNDE_MAX = 2 * 3600  # eine Antwort zählt höchstens 2 Stunden (offen liegengebliebene Sitzungen)
 
 
+_MOJIBAKE = re.compile("[ÃÂâ][\u0080-\u00bf\u0152-\u2122]")
+
+
+def repair_text(text):
+    """Doppelt kodierte Umlaute (UTF-8 als cp1252 gelesen, „kÃ¶nnte“) zurückholen – alte Einträge von Windows vor dem
+    Fix vom 21.10.2026. Was sich nicht sauber zurückwandeln lässt, bleibt, wie es ist."""
+    if not _MOJIBAKE.search(text):
+        return text
+    try:
+        return text.encode("cp1252").decode("utf-8")
+    except (UnicodeEncodeError, UnicodeDecodeError):
+        return text
+
+
 def read_entries(directories):
     """Einträge aller Monatsdateien; Ordner dürfen Platzhalter enthalten. Gleiche Zeilen zählen einmal (der eigene
     Rechner liegt lokal und im Sammel-Repo)."""
@@ -106,6 +120,8 @@ def read_entries(directories):
                     except json.JSONDecodeError:
                         continue
                     if entry.get("v") == 1:
+                        if isinstance(entry.get("text"), str):
+                            entry["text"] = repair_text(entry["text"])
                         entries.append(entry)
     entries.sort(key=lambda e: (e.get("ts") or ""))
     return entries

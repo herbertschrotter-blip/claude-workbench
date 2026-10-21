@@ -197,5 +197,13 @@ class SammelTest(unittest.TestCase):
             entries = r.read_entries([os.path.join(d, "lokal"), os.path.join(d, "sammel/logs/*")])
             self.assertEqual(len(entries), 2)
 
+
+class UmlautTest(unittest.TestCase):
+    def test_doppelt_kodierte_umlaute(self):
+        self.assertEqual(r.repair_text("kÃ¶nnte â€žAlbenâ€œ"), "könnte „Alben“")
+        self.assertEqual(r.repair_text("könnte"), "könnte")
+        self.assertEqual(r.repair_text("château"), "château")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -50,7 +50,7 @@ Datei `plugins/work-hooks/hooks/regeln.json`, für alle Rechner gleich (kommt mi
 |---|---|
 | `id` | eindeutiger Name |
 | `beschreibung` | Satz, den Claude in der Meldung sieht |
-| `aktion` | `datei` (Edit/Write), `datei:neu` (Write auf eine Datei, die es noch nicht gibt), `bash:schreibt` (Umleitung, `tee`, `sed -i`, Ziel von `cp`/`mv`, Schreiben im Python-Heredoc), `bash:commit` (Text in Heredocs zählt nicht), `mcp:clickup-schreibt` |
+| `aktion` | `datei` (Edit/Write), `datei:neu` (Write auf eine Datei, die es noch nicht gibt), `bash:schreibt` (Umleitung, `tee`, `sed -i`, Ziel von `cp`/`mv`, Schreiben im Python-Heredoc), `bash:commit` (Text in Heredocs zählt nicht), `bash:merge` (`gh pr merge`, `git merge` außer `--ff-only`/`--abort`; Text in Heredocs und Anführungszeichen zählt nicht), `mcp:clickup-schreibt` |
 | `pfad` / `ausser` | Muster wie `*.py`, `*/mockups/*` (fnmatch auf den absoluten Pfad, in Arbeitsordnern auf den Pfad im Repo; `*` passt auch über `/`). Dazu gilt `ausser_immer` für alle Regeln (Scratchpad, `/tmp`, `.claude/`, `.git/`) |
 | `projekt` | `*` oder eine Projekt-ID aus dem Skill-Profil der `CLAUDE.md` |
 | `pflicht` | Skills, von denen einer geladen sein muss |
@@ -151,7 +151,15 @@ Tests: `python3 -m unittest plugins/work-hooks/hooks/test_skill_guard.py` (die M
 - Schreiben per Shell erkennt der Wächter über Muster. Ziele mit Shell-Variablen (`$S/datei`) lässt er aus. Relative
   Ziele löst er gegen das Verzeichnis nach dem letzten `cd`/`pushd` davor auf; ist dessen Ziel unbekannt (`cd $X`,
   `cd -`, `popd`), lässt er sie aus. Im Python-Heredoc zählen alle genannten Dateien, auch gelesene, sobald das Skript
-  schreibt.
+  schreibt. Seit 21.10.2026 (Auswertung: Fehlalarme bei Zip-Skripten und Literalen im geschriebenen Inhalt) zählen im
+  Skript nur die Ziele von Schreibaufrufen (`open(…, 'w')`, `Path(…).write_text`, `shutil.copy`/`move`,
+  `ZipFile(…, 'w')`), bei einem Namen das ihm zugewiesene Literal; bleibt ein Ziel unbekannt (Ausdruck, Parameter),
+  zählen wie früher alle Dateinamen im Skript.
+- Ein Skript, das per Write im Scratchpad liegt und dann mit `python3 <datei>` läuft, sieht der Wächter nicht
+  (Auswertung 21.10.2026, belegt; Regel dafür vorerst nicht umgesetzt).
+- Hooks lesen ihre Eingabe als UTF-8 (unter Windows sonst cp1252: Umlaute im Log doppelt kodiert, Befund desktop-pc
+  21.10.2026; ältere Einträge repariert die Auswertung beim Lesen). Die Projekt-ID im Worktree kommt aus dem Repo, nicht
+  aus dem Ordnernamen des Worktrees.
 - Die Blockmeldung nennt den Plugin-Stand (Commit aus dem Ordnernamen im Plugin-Cache). Blockt der Wächter, obwohl der
   Skill geladen ist, läuft die Sitzung womöglich mit einem alten Stand: `/plugin update` und Claude neu starten.
 - Dateien, die ein Build-Skript erzeugt (z. B. ein gebündeltes Mockup), sieht der Wächter nicht.

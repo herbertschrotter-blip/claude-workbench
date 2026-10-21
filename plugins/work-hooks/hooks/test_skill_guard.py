@@ -31,7 +31,7 @@ class RegelnTest(unittest.TestCase):
             self.assertIn(rule["modus"], ("blocken", "warnen", "aus"))
             self.assertTrue(rule["pflicht"])
             self.assertTrue(set(rule["aktion"]) <= {"datei", "datei:neu", "bash:schreibt", "bash:commit",
-                                                    "mcp:clickup-schreibt"})
+                                                    "mcp:clickup-schreibt", "bash:merge"})
             self.assertTrue(set(rule.get("gilt_bis", [])) <= set(RULES.get("grenzen", {})))
 
 
@@ -536,6 +536,68 @@ class PromptGrenzeTest(unittest.TestCase):
         self.assertNotIn("agent", skill_log.build(base))
         self.assertEqual(skill_log.build(dict(base, agent_id="a1"))["agent"], "a1")
         self.assertEqual(skill_log.build(dict(base, transcript_path="/p/s1/subagents/agent-b2.jsonl"))["agent"], "b2")
+
+
+class AuswertungOktoberTest(unittest.TestCase):
+    """Befunde der Skill-Auswertung vom 21.10.2026."""
+
+    def ziele(self, command):
+        return [t for a, t in g.actions(hook("PreToolUse", "Bash", {"command": command})) if a == "bash:schreibt"]
+
+    def test_literal_im_inhalt_ist_kein_ziel(self):
+        # Befund 10.10.: `datei: 'hochrechnung.html'` im geschriebenen JS wurde zum Ziel
+        command = ("python3 - <<'EOF'\nopen('mockups/quelle/hochrechnung.js', 'w')"
+                   ".write(\"const x = {datei: 'hochrechnung.html'}\")\nEOF")
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/mockups/quelle/hochrechnung.js"])
+
+    def test_zip_schreibt_nur_das_archiv(self):
+        # Befund 14.10.: z.write('skills/x/SKILL.md') machte die gelesene Datei zum Ziel
+        command = ("python3 - <<'EOF'\nimport zipfile\nwith zipfile.ZipFile('/tmp/x/scratchpad/a.zip', 'w') as z:\n"
+                   "    z.write('skills/audit/SKILL.md')\nEOF")
+        self.assertEqual(self.ziele(command), ["/tmp/x/scratchpad/a.zip"])
+        self.assertEqual(g.decide(hook("PreToolUse", "Bash", {"command": command}), RULES, set())[0], 0)
+
+    def test_ziel_ueber_namen(self):
+        command = "python3 - <<'EOF'\np = 'src/a.py'\ns = open(p).read()\nopen(p, 'w').write(s)\nEOF"
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/src/a.py"])
+        command = "python3 - <<'EOF'\nfrom pathlib import Path\nPath('docs/x.md').write_text('y')\nEOF"
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/docs/x.md"])
+
+    def test_unbekanntes_ziel_faellt_auf_alle_dateinamen_zurueck(self):
+        command = "python3 - <<'EOF'\ndef patch(p):\n    open(p, 'w').write('x')\npatch('src/b.py')\nEOF"
+        self.assertIn("/home/nutzer/projekte/demo/src/b.py", self.ziele(command))
+
+    def test_merge_ist_commit(self):
+        def acts(command):
+            return [a for a, _ in g.actions(hook("PostToolUse", "Bash", {"command": command}))]
+        for command in ("gh pr merge 3 --squash", "git merge feature", "git -C /r merge --no-ff x"):
+            self.assertIn("bash:merge", acts(command), command)
+        for command in ("git merge --ff-only origin/main", "git merge --abort", "echo 'git merge' > notiz.txt",
+                        "git merge-base HEAD main", "git merge-tree a b"):
+            self.assertNotIn("bash:merge", acts(command), command)
+        data = hook("PostToolUse", "Bash", {"command": "gh pr merge 4"})
+        self.assertIn("merge", g.decide(data, RULES, set())[1])
+        self.assertEqual(g.decide(data, RULES, {"git-commit-helper"})[1], "")
+
+    def test_projekt_im_worktree(self):
+        import skill_log
+        with tempfile.TemporaryDirectory() as tmp:
+            wt = os.path.join(tmp, "03_Foto", ".claude", "worktrees", "elated-bun")
+            os.makedirs(wt)
+            self.assertEqual(g.project_of(wt), "03_Foto")
+            self.assertEqual(skill_log.project_of(wt), "03_Foto")
+        self.assertEqual(skill_log.repo_folder("D:\\r\\03_Foto\\.claude\\worktrees\\x\\src"), "D:/r/03_Foto")
+
+    def test_stdin_als_utf8(self):
+        import subprocess
+        here = os.path.dirname(os.path.abspath(__file__))
+        with tempfile.TemporaryDirectory() as tmp:
+            data = json.dumps({"hook_event_name": "UserPromptSubmit", "session_id": "s1", "cwd": tmp,
+                               "prompt": "könnte"}, ensure_ascii=False).encode("utf-8")
+            env = dict(os.environ, SKILL_LOG_DIR=tmp, PYTHONIOENCODING="cp1252")
+            subprocess.run([sys.executable, os.path.join(here, "skill_log.py")], input=data, env=env, check=True)
+            text = open(os.path.join(tmp, os.listdir(tmp)[0]), encoding="utf-8").read()
+            self.assertIn("könnte", text)
 
 
 if __name__ == "__main__":

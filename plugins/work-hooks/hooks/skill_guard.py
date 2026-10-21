@@ -41,9 +41,12 @@ def setting(env, option):
 
 
 FILE_TOOLS = {"Edit", "Write", "MultiEdit", "NotebookEdit"}
+WORKTREES = "/.claude/worktrees/"  # Arbeitsordner von Claude Code (Standard für regeln.json → arbeitsordner)
 _CLICKUP_WRITE = re.compile(r"^mcp__.*clickup.*__clickup_(create|update|delete|merge|move|add|remove|attach|set)",
                             re.I)
 _GIT_COMMIT = re.compile(r"\bgit\b(?:\s+-C\s+\S+)?\s+commit\b")
+_QUOTED = re.compile(r"'[^']*'|\"[^\"]*\"")  # Text in Anführungszeichen ist kein Befehl
+_MERGE = re.compile(r"\bgh\s+pr\s+merge\b|\bgit\b(?:\s+-C\s+\S+)?\s+merge\b(?!-)(?![^\n;&|]*--(?:ff-only|abort|quit|continue)\b)")
 _HEREDOC = re.compile(r"(?<!<)<<(?!<)(-?)\s*(['\"]?)([A-Za-z_][\w.-]*)\2")
 _REDIRECT = re.compile(r"(?:^|[^0-9&<>])>>?\s*([^\s;|&<>()]+)")
 _TEE = re.compile(r"\btee\s+(?:-a\s+)?([^\s;|&<>()]+)")
@@ -51,6 +54,15 @@ _SED_I = re.compile(r"\bsed\s+(?:-[^i\s]*\s+)*-i\S*\s+(.*)")
 _CP_MV = re.compile(r"^\s*(?:cp|mv|install)\s+(.*)")
 _PY_WRITE = re.compile(r"open\([^)]*['\"][wax]b?['\"]|\.write_text\(|\.write\(|shutil\.(?:copy|move)")
 _QUOTED_FILE = re.compile(r"['\"]([\w./~-]*[\w-]\.[A-Za-z0-9]{1,5}|[\w./~-]*/mockups/[\w./-]+)['\"]")
+# Schreibaufrufe in Skripten: das Ziel ist ein Literal oder ein Name, der vorher ein Literal bekam
+_ARG = r"\s*(?:(['\"])([^'\"\n]+)\1|([A-Za-z_]\w*))\s*"
+_WRITE_CALLS = [
+    re.compile(r"\b(?:open|ZipFile|TarFile\.open|tarfile\.open)\(" + _ARG + r",\s*(?:mode\s*=\s*)?['\"][wax]"),
+    re.compile(r"\bPath\(" + _ARG + r"\)\.write_(?:text|bytes)\("),
+    re.compile(r"\bshutil\.(?:copy\w*|move)\([^,\n]+," + _ARG + r"[,)]"),
+]
+_WRITE_NAME = re.compile(r"\b([A-Za-z_]\w*)\.write_(?:text|bytes)\(")
+_ASSIGN = re.compile(r"^\s*([A-Za-z_]\w*)\s*=\s*(['\"])([^'\"\n]+)\2\s*$", re.M)
 _SEGMENT = re.compile(r"\s*(?:;|&&|\|\||\||\n)\s*")
 _CD = re.compile(r"^\s*(cd|pushd|popd)\b\s*(.*)$")
 _COMMAND_NAME = re.compile(r"<command-name>/?([\w:.-]+)</command-name>")
@@ -84,7 +96,9 @@ def project_of(cwd):
                 pass
         parent = os.path.dirname(path)
         if parent == path:
-            return os.path.basename(start) or start
+            # im Worktree (<repo>/.claude/worktrees/<name>) zählt der Ordner des Repos, nicht der des Worktrees
+            repo = repo_path(start, [WORKTREES])
+            return os.path.basename(repo.rstrip("/\\")) or start
         path = parent
 
 
@@ -327,6 +341,11 @@ def is_commit(command):
     return bool(_GIT_COMMIT.search(without_heredocs(command)))
 
 
+def is_merge(command):
+    """Merge, der einen Commit erzeugt: gh pr merge, git merge (nicht --ff-only, --abort, --quit, --continue)."""
+    return bool(_MERGE.search(_QUOTED.sub("''", without_heredocs(command))))
+
+
 def _cd(base, segment):
     """Verzeichnis nach einem cd/pushd/popd-Teilbefehl, relativ zum Ausgangsordner ('' = dort); None = unbekannt."""
     match = _CD.match(segment)
@@ -373,7 +392,7 @@ def bash_targets_at(command):
     if heredoc >= 0 or "python" in command:
         body = command if heredoc < 0 else command[heredoc:]
         if _PY_WRITE.search(body):
-            found += [(base, t) for t in _QUOTED_FILE.findall(body)]
+            found += [(base, t) for t in script_targets(body)]
     clean = []
     for where, target in found:
         target = target.strip("\"'")
@@ -386,6 +405,34 @@ def bash_targets_at(command):
         if (where, target) not in clean:
             clean.append((where, target))
     return clean
+
+
+def script_targets(body):
+    """Ziele der Schreibaufrufe in einem Skript (open(…, 'w'), Path(…).write_text, shutil.copy/move, ZipFile(…, 'w')).
+
+    Befund Auswertung 21.10.2026: Früher zählte jeder Dateiname in Anführungszeichen, sobald das Skript irgendwo
+    schrieb – Literale im Inhalt (`datei: 'x.html'`) oder Dateien in einem Zip wurden zu Zielen. Ist ein Ziel ein Name,
+    gilt das Literal, das ihm zugewiesen wurde; bleibt ein Ziel unbekannt (Ausdruck, Parameter), zählen wie früher alle
+    Dateinamen im Skript – lieber ein Fehlalarm als eine Lücke."""
+    names = {m.group(1): m.group(3) for m in _ASSIGN.finditer(body)}
+    found, unknown = [], False
+    for pattern in _WRITE_CALLS:
+        for m in pattern.finditer(body):
+            literal, name = m.group(2), m.group(3)
+            if literal:
+                found.append(literal)
+            elif name in names:
+                found.append(names[name])
+            else:
+                unknown = True
+    for m in _WRITE_NAME.finditer(body):
+        if m.group(1) in names:
+            found.append(names[m.group(1)])
+        elif m.group(1) not in ("sys", "self"):
+            unknown = True
+    if unknown:
+        found += _QUOTED_FILE.findall(body)
+    return list(dict.fromkeys(found))
 
 
 def bash_targets(command):
@@ -410,6 +457,8 @@ def actions(data):
         command = tin.get("command") or ""
         if is_commit(command):
             result.append(("bash:commit", ""))
+        if is_merge(command):
+            result.append(("bash:merge", ""))
         for where, target in bash_targets_at(command):
             full = os.path.join(cwd, os.path.expanduser(where or ""), os.path.expanduser(target))
             result.append(("bash:schreibt", os.path.normpath(full)))
@@ -589,7 +638,8 @@ def main():
     if setting("SKILL_GUARD", "SKILL_GUARD").lower() in OFF:
         return 0
     try:
-        raw = sys.stdin.read()
+        # Claude Code schickt UTF-8; unter Windows wäre sys.stdin sonst cp1252 (Befund desktop-pc 21.10.2026)
+        raw = sys.stdin.buffer.read().decode("utf-8", "replace")
         data = json.loads(raw) if raw.strip() else {}
         code, out, err, entries = decide(data)
         try:

@@ -79,10 +79,18 @@ def project_of(cwd):
                 pass
         parent = os.path.dirname(probe)
         if parent == probe:
-            return os.path.basename(path) or path
+            return os.path.basename(repo_folder(path)) or path
         probe = parent
 
 
+def repo_folder(path):
+    """Im Worktree von Claude Code (<repo>/.claude/worktrees/<name>/…) der Ordner des Repos, sonst der Pfad selbst."""
+    norm = path.replace("\\", "/")
+    index = norm.find(WORKTREES)
+    return norm[:index] if index >= 0 else path
+
+
+WORKTREES = "/.claude/worktrees/"
 _AGENT_PATH = re.compile(r"/subagents/agent-([^/]+)\.jsonl$")
 
 
@@ -139,7 +147,8 @@ def main():
     if setting("SKILL_LOG", "SKILL_LOG").lower() in OFF:
         return 0
     try:
-        raw = sys.stdin.read()
+        # Claude Code schickt UTF-8; unter Windows wäre sys.stdin sonst cp1252 (Befund desktop-pc 21.10.2026)
+        raw = sys.stdin.buffer.read().decode("utf-8", "replace")
         data = json.loads(raw) if raw.strip() else {}
         directory = setting("SKILL_LOG_DIR", "LOG_DIR") or os.path.join(os.path.expanduser("~"), ".claude", "skill-log")
         month = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m")
