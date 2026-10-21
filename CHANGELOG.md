@@ -8,6 +8,14 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.58.0] — 2026-10-22
+
+- **skills/projekt-anlegen, Feature (projekt-anlegen-002, Skill-Auswertung 21.10.2026):** neuer Auslöser – ein
+  Altbestand ohne eigenes Projekt (YAML-Pakete, Skripte, Karten im Konfigurationsordner) wird als Projekt neu
+  aufgebaut („X überarbeiten“, „neu machen“); Do-not auf „changes inside an existing project repo“ geschärft; Zweck,
+  Abschnitt „Bestehende Projekte“, um diese Ausnahme ergänzt. INDEX: Auslöser und Konfliktpaar projekt-anlegen ↔
+  code-erstellen. Befund: „ich will netzwerk in ha überarbeiten …“ (11.10.) löste erst auf Zuruf aus.
+
 ## [v0.57.3] — 2026-10-21
 
 - **skills/sitzung, Fix (sitzung-001, Skill-Auswertung 21.10.2026):** Description – „Mach bitte einen Neustart.“ ohne

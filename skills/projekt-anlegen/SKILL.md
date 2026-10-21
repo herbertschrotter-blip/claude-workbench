@@ -7,9 +7,12 @@ description: >
   klont nach Rückfrage GitHub-Repos und richtet das Skill-Profil ein. Use when
   users want to start, scaffold, anlegen, aufsetzen or einrichten a new project,
   HA integration, card, dashboard or Python tool, say "neues Projekt" or "ich
-  will X bauen, weiß aber nicht wie", want a GitHub repo created or cloned, or
-  an existing repo eingerichtet for these skills (Skill-Profil, Configs). Do not
-  trigger for changes in existing projects (code-erstellen), UI mockups
+  will X bauen, weiß aber nicht wie", want a GitHub repo created or cloned,
+  want an existing setup that is not yet a project (YAML, scripts or cards in
+  the config folder) rebuilt or replaced as a new project ("X
+  überarbeiten", "neu machen"), or an existing repo eingerichtet for these
+  skills (Skill-Profil, Configs). Do not trigger for changes inside an existing
+  project repo (code-erstellen), UI mockups
   (mockup-erstellen), new or changed skills (skill-neu, skill-pflege), ClickUp
   tasks (tracker), documentation only (doc-pflege), or git-only operations.
 ---
@@ -29,7 +32,8 @@ erzeugen und eintragen. Danach übernehmen die Fachskills.
   Doku pflegt doc-pflege, Aufgaben legt tracker an.
 - **Bestehende Projekte** gehören nicht hierher. Wer in einem vorhandenen Projekt etwas ergänzt, braucht code-erstellen.
   Ausnahmen: ein bestehendes Repo zum ersten Mal an einen Ort holen und einrichten (klonen) und ein bestehendes Repo
-  für die Skills einrichten (Abschnitt „Bestehendes Repo einrichten“).
+  für die Skills einrichten (Abschnitt „Bestehendes Repo einrichten“) und ein Altbestand ohne eigenes Projekt (z. B.
+  Pakete, Skripte oder Karten im Konfigurationsordner), der als Projekt neu aufgebaut wird.
 - **Prüfen** eines Projekts gegen seine Regeln macht audit.
 
 ## Benötigte Werte
