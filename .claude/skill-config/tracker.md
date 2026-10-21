@@ -51,6 +51,7 @@ Skill-Issue-Listen:
 | ticket | `1200660000006177` |
 | projekt-anlegen | `1200660000006175` |
 | skill-auswertung | `1200660000006208` |
+| sitzung | `1200660000011161` |
 
 Routing: `tracker issue <skill>: …` → Liste des Skills; alles zum Umbau und zum Skillsystem als Ganzes → ClaudeSkills.
 Unbekannter Skill-Name → Auswahlfrage mit den Namen oben, nie raten.
