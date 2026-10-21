@@ -6,6 +6,8 @@ Hook für Claude Code:
   auf stderr; Claude sieht sie und lädt den Skill nach).
 - PostToolUse → Regeln mit modus "warnen": fehlt der Pflicht-Skill, bekommt Claude nach der Aktion einen Hinweis
   (additionalContext).
+Ein Subagent (Hook-Feld agent_id) zählt nur seine eigenen Skills, außer eine Regel setzt erbt_hauptsitzung. Pfade in
+Arbeitsordnern (Worktrees, regeln.json → arbeitsordner) werden wie der entsprechende Pfad im Repo geprüft.
 Die Regeln stehen in regeln.json neben diesem Skript; skill-auswertung schärft sie nach. Jede Entscheidung landet als
 Ereignis "guard" im Skill-Log (<SKILL_LOG_DIR>/<JJJJ-MM>.jsonl).
 
@@ -86,21 +88,34 @@ def project_of(cwd):
         path = parent
 
 
+def agent_of(data):
+    """Kennung des Subagenten, der die Aktion ausführt (Hook-Feld agent_id; ältere Fassungen: Transcript unter
+    subagents/agent-<id>.jsonl); '' = Hauptsitzung."""
+    if data.get("agent_id"):
+        return str(data["agent_id"])
+    tp = (data.get("transcript_path") or "").replace("\\", "/")
+    match = re.search(r"/subagents/agent-([^/]+)\.jsonl$", tp)
+    return match.group(1) if match else ""
+
+
 def transcripts(data):
-    """Transcript der Aktion und, bei Subagenten, das der Hauptsitzung."""
-    paths = []
+    """Transcripts der Aktion als (eigene, hauptsitzung): beim Subagenten sein eigenes Transcript und getrennt das der
+    Hauptsitzung (zählt nur für Regeln mit erbt_hauptsitzung), sonst das der Sitzung und keins."""
     tp = data.get("transcript_path")
-    if tp:
-        paths.append(tp)
-        if "/subagents/" in tp:
-            paths.append(tp.split("/subagents/")[0] + ".jsonl")
-        session = data.get("session_id")
-        if session:
-            folder = os.path.dirname(tp.split("/subagents/")[0]) if "/subagents/" in tp else os.path.dirname(tp)
-            main = os.path.join(folder, session + ".jsonl")
-            if main not in paths:
-                paths.append(main)
-    return [p for p in paths if os.path.isfile(p)]
+    if not tp:
+        return [], []
+    session = data.get("session_id")
+    agent = agent_of(data)
+    norm = tp.replace("\\", "/")
+    root = tp[:norm.index("/subagents/")] if "/subagents/" in norm else os.path.splitext(tp)[0]
+    folder = os.path.dirname(root)
+    main = os.path.join(folder, (session or os.path.basename(root)) + ".jsonl")
+    if not agent:
+        own = [tp] + ([main] if main != tp else [])
+        return [p for p in own if os.path.isfile(p)], []
+    sub = os.path.join(folder, session or os.path.basename(root), "subagents", f"agent-{agent}.jsonl")
+    own = [sub] + ([tp] if "/subagents/" in norm and tp != sub else [])
+    return [p for p in own if os.path.isfile(p)], [p for p in [main] if os.path.isfile(p)]
 
 
 def loaded_skills(paths):
@@ -154,6 +169,7 @@ def events(lines, grenzen):
     invoked_skills (Compaction) zählt nur Skills, die der Verlauf noch nicht kennt – verbrauchte kommen nicht zurück.
     """
     task = re.compile(grenzen["task_id"]["muster"]) if "task_id" in grenzen else None
+    prompt = "prompt" in grenzen
     statuses = {x.lower() for x in (grenzen.get("aufgabenstart") or {}).get("status", [])}
     seen, commits = set(), set()
     for index, line in enumerate(lines):
@@ -173,6 +189,8 @@ def events(lines, grenzen):
         if msg.get("type") == "user":
             text = _user_text(content)
             if text is not None:
+                if prompt and is_prompt(msg, text):
+                    yield index, ("grenze", "prompt")
                 for name in _COMMAND_NAME.findall(text):
                     seen.add(short(name))
                     yield index, ("skill", short(name))
@@ -198,6 +216,18 @@ def events(lines, grenzen):
                 commits.add(block.get("id"))
             elif statuses and _CLICKUP_WRITE.match(name) and str(tin.get("status", "")).lower() in statuses:
                 yield index, ("grenze", "aufgabenstart")
+
+
+# Nachrichten vom Typ user, die keine Eingabe des Nutzers sind (Benachrichtigungen, Hinweise, Abbruch)
+_NOT_PROMPT = ("<task-notification", "<system-reminder", "[Request interrupted", "<local-command-", "Caveat:")
+
+
+def is_prompt(msg, text):
+    """Echte Eingabe des Nutzers (Grenze prompt): kein Meta-Eintrag, keine Zusammenfassung, keine Benachrichtigung."""
+    if msg.get("isMeta") or msg.get("isCompactSummary") or msg.get("isSidechain"):
+        return False
+    stripped = text.lstrip()
+    return bool(stripped) and not stripped.startswith(_NOT_PROMPT)
 
 
 def history(paths, grenzen):
@@ -228,12 +258,13 @@ def last_timestamp(paths):
     return latest
 
 
-def recent_skills(session, since):
+def recent_skills(session, since, agent=""):
     """Skills, die das Skill-Log für die Sitzung nach `since` verzeichnet.
 
     Claude Code schreibt das Transcript verzögert; ein gerade geladener Skill steht dort oft erst Sekunden später. Das
     Skill-Log schreibt ihn sofort (PostToolUse). Nur Ereignisse nach der letzten Transcript-Zeile zählen – sie liegen
-    sicher hinter jeder Grenze, die das Transcript schon kennt. Sekundengenau: dieselbe Sekunde zählt mit.
+    sicher hinter jeder Grenze, die das Transcript schon kennt. Sekundengenau: dieselbe Sekunde zählt mit. Es zählen
+    nur Ereignisse desselben Agenten (Feld agent; '' = Hauptsitzung).
     """
     if not session:
         return []
@@ -251,7 +282,7 @@ def recent_skills(session, since):
                     except json.JSONDecodeError:
                         continue
                     if entry.get("event") == "skill" and entry.get("session") == session and entry.get("ok", True) \
-                            and (entry.get("ts") or "")[:19] >= since:
+                            and (entry.get("agent") or "") == agent and (entry.get("ts") or "")[:19] >= since:
                         found.append(short(entry.get("skill")))
         except OSError:
             continue
@@ -391,12 +422,37 @@ def _match(path, patterns):
     return any(fnmatch.fnmatch(path, p.replace("**", "*")) for p in patterns)
 
 
+def repo_path(path, workdirs):
+    """Pfad in einem Arbeitsordner (z. B. Worktree unter <repo>/.claude/worktrees/<name>/) als Pfad im Repo; die Regeln
+    gelten dort wie im Repo selbst. workdirs: Ordner-Marker aus regeln.json → arbeitsordner."""
+    norm = path.replace("\\", "/")
+    for marker in workdirs:
+        index = norm.find(marker)
+        if index >= 0:
+            rest = norm[index + len(marker):].split("/", 1)
+            return norm[:index] + ("/" + rest[1] if len(rest) > 1 else "")
+    return path
+
+
+def _applies(rule, act, target, workdirs, always_except):
+    """Trifft die Regel diese Aktion auf dieses Ziel (Aktion, Pfad, Ausnahmen; Arbeitsordner wie im Repo)?"""
+    if act not in rule.get("aktion", []):
+        return False
+    if not rule.get("pfad"):
+        return True
+    where = repo_path(target, workdirs) if target else target
+    if not where or not _match(where, rule["pfad"]):
+        return False
+    return not (_match(where, always_except) or _match(where, rule.get("ausser", [])))
+
+
 def violations(rules, acts, project, skills, mode):
     """Regeln im gegebenen modus, deren Pflicht-Skill fehlt: Liste von (regel, ziel).
 
     skills ist eine Menge (gilt für alle Regeln) oder eine Funktion regel → Menge (Grenzen je Regel)."""
     out = []
     always_except = rules.get("ausser_immer", [])
+    workdirs = rules.get("arbeitsordner", [])
     for rule in rules.get("regeln", []):
         if rule.get("modus") != mode:
             continue
@@ -405,14 +461,16 @@ def violations(rules, acts, project, skills, mode):
         have = skills(rule) if callable(skills) else skills
         if any(p in have for p in rule.get("pflicht", [])):
             continue
+        base = next((r for r in rules.get("regeln", []) if r.get("id") == rule.get("ergaenzt")
+                     and r.get("modus") in ("blocken", "warnen") and r.get("projekt", "*") in ("*", project)), None)
+        base_missing = base is not None and not any(
+            p in (skills(base) if callable(skills) else skills) for p in base.get("pflicht", []))
         for act, target in acts:
-            if act not in rule.get("aktion", []):
+            if not _applies(rule, act, target, workdirs, always_except):
                 continue
-            if rule.get("pfad"):
-                if not target or not _match(target, rule["pfad"]):
-                    continue
-                if _match(target, always_except) or _match(target, rule.get("ausser", [])):
-                    continue
+            # ergänzende Regel: schweigt, wo die Grundregel für dieses Ziel schon meldet
+            if base_missing and _applies(base, act, target, workdirs, always_except):
+                continue
             out.append((rule, target))
             break
     return out
@@ -424,8 +482,11 @@ def log(entries, data, project):
     directory = setting("SKILL_LOG_DIR", "LOG_DIR") or os.path.join(os.path.expanduser("~"), ".claude", "skill-log")
     now = datetime.datetime.now(datetime.timezone.utc)
     os.makedirs(directory, exist_ok=True)
+    agent = agent_of(data)
     with open(os.path.join(directory, now.strftime("%Y-%m") + ".jsonl"), "a", encoding="utf-8") as fh:
         for entry in entries:
+            if agent:
+                entry = dict(entry, agent=agent)
             fh.write(json.dumps(dict({
                 "v": 1, "ts": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
                 "host": setting("SKILL_LOG_HOST", "LOG_HOST") or socket.gethostname(),
@@ -491,12 +552,17 @@ def decide(data, rules=None, skills=None):
     project = project_of(data.get("cwd"))
     if skills is None:
         grenzen = rules.get("grenzen", {})
-        paths = transcripts(data)
-        hist = history(paths, grenzen)
-        recent = recent_skills(data.get("session_id"), last_timestamp(paths)) if paths else []
-        if recent:
-            hist = hist + [[("skill", name) for name in recent]]
-        skills = lambda rule: active(hist, grenzen, rule.get("gilt_bis", []))  # noqa: E731
+        agent = agent_of(data)
+        own, main = transcripts(data)
+        hist = history(own, grenzen)
+        # ein Subagent ohne eigenes Transcript (noch nicht geschrieben): alle seine Skill-Ereignisse im Log zählen
+        if own or agent:
+            recent = recent_skills(data.get("session_id"), last_timestamp(own) if own else "", agent)
+            if recent:
+                hist = hist + [[("skill", name) for name in recent]]
+        inherited = history(main, grenzen)
+        skills = lambda rule: active(hist + (inherited if rule.get("erbt_hauptsitzung") else []),  # noqa: E731
+                                     grenzen, rule.get("gilt_bis", []))
     found = violations(rules, acts, project, skills, mode)
     if not found:
         return 0, "", "", []
@@ -508,7 +574,8 @@ def decide(data, rules=None, skills=None):
         err = ("Skill-Wächter: Diese Änderung braucht einen geladenen Skill, der dafür zuständig ist.\n" + text +
                "\nLade den passenden Skill mit dem Skill-Werkzeug und wiederhole dann die Aktion – auch wenn er früher in "
                "der Sitzung schon geladen war: Nach einem Commit, einem Aufgabenstart oder einer neuen Aufgaben-ID gilt "
-               "er als verbraucht. " + NAME_HINWEIS + stand_hinweis() +
+               "er als verbraucht, und ein Subagent muss ihn selbst laden (die Hauptsitzung zählt für ihn nicht). " +
+               NAME_HINWEIS + stand_hinweis() +
                "Ist die Regel hier falsch, sag es dem Nutzer (wird bei der Skill-Auswertung nachgeschärft).")
         return 2, "", err, entries
     ctx = ("Skill-Wächter (Hinweis): Diese Aktion lief ohne den zuständigen Skill.\n" + text +

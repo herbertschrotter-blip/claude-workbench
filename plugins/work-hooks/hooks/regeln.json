@@ -9,6 +9,10 @@
     "*/.git/*",
     "*/__pycache__/*"
   ],
+  "arbeitsordner": [
+    "/.claude/worktrees/"
+  ],
+  "arbeitsordner_herkunft": "21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Agenten-Worktrees unter <repo>/.claude/worktrees/ fielen unter die Ausnahme */.claude/* und blieben ungeprüft; Pfade darin gelten jetzt wie der Pfad im Repo",
   "grenzen": {
     "commit": {
       "beschreibung": "erfolgreicher git commit (Bash, Tool-Ergebnis ohne Fehler)",
@@ -41,6 +45,17 @@
       "ausser": [
         "tracker"
       ]
+    },
+    "prompt": {
+      "beschreibung": "neue Eingabe des Nutzers (keine Benachrichtigung, kein Tool-Ergebnis, keine Zusammenfassung nach Compaction)",
+      "verbraucht": [
+        "code-erstellen",
+        "ticket",
+        "skill-neu",
+        "skill-pflege",
+        "projekt-anlegen"
+      ],
+      "herkunft": "21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – code-erstellen zweimal am Anfang geladen, danach liefen Konfliktlösung, Fixes und neue Funktionen ohne erneuten Durchlauf; nur für die Warnregel code-prompt"
     }
   },
   "regeln": [
@@ -90,7 +105,7 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe; Auswertung 11.10.2026: 4 Fehlalarme durch relative Pfade nach cd (behoben in skill_guard.py e6262c3), 4 Testläufe vom 07.10. nicht gezählt",
+      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe; Auswertung 11.10.2026: 4 Fehlalarme durch relative Pfade nach cd (behoben in skill_guard.py e6262c3), 4 Testläufe vom 07.10. nicht gezählt; 21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Subagenten erben die Skills der Hauptsitzung nicht mehr (erbt_hauptsitzung fehlt = false), Worktrees unter .claude/worktrees/ werden geprüft (arbeitsordner)",
       "stand": {
         "seit": "2026-10-07",
         "treffer": 23,
@@ -101,6 +116,62 @@
           "treffer": 316,
           "fehlalarm": 0
         }
+      }
+    },
+    {
+      "id": "code-prompt",
+      "beschreibung": "Code ändern nach einer neuen Eingabe des Nutzers: code-erstellen für die aktuelle Aufgabe neu laden",
+      "aktion": [
+        "datei",
+        "bash:schreibt"
+      ],
+      "pfad": [
+        "*.py",
+        "*.js",
+        "*.mjs",
+        "*.cjs",
+        "*.ts",
+        "*.yaml",
+        "*.yml",
+        "*.json",
+        "*.sh",
+        "*.ps1",
+        "*.cs",
+        "*.xaml",
+        "*.css",
+        "*.html"
+      ],
+      "ausser": [
+        "*/mockups/*",
+        "*/skills/*",
+        "*/quality/evals/*",
+        "*/.claude-plugin/*",
+        "*/package-lock.json",
+        "*/secrets.yaml",
+        "*/work-hooks/hooks/regeln.json"
+      ],
+      "projekt": "*",
+      "pflicht": [
+        "code-erstellen",
+        "ticket",
+        "skill-neu",
+        "skill-pflege",
+        "projekt-anlegen"
+      ],
+      "ergaenzt": "code",
+      "modus": "warnen",
+      "gilt_bis": [
+        "commit",
+        "aufgabenstart",
+        "task_id",
+        "prompt"
+      ],
+      "herkunft": "21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Gültigkeit eines geladenen Skills je Nutzer-Prompt; Start warnen, Fehlalarm-Risiko hoch (jedes „weiter“ in derselben Aufgabe), blocken erst nach mindestens 10 Treffern ohne Fehlalarm",
+      "stand": {
+        "seit": "2026-10-21",
+        "treffer": 0,
+        "fehlalarm": 0,
+        "zuletzt": null
       }
     },
     {

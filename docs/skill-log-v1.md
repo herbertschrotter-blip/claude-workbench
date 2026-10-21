@@ -53,6 +53,7 @@ Alle Zeilen:
 | `session` | Sitzungs-ID von Claude Code |
 | `event` | `session`, `prompt`, `skill` oder `turn_end` |
 | `project` | `Projekt-ID` aus dem Skill-Profil der nächsten `CLAUDE.md` ab dem Arbeitsordner nach oben, sonst der Ordnername |
+| `agent` | nur bei Ereignissen aus einem Subagenten: dessen `agent_id` (seit 21.10.2026; der Skill-Wächter zählt Skills nur für den Agenten, der sie geladen hat) |
 
 Zusätzlich je Ereignis:
 

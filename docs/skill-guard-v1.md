@@ -27,8 +27,15 @@ geladen sein. Die Regeln dafür sind lernbar: skill-auswertung schärft sie anha
   (Abschnitt „Grenzen für geladene Skills“), sonst bis zum Sitzungsende. Claude Code schreibt das Transcript mit
   einigen Sekunden Verzögerung; deshalb zählen zusätzlich die Skill-Ereignisse dieser Sitzung aus dem Skill-Log, die
   neuer sind als die letzte Transcript-Zeile (Befund Auswertung 08.10.2026: drei Fehlalarme 4–7 s nach dem Laden).
-  Subagenten und Workflows erben die Skills der Hauptsitzung (Transcript unter
-  `<sitzung>/subagents/` → `<sitzung>.jsonl`).
+  Seit 21.10.2026 (Befund Lumora/PhotoViewer V3: Agenten lieferten fast allen Code, code-erstellen war nur zweimal
+  am Anfang der Hauptsitzung geladen) erben Subagenten die Skills der Hauptsitzung **nicht** mehr: Ein Agent muss den
+  Pflicht-Skill selbst laden. Erkannt wird er am Hook-Feld `agent_id` (ältere Fassungen: Transcript
+  `<sitzung>/subagents/agent-<id>.jsonl`); gezählt werden dann nur sein eigenes Transcript und Skill-Log-Ereignisse
+  mit seiner `agent`. Eine Regel mit `erbt_hauptsitzung: true` zählt die Hauptsitzung mit; heute setzt keine Regel das.
+- Pfade in Arbeitsordnern (`regeln.json` → `arbeitsordner`, heute `/.claude/worktrees/`: Agenten- und
+  Zusammenbau-Worktrees) prüft der Wächter wie den entsprechenden Pfad im Repo:
+  `<repo>/.claude/worktrees/agent-x/src/A.cs` gilt als `<repo>/src/A.cs`. So fallen Worktrees nicht unter die
+  Ausnahme `*/.claude/*`, die für Einstellungen, Memory, Plugin-Cache und Skill-Log bleibt.
 - Die Meldung nennt die zuständigen Skills mit Plugin-Präfix (`work:code-erstellen`, aus der `marketplace.json` des
   Plugins). Ohne Präfix kann Claude Code eine per `skillOverrides` abgeschaltete Kopie treffen (Befund 09.10.2026).
 - Jede Entscheidung landet als Ereignis `guard` im Skill-Log (`docs/skill-log-v1.md`): `regel`, `entscheidung`
@@ -44,11 +51,13 @@ Datei `plugins/work-hooks/hooks/regeln.json`, für alle Rechner gleich (kommt mi
 | `id` | eindeutiger Name |
 | `beschreibung` | Satz, den Claude in der Meldung sieht |
 | `aktion` | `datei` (Edit/Write), `datei:neu` (Write auf eine Datei, die es noch nicht gibt), `bash:schreibt` (Umleitung, `tee`, `sed -i`, Ziel von `cp`/`mv`, Schreiben im Python-Heredoc), `bash:commit` (Text in Heredocs zählt nicht), `mcp:clickup-schreibt` |
-| `pfad` / `ausser` | Muster wie `*.py`, `*/mockups/*` (fnmatch auf den absoluten Pfad; `*` passt auch über `/`). Dazu gilt `ausser_immer` für alle Regeln (Scratchpad, `/tmp`, `.claude/`, `.git/`) |
+| `pfad` / `ausser` | Muster wie `*.py`, `*/mockups/*` (fnmatch auf den absoluten Pfad, in Arbeitsordnern auf den Pfad im Repo; `*` passt auch über `/`). Dazu gilt `ausser_immer` für alle Regeln (Scratchpad, `/tmp`, `.claude/`, `.git/`) |
 | `projekt` | `*` oder eine Projekt-ID aus dem Skill-Profil der `CLAUDE.md` |
 | `pflicht` | Skills, von denen einer geladen sein muss |
 | `modus` | `blocken`, `warnen` oder `aus` |
-| `gilt_bis` | Grenzen, nach denen ein vorher geladener Skill für diese Regel nicht mehr zählt (`commit`, `aufgabenstart`, `task_id`) |
+| `gilt_bis` | Grenzen, nach denen ein vorher geladener Skill für diese Regel nicht mehr zählt (`commit`, `aufgabenstart`, `task_id`, `prompt`) |
+| `ergaenzt` | optional: `id` einer Grundregel; die Regel meldet nur, wenn die Grundregel erfüllt ist (sonst meldet schon diese) |
+| `erbt_hauptsitzung` | optional, Standard `false`: Skills der Hauptsitzung zählen auch für Subagenten |
 | `herkunft` | Befund oder Entscheidung, aus der die Regel stammt |
 | `stand` | `seit`, `treffer`, `fehlalarm`, `zuletzt` – nachgerechnet von skill-auswertung; `rueckblick` = Abspielen der Regeln gegen alte Transcripts |
 
@@ -67,6 +76,12 @@ Anfang, alle Commits ohne git-commit-helper, neue Docs ohne doc-pflege) gilt ein
 | `commit` | erfolgreicher `git commit` (Bash, Tool-Ergebnis ohne Fehler) | code-erstellen, doc-pflege, git-commit-helper, skill-pflege, skill-neu, skill-auswertung |
 | `aufgabenstart` | ClickUp-Schreibaufruf setzt eine Aufgabe auf `in development` bzw. `in progress` | alle außer tracker |
 | `task_id` | Nutzer-Nachricht nennt eine Aufgabe oder ein Ticket (`BSM-026`, `Bsm 026`, `FE-0012`; Muster in `regeln.json`) | alle außer tracker |
+| `prompt` | neue Eingabe des Nutzers; nicht: Tool-Ergebnisse, `isMeta`, Zusammenfassung nach Compaction, `<task-notification>`, `<system-reminder>`, „[Request interrupted…“ | code-erstellen, ticket, skill-neu, skill-pflege, projekt-anlegen |
+
+Die Grenze `prompt` (seit 21.10.2026) nutzt nur die Warnregel `code-prompt`: dieselben Pfade wie `code`, `ergaenzt:
+code`, Start `warnen`. Sie meldet, wenn Code nach einer neuen Eingabe geändert wird, ohne dass code-erstellen danach neu
+geladen wurde – gegen Aufgabenwechsel ohne neuen Durchlauf. Fehlalarm-Risiko hoch: auch jedes „weiter“ in derselben
+Aufgabe zählt als neue Eingabe. Hochstufen erst nach Auswertung (mindestens 10 Treffer ohne Fehlalarm).
 
 Für eine Regel zählen nur Skills, die nach der letzten Grenze aus ihrem `gilt_bis` geladen wurden. Ein nach der Grenze
 neu geladener Skill gilt wieder. Eine Compaction holt verbrauchte Skills nicht zurück: Der Anhang `invoked_skills`
@@ -140,5 +155,10 @@ Tests: `python3 -m unittest plugins/work-hooks/hooks/test_skill_guard.py` (die M
 - Die Blockmeldung nennt den Plugin-Stand (Commit aus dem Ordnernamen im Plugin-Cache). Blockt der Wächter, obwohl der
   Skill geladen ist, läuft die Sitzung womöglich mit einem alten Stand: `/plugin update` und Claude neu starten.
 - Dateien, die ein Build-Skript erzeugt (z. B. ein gebündeltes Mockup), sieht der Wächter nicht.
-- Ob `PreToolUse` in Subagenten feuert, ist in der Doku von Claude Code nicht beschrieben; das Skill-Log zeigt es.
+- Hooks feuern laut Doku von Claude Code auch in Subagenten und tragen dann `agent_id` und `agent_type`. Ob
+  `transcript_path` dort auf die Hauptsitzung oder den Agenten zeigt, ist nicht beschrieben; der Wächter baut den Pfad
+  zum Transcript des Agenten deshalb selbst. Ohne `agent_id` und ohne Agenten-Pfad ist ein Subagent nicht von der
+  Hauptsitzung zu unterscheiden.
+- Der Wächter prüft, ob der Skill geladen ist, nicht, ob sein Ablauf befolgt wurde (Impact Check, Selbst-Review,
+  Commit-Profil).
 - Warnen geht nur nach der Aktion (`PostToolUse`); vor der Aktion kann ein Hook Claude keinen Hinweis geben.

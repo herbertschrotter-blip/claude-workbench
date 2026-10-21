@@ -83,6 +83,9 @@ def project_of(cwd):
         probe = parent
 
 
+_AGENT_PATH = re.compile(r"/subagents/agent-([^/]+)\.jsonl$")
+
+
 def skill_fields(data):
     tool_input = data.get("tool_input") or {}
     name = tool_input.get("skill") or tool_input.get("command") or tool_input.get("name")
@@ -111,6 +114,10 @@ def build(data):
         "event": event,
         "project": project_of(cwd),
     }
+    agent = data.get("agent_id") or _AGENT_PATH.search((data.get("transcript_path") or "").replace("\\", "/"))
+    if agent:
+        # Subagent: der Skill-Wächter zählt Skills nur für den Agenten, der sie geladen hat (wie agent_of dort)
+        entry["agent"] = str(agent) if isinstance(agent, str) else agent.group(1)
     if event == "session":
         entry.update({"cwd": cwd, "source": data.get("source")})
     elif event == "prompt":

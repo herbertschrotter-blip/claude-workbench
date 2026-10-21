@@ -14,6 +14,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
   Teilaudit „nur Grundsatz“ (Modul 7): max 30 Tool-Calls je Modul-Manifest, Suchen mehrerer Regeln gebündelt; der
   Probelauf (Stufe 4) brauchte rund 24 Aufrufe. `references/grundsatz/home-assistant.md`, Ausführungsnachweise:
   Hinweis, dass das Log die Testfälle nennen muss (pytest etwa mit `-rA`; `-q` allein nennt keine).
+- **plugins/work-hooks, Skill-Wächter (Befund Lumora/PhotoViewer V3, keine neue Nummer – Tools):** Pfade in
+  Agenten- und Zusammenbau-Worktrees (`<repo>/.claude/worktrees/…`) werden wie der Pfad im Repo geprüft, statt unter
+  die Ausnahme `*/.claude/*` zu fallen; Subagenten (`agent_id`) zählen nur selbst geladene Skills (Feld
+  `erbt_hauptsitzung`, Standard aus); neue Grenze `prompt` mit Warnregel `code-prompt` (`ergaenzt: code`); Skill-Log
+  schreibt `agent`. 22 neue Tests, `docs/skill-guard-v1.md`, `docs/skill-log-v1.md`.
 
 ## [v0.57.1] — 2026-10-20
 

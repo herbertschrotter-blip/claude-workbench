@@ -144,7 +144,7 @@ class ProjektTest(unittest.TestCase):
 
 
 class TranscriptTest(unittest.TestCase):
-    def test_skills_aus_haupt_und_subagent_transcript(self):
+    def test_subagent_transcript_getrennt_von_hauptsitzung(self):
         with tempfile.TemporaryDirectory() as tmp:
             main = os.path.join(tmp, "s1.jsonl")
             sub = os.path.join(tmp, "s1", "subagents", "agent-a.jsonl")
@@ -155,9 +155,10 @@ class TranscriptTest(unittest.TestCase):
                 fh.write(json.dumps({"message": {"content": "<command-name>/mockup-erstellen</command-name>"}}) + "\n")
             with open(sub, "w", encoding="utf-8") as fh:
                 fh.write("{}\n")
-            paths = g.transcripts({"transcript_path": sub, "session_id": "s1"})
-            self.assertIn(main, paths)
-            self.assertEqual(g.loaded_skills(paths), {"code-erstellen", "mockup-erstellen"})
+            own, haupt = g.transcripts({"transcript_path": sub, "session_id": "s1"})
+            self.assertEqual((own, haupt), ([sub], [main]))
+            self.assertEqual(g.loaded_skills(haupt), {"code-erstellen", "mockup-erstellen"})
+            self.assertEqual(g.loaded_skills(own), set())
 
     def test_skills_nach_compaction_aus_anhang(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -369,6 +370,173 @@ class NamenTest(unittest.TestCase):
         self.assertEqual(g.plugin_names("/gibt/es/nicht.json"), {})
         rule = {"id": "code", "beschreibung": "x", "pflicht": ["code-erstellen"]}
         self.assertIn("Zuständig: code-erstellen", g.message([(rule, "")], names={}))
+
+class ArbeitsordnerTest(unittest.TestCase):
+    """Befund Lumora 21.10.2026: Agenten-Worktrees unter <repo>/.claude/worktrees/ fielen unter */.claude/*."""
+    REPO = "/home/nutzer/projekte/demo"
+    WT = REPO + "/.claude/worktrees/agent-x"
+
+    def test_code_im_worktree_wird_geblockt(self):
+        for tool, tin in (("Edit", {"file_path": self.WT + "/src/Viewer.cs"}),
+                          ("Write", {"file_path": self.WT + "/src/Neu.cs"}),
+                          ("Bash", {"command": "cat > src/Viewer.cs <<'EOF'\nx\nEOF"})):
+            data = hook("PreToolUse", tool, tin, cwd=self.WT)
+            code, _, err, _ = g.decide(data, RULES, set())
+            self.assertEqual(code, 2, tool)
+            self.assertIn("code-erstellen", err)
+            self.assertEqual(g.decide(data, RULES, {"code-erstellen"})[0], 0, tool)
+
+    def test_zusammenbau_worktree_wird_geprueft(self):
+        data = hook("PreToolUse", "Edit", {"file_path": self.REPO + "/.claude/worktrees/integration-1/App.xaml"})
+        self.assertEqual(g.decide(data, RULES, set())[0], 2)
+
+    def test_konfiguration_bleibt_frei(self):
+        for path in ("/home/nutzer/.claude/settings.json", self.REPO + "/.claude/settings.local.json",
+                     "/home/nutzer/.claude/projects/-home-nutzer-projekte-demo/memory/notiz.json",
+                     "/home/nutzer/.claude/plugins/cache/workbench/work/abc1234/hooks/x.py",
+                     self.WT + "/.claude/settings.json", self.WT + "/node_modules/x/a.js"):
+            self.assertEqual(g.decide(hook("PreToolUse", "Write", {"file_path": path}), RULES, set())[0], 0, path)
+
+    def test_pfad_im_repo(self):
+        self.assertEqual(g.repo_path(self.WT + "/src/a.cs", ["/.claude/worktrees/"]), self.REPO + "/src/a.cs")
+        self.assertEqual(g.repo_path(self.WT, ["/.claude/worktrees/"]), self.REPO)
+        self.assertEqual(g.repo_path("C:\\r\\.claude\\worktrees\\a\\x.cs", ["/.claude/worktrees/"]), "C:/r/x.cs")
+        self.assertEqual(g.repo_path(self.REPO + "/a.cs", ["/.claude/worktrees/"]), self.REPO + "/a.cs")
+
+
+class SubagentTest(unittest.TestCase):
+    """Ein Subagent muss den Pflicht-Skill selbst laden (Hook-Feld agent_id)."""
+
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        self.log_dir = os.path.join(self.dir, "log")
+        os.makedirs(self.log_dir)
+        self._env = os.environ.get("SKILL_LOG_DIR")
+        os.environ["SKILL_LOG_DIR"] = self.log_dir
+        self.main = os.path.join(self.dir, "s1.jsonl")
+        self.sub = os.path.join(self.dir, "s1", "subagents", "agent-a1.jsonl")
+        os.makedirs(os.path.dirname(self.sub))
+        self.write(self.main, "work:code-erstellen")
+
+    def tearDown(self):
+        if self._env is None:
+            os.environ.pop("SKILL_LOG_DIR", None)
+        else:
+            os.environ["SKILL_LOG_DIR"] = self._env
+
+    @staticmethod
+    def write(path, *skills):
+        with open(path, "w", encoding="utf-8") as fh:
+            for skill in skills:
+                fh.write(json.dumps({"type": "assistant", "message": {"content": [
+                    {"type": "tool_use", "id": "x", "name": "Skill", "input": {"skill": skill}}]}}) + "\n")
+
+    def data(self, tp, agent="a1"):
+        d = hook("PreToolUse", "Edit", {"file_path": "/home/nutzer/projekte/demo/src/A.cs"})
+        d["transcript_path"] = tp
+        if agent:
+            d["agent_id"] = agent
+        return d
+
+    def test_hauptsitzung_deckt_subagent_nicht(self):
+        open(self.sub, "w").close()
+        for tp in (self.sub, self.main):  # transcript_path zeigt auf das eigene oder auf das der Hauptsitzung
+            self.assertEqual(g.decide(self.data(tp), RULES)[0], 2, tp)
+
+    def test_subagent_mit_eigenem_skill_laeuft(self):
+        self.write(self.sub, "work:code-erstellen")
+        self.assertEqual(g.decide(self.data(self.main), RULES)[0], 0)
+
+    def test_hauptsitzung_mit_skill_laeuft(self):
+        self.assertEqual(g.decide(self.data(self.main, agent=""), RULES)[0], 0)
+
+    def test_aeltere_fassung_ohne_agent_id(self):
+        open(self.sub, "w").close()
+        self.assertEqual(g.agent_of({"transcript_path": self.sub}), "a1")
+        self.assertEqual(g.decide(self.data(self.sub, agent=""), RULES)[0], 2)
+
+    def test_erben_nur_mit_regelfeld(self):
+        open(self.sub, "w").close()
+        rules = copy.deepcopy(RULES)
+        next(r for r in rules["regeln"] if r["id"] == "code")["erbt_hauptsitzung"] = True
+        self.assertEqual(g.decide(self.data(self.sub), rules)[0], 0)
+
+    def log(self, skill, agent):
+        entry = {"v": 1, "ts": "2026-10-21T10:00:00Z", "session": "s1", "event": "skill", "skill": skill, "ok": True}
+        if agent:
+            entry["agent"] = agent
+        with open(os.path.join(self.log_dir, "2026-10.jsonl"), "a", encoding="utf-8") as fh:
+            fh.write(json.dumps(entry) + "\n")
+
+    def test_skill_log_eines_anderen_agenten_zaehlt_nicht(self):
+        self.log("work:code-erstellen", "b2")
+        self.log("work:code-erstellen", "")
+        self.assertEqual(g.recent_skills("s1", "", "a1"), [])
+        self.assertEqual(g.decide(self.data(self.sub), RULES)[0], 2)  # Transcript des Agenten fehlt noch
+        self.log("work:code-erstellen", "a1")
+        self.assertEqual(g.recent_skills("s1", "", "a1"), ["code-erstellen"])
+        self.assertEqual(g.decide(self.data(self.sub), RULES)[0], 0)
+
+    def test_hauptsitzung_zaehlt_keine_agenten_skills(self):
+        self.log("work:doc-pflege", "a1")
+        self.assertEqual(g.recent_skills("s1", "2026-10-21T09:00:00", ""), [])
+
+
+class PromptGrenzeTest(unittest.TestCase):
+    """Grenze prompt und Warnregel code-prompt (21.10.2026)."""
+
+    def aktiv(self, *events):
+        path = _tx(*events)
+        try:
+            grenzen = RULES["grenzen"]
+            return g.active(g.history([path], grenzen), grenzen, ["commit", "aufgabenstart", "task_id", "prompt"])
+        finally:
+            os.unlink(path)
+
+    def test_neuer_prompt_verbraucht_code_erstellen(self):
+        self.assertEqual(self.aktiv(("skill", "code-erstellen"), ("skill", "tracker"), ("user", "weiter")),
+                         {"tracker"})
+        self.assertEqual(self.aktiv(("user", "bau X"), ("skill", "code-erstellen")), {"code-erstellen"})
+
+    def test_keine_grenze(self):
+        for text in ("<task-notification>\n<task-id>x</task-id>", "<system-reminder>x</system-reminder>",
+                     "[Request interrupted by user for tool use]", "   "):
+            self.assertEqual(self.aktiv(("skill", "code-erstellen"), ("user", text)), {"code-erstellen"}, text)
+        self.assertEqual(self.aktiv(("skill", "code-erstellen"), ("commit", "fehler")), {"code-erstellen"})
+
+    def test_slash_befehl_zaehlt_nach_der_grenze(self):
+        self.assertEqual(self.aktiv(("user", "<command-name>/code-erstellen</command-name> mach x")),
+                         {"code-erstellen"})
+
+    def test_meta_und_zusammenfassung_keine_grenze(self):
+        self.assertFalse(g.is_prompt({"isMeta": True}, "x"))
+        self.assertFalse(g.is_prompt({"isCompactSummary": True}, "This session is being continued"))
+        self.assertTrue(g.is_prompt({}, "ja"))
+
+    def test_code_prompt_warnt_nur_wenn_code_erfuellt(self):
+        data = hook("PostToolUse", "Edit", {"file_path": "/home/nutzer/projekte/demo/src/A.cs"})
+        rule_sets = {"code": {"code-erstellen"}, "code-prompt": set()}
+        skills = lambda rule: rule_sets.get(rule["id"], {"code-erstellen"})  # noqa: E731
+        code, out, _, entries = g.decide(data, RULES, skills)
+        self.assertEqual(code, 0)
+        self.assertIn("code-prompt", out)
+        self.assertEqual(entries[0]["entscheidung"], "gewarnt")
+        self.assertEqual(g.decide(data, RULES, set())[1], "")  # ohne Skill blockt schon code vorher
+
+    def test_code_prompt_meldet_wenn_grundregel_aus(self):
+        rules = copy.deepcopy(RULES)
+        next(r for r in rules["regeln"] if r["id"] == "code")["modus"] = "aus"
+        data = hook("PostToolUse", "Edit", {"file_path": "/home/nutzer/projekte/demo/src/A.cs"})
+        self.assertIn("code-prompt", g.decide(data, rules, set())[1])
+
+    def test_skill_log_schreibt_agent(self):
+        import skill_log
+        base = {"hook_event_name": "PostToolUse", "tool_name": "Skill", "tool_input": {"skill": "work:x"},
+                "session_id": "s1", "cwd": "/tmp"}
+        self.assertNotIn("agent", skill_log.build(base))
+        self.assertEqual(skill_log.build(dict(base, agent_id="a1"))["agent"], "a1")
+        self.assertEqual(skill_log.build(dict(base, transcript_path="/p/s1/subagents/agent-b2.jsonl"))["agent"], "b2")
+
 
 if __name__ == "__main__":
     unittest.main()
