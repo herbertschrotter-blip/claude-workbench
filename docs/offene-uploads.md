@@ -12,3 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
+| code-erstellen | v0.60.3 | b87cc0d | Zip: SKILL.md + references/ (5 Dateien) | 2026-10-22 |
