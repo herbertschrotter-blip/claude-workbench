@@ -6,7 +6,7 @@ description: >
   "tracker status", "tracker suche", "tracker next", "tracker split",
   "tracker relate" und "tracker field". Use when users want to anlegen,
   erstellen, eintragen, melden, dokumentieren, abschließen, aktualisieren,
-  or update a ClickUp task or issue — including Projekt-Tasks (BPM, Heidi, …), Skill-Issues,
+  or update a ClickUp task or issue — including Projekt-Tasks, Skill-Issues,
   Bug-Reports, neue Aufgaben, offene Punkte, Task-Splits, Dependencies,
   oder Status-Abfragen. Triggers also on "issue erstellen", "task anlegen",
   "ClickUp-Eintrag", "Skill-Issue melden". Do not trigger for general talk

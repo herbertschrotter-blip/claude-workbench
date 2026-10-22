@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.6] — 2026-10-23
+
+- **skills/tracker, Safe Patch (Umbau Phase 5, Schritt 8):** Description ohne Projektnamen: „Projekt-Tasks (BPM, Heidi,
+  …)“ → „Projekt-Tasks“; 781 → 765 Zeichen. Sonst unverändert.
+
 ## [v0.60.5] — 2026-10-23
 
 - **skills/ticket, Safe Patch (Umbau Phase 5, Schritt 7):** Description ohne Projektnamen: „(z.B. Heidi-Tickets HT-0007
