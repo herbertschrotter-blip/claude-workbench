@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.5] — 2026-10-23
+
+- **skills/ticket, Safe Patch (Umbau Phase 5, Schritt 7):** Description ohne Projektnamen: „(z.B. Heidi-Tickets HT-0007
+  aus dem Diagnose-Protokoll)“ → „(z.B. HT-0007 aus einem Diagnose-Protokoll)“; 863 → 851 Zeichen. Sonst unverändert.
+
 ## [v0.60.4] — 2026-10-23
 
 - **skills/mockup-erstellen, Safe Patch (Umbau Phase 5, Schritt 6):** Description ohne Projektnamen: „(BPM: Docs/Mockups

@@ -1,7 +1,7 @@
 ---
 name: ticket
 description: >
-  Bearbeitet Fehler-Tickets eines Projekts (z.B. Heidi-Tickets HT-0007 aus dem Diagnose-Protokoll) einzeln und
+  Bearbeitet Fehler-Tickets eines Projekts (z.B. HT-0007 aus einem Diagnose-Protokoll) einzeln und
   immer im selben Ablauf: Ticket holen, Befund erklären, mit dem User klären ob es ein echter Fehler ist, Ursache
   finden, Aufgabe im Tracker anlegen, Fix mit Test, einspielen, Ticket auf gelöst setzen – jeder Schritt mit
   Bestätigung, nichts automatisch. Use when users say "ticket HT-0007", "ticket liste", "offene tickets", "nimm
