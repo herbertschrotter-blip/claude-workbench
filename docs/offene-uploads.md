@@ -12,3 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
+| doc-pflege | v0.60.0 | 2f30fd4 | SKILL.md (keine references) | 2026-10-22 |

@@ -266,5 +266,8 @@ dem Schreiben werden nur die geänderten Docs geprüft (R084) – so im freigege
   Projektwerte BPM/Heidi bleiben als Beispiele bis Phase 6.
 - **Description:** 894 → 994 Zeichen (Zeilen getrimmt, mit Leerzeichen verbunden); kein BPM/Heidi, „Use when … Do not
   trigger for …“.
-- **Prüfskript:** läuft nach dem Push in der CI (kein `pwsh` auf dem HA).
-- **Routing-Eval:** wird nach dem Commit eingetragen (`--tag doc-pflege --tag audit --tag chat-wechsel`).
+- **Prüfskript:** CI `validate-skills` für 2f30fd4 grün (Lauf 39844045002).
+- **Routing-Eval** (2f30fd4, `--runs 3 --tag doc-pflege --tag audit --tag chat-wechsel`): 36/36 Fälle mit 3/3, darunter
+  `doc-write`, `doc-fix-links`, `doc-session-close`, `doc-no-trigger-discussion`, `audit-findings-fix`, `audit-frontmatter`,
+  `audit-bauplan`, `audit-readonly`, `mockup-erstellen-real-abnahme`, `chat-wechsel-handover`. Report
+  `quality/evals/results/2026-10-22T19-53-37-960Z/`.
