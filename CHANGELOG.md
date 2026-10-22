@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.3] — 2026-10-22
+
+- **skills/code-erstellen, Safe Patch (Umbau Phase 5, Schritt 5):** Description ohne Projektnamen: „projektneutral für
+  BPM (C#/WPF), Heidi (TypeScript/Lit, HA-YAML, Python) oder jedes Repo mit Profil“ → „projektneutral für jedes Repo
+  mit Profil (z. B. C#/WPF, TypeScript/Lit, HA-YAML, Python)“; 1024 → 1013 Zeichen. Sonst unverändert.
+
 ## [v0.60.2] — 2026-10-22
 
 - **skills/chatgpt-review, Safe Patch (Umbau Phase 5, Schritt 4):** Description ohne Projektnamen („(BPM, Heidi, …)“

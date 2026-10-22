@@ -3,8 +3,8 @@ name: code-erstellen
 description: >
   Plant und erzeugt Codeänderungen im aktiven Projekt nach dessen Code-Profil
   (Pflicht-Docs, Aufgabenquelle, Stack-Referenzen, Tests, Auslieferung) –
-  projektneutral für BPM (C#/WPF), Heidi (TypeScript/Lit, HA-YAML, Python) oder
-  jedes Repo mit Profil. Use when users want to schreiben, erstellen, bauen,
+  projektneutral für jedes Repo mit Profil (z. B. C#/WPF, TypeScript/Lit,
+  HA-YAML, Python). Use when users want to schreiben, erstellen, bauen,
   implementieren, fixen, refaktorieren, ändern, ergänzen, korrigieren, or
   erweitern application code — views, dialogs, components, services, view
   models, repositories, handlers, validators, models, validation, persistence,
