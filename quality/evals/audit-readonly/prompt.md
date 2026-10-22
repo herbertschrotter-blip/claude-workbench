@@ -1,5 +1,5 @@
 ---
-description: "Ziel-Fall – Skills gegen INDEX prüfen, audit soll auslösen, doc-pflege nicht. Bis Phase 5 erwarteter Fehlfall, die audit-Description deckt die Prüfung von Skills noch nicht ab."
+description: "Skills gegen INDEX prüfen, audit soll auslösen, doc-pflege nicht. Seit v0.58.5 deckt die audit-Description die Prüfung einer Index- oder Router-Datei gegen die Beschreibungen ab (audit-001)."
 tags: [baseline, routing, pilot, critical, ziel, audit, doc-pflege]
 runs: 3
 max_turns: 8
