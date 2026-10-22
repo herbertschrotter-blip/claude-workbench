@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.58.3] — 2026-10-22
+
+- **skills/code-erstellen, Fix (mockup-erstellen-003):** Description – „Do not trigger for UI mockups (HTML-Entwürfe)“
+  wird „UI mockups and their sources“, damit Generator-Skripte im Mockup-Ordner nicht code-erstellen auslösen.
+  Description 1024 Zeichen (Grenze).
+
 ## [v0.58.2] — 2026-10-22
 
 - **skills/mockup-erstellen, Fix (mockup-erstellen-003, Skill-Auswertung 21.10.2026):** Description und Vorrang – die

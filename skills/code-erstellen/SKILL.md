@@ -12,7 +12,7 @@ description: >
   .ts, .js, .py, .yaml, .json). Triggers also on bug fixes, UI fixes in existing
   screens/components, implementing logic regardless of domain, and code work
   on a task by its ID ("mach BSM-002", "weiter mit BSM-014"). Do not
-  trigger for UI mockups (HTML-Entwürfe), git commit
+  trigger for UI mockups and their sources, git commit
   commands, explicit documentation authoring (ADR / Konzept-Doc / Frontmatter
   / Quickload), ClickUp task actions without code work, or read-only audits.
 ---
