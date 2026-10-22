@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.58.5] — 2026-10-22
+
+- **skills/audit, Fix (audit-001):** Description – „Use when …“ nennt jetzt auch die Prüfung, ob eine Index- oder
+  Router-Datei zu den Beschreibungen der gelisteten Skills, Module oder Docs passt. Ursache aus dem Eval-Verlauf: Bei
+  „Prüfe, ob INDEX.md und die Beschreibungen der Skills zusammenpassen“ suchte Claude in 2 von 6 Läufen zuerst selbst
+  nach den Dateien und lud audit nicht. INDEX: Auslöser ergänzt. Description 720 Zeichen.
+
 ## [v0.58.4] — 2026-10-22
 
 - **skills/doc-pflege, Fix (mockup-erstellen-003):** Description – „Do not trigger for …“ nennt jetzt auch „mockup

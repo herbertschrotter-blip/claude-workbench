@@ -7,7 +7,9 @@ description: >
   PD-Register). Use when users want a consistency audit, a documentation-vs-code
   check, a Frontmatter or Quickload validation, a Bauplan check, a check of a
   project against its ground rules (Grundsatzregeln, e.g. Home Assistant), or a
-  systematic read-only review of project rules. Do not trigger for code
+  systematic read-only review of project rules, including whether an index or
+  router file matches the descriptions of the skills, modules or docs it
+  lists. Do not trigger for code
   implementation, build debugging, or general code review without doc/context
   comparison.
 ---

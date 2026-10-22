@@ -16,7 +16,7 @@ wiederholt sie nicht.
 
 | Skill | Zuständig für | Löst aus bei |
 |-------|---------------|--------------|
-| **audit** | Konsistenz zwischen Code und Doku prüfen, dazu Prüfung gegen Grundsatzregeln (Modul 7, z. B. HA), read-only; Befunde → tracker oder Fix-Skill | "audit", "prüfe alles", "konsistenzcheck", "passt die Doku noch zum Code", "hält das Projekt die Grundsatzregeln ein" |
+| **audit** | Konsistenz zwischen Code und Doku prüfen, dazu Prüfung gegen Grundsatzregeln (Modul 7, z. B. HA), read-only; Befunde → tracker oder Fix-Skill | "audit", "prüfe alles", "konsistenzcheck", "passt die Doku noch zum Code", "hält das Projekt die Grundsatzregeln ein", "passen INDEX und Skill-Beschreibungen zusammen" |
 | **cc-steuerung** | Desktop Commander im Cowork-Chat (Modalität, WIE statt WAS); nie in Claude Code | im Cowork-Chat: "cc mach", "dc lies", "direkt auf den PC" |
 | **chat-wechsel** | Übergabe an die nächste Sitzung (Handover-Prompt; in Claude Code vorher Sitzungsabschluss über doc-pflege, mit tmux gleich neues Fenster im Projekt mit Remote Control) | "neuer chat", "übergabe", "chat wechsel" |
 | **chatgpt-review** | Review-Gespräch mit ChatGPT: Prompts, Runden selbst über die Codex CLI (sonst Codeblock zum Kopieren), Archiv (CGR) nach der Review-Config des Repos | "besprich mit ChatGPT", "zweite Meinung", "lass Codex das reviewen", "Runde N" |
