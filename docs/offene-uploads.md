@@ -12,3 +12,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
+| mockup-erstellen | v0.58.2 | 2417111 | Zip mit SKILL.md und references/ (neu: references/sitemap.md) | 2026-10-22 |

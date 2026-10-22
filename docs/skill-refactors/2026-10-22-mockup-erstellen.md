@@ -273,5 +273,6 @@ Keine. Kein anderer Skill, `INDEX.md` oder die Doku verweist auf Kapitel von moc
   Neu-Ort zu finden.
 - **Neu→Alt:** Zeilenvergleich alt gegen neu (`SKILL.md` + `references/sitemap.md`): Jede neue Zeile gehört zu einer
   REWRITE-Zeile (Verweis oder Überschrift) oder zu N001/N002.
-- **Prüfskript:** läuft per CI nach dem Push (`validate-skills`).
-- **Routing-Eval:** nach dem Commit, `--tag mockup-erstellen`.
+- **Prüfskript:** CI `validate-skills` grün für fe190e6 (Refactor) und 2417111 (Fix mockup-erstellen-003).
+- **Routing-Eval:** `--tag mockup-erstellen` auf 2417111: 16 Fälle, alle 3/3 (darunter `mockup-erstellen-real-abnahme`,
+  vorher 2/3, und `mockup-erstellen-real-generator-quelle`).
