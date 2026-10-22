@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.4] — 2026-10-23
+
+- **skills/mockup-erstellen, Safe Patch (Umbau Phase 5, Schritt 6):** Description ohne Projektnamen: „(BPM: Docs/Mockups
+  mit Sitemap; Heidi: dreame_x60/mockups im Bento-Design mit --dx-Tokens)“ → „(Ablage, Designquelle, Ansichten)“;
+  968 → 911 Zeichen. Sonst unverändert.
+
 ## [v0.60.3] — 2026-10-22
 
 - **skills/code-erstellen, Safe Patch (Umbau Phase 5, Schritt 5):** Description ohne Projektnamen: „projektneutral für

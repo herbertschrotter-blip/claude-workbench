@@ -2,8 +2,8 @@
 name: mockup-erstellen
 description: >
   Erstellt UI-Mockups als HTML-Entwürfe für neue Screens, Dialoge und
-  Layoutvarianten – nach dem Mockup-Profil des Projekts (BPM: Docs/Mockups mit
-  Sitemap; Heidi: dreame_x60/mockups im Bento-Design mit --dx-Tokens). Use when users want to mocken, entwerfen, skizzieren,
+  Layoutvarianten – nach dem Mockup-Profil des Projekts (Ablage, Designquelle,
+  Ansichten). Use when users want to mocken, entwerfen, skizzieren,
   zeigen, visualisieren, layouten, or want to clarify how a screen should
   look before coding — including mockups, screen designs, UI proposals,
   layout drafts, dialog sketches, tab/panel arrangements, and changes to an
