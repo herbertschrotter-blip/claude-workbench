@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.58.2] — 2026-10-22
+
+- **skills/mockup-erstellen, Fix (mockup-erstellen-003, Skill-Auswertung 21.10.2026):** Description und Vorrang – die
+  Generator-Quellen eines Mockups (Skripte im Mockup-Ordner) und der Abnahme-Eintrag am Abnahme-Ort, auch in einer
+  README, gehören zu mockup-erstellen. INDEX: Konfliktpaar code-erstellen ↔ mockup-erstellen ergänzt. Befund:
+  ha-baustelle lud dafür zusätzlich code-erstellen bzw. doc-pflege.
+
 ## [v0.58.1] — 2026-10-22
 
 - **skills/mockup-erstellen, Refactor (Split, bei mockup-erstellen-003):** `SKILL.md` lag mit rund 573 Zeilen über der
