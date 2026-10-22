@@ -8,6 +8,21 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.0] — 2026-10-22
+
+- **skills/doc-pflege, Refactor (Umbau Phase 5, Grenze audit ↔ doc-pflege):** prüfen = audit, ändern = doc-pflege.
+  - Description neu ohne Projektnamen und ohne „validieren“ (994 Zeichen): schreiben, ändern, korrigieren, Befunde aus
+    einem Audit beheben, Sitzungsabschluss; Do-not: Prüfen ohne Änderung (audit), Mockup-Abnahme (mockup-erstellen).
+  - Modi mit Namen statt Nummern: Projekt-Init · Router nachziehen · Begleit-Docs · Doku pflegen · Neue Doc oder Umbau ·
+    Sitzungsabschluss. Modus 3 und 4 sind jetzt der Abschnitt „Doku-Hinweise nach Code-Änderungen“; Modus 6 ist an
+    audit gegangen (Prüflisten seit v0.59.0 in `skills/audit/references/doku-validierung.md`).
+  - Neu „Prüfen nach dem Schreiben“: nur die eigenen Änderungen, nach `Doku.Validierungsregeln` (`none` → entfällt).
+  - Voraussetzung liest zuerst das Skill-Profil v1 (`Doku.*`, `Commit.Doku-Check`, `Commit.Push-Policy`); das ältere
+    Doku-Profil bleibt als Rückfall. Projekt-Init legt nur den Bereich Doku an, das ganze Profil richtet projekt-anlegen
+    ein.
+  - Regel-Inventar `docs/skill-refactors/2026-10-22-doc-pflege.md` (163 alte Regeln, keine DROP). INDEX und README:
+    Zeile doc-pflege.
+
 ## [v0.59.0] — 2026-10-22
 
 - **skills/audit, Refactor (Umbau Phase 5, Grenze audit ↔ doc-pflege):** prüfen = audit, ändern = doc-pflege.
