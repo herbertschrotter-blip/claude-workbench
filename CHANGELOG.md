@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.2] — 2026-10-22
+
+- **skills/chatgpt-review, Safe Patch (Umbau Phase 5, Schritt 4):** Description ohne Projektnamen („(BPM, Heidi, …)“
+  entfernt, 623 Zeichen); Phase 3 verweist auf doc-pflege über die Abschnitte „Neue Doc“ und „Begleit-Docs“ statt
+  „Modus 7a/2“. Sonst unverändert.
+
 ## [v0.60.1] — 2026-10-22
 
 - **skills/chat-wechsel, Safe Patch (Umbau Phase 5, Schritt 3):** Verweise auf doc-pflege über den Abschnittsnamen statt

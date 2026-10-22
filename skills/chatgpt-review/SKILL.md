@@ -4,7 +4,7 @@ description: >
   Erstellt Prompts und Folgeprompts für ein technisches Review-Gespräch zwischen
   Claude und ChatGPT (inkl. Runden-Folgeprompts wie "Runde 3 erstellen"), führt die
   Runden in Claude Code selbst über die Codex CLI und archiviert jede Runde im Repo
-  (CGR-System) – projektneutral nach dem Review-Profil des Repos (BPM, Heidi, …). Use
+  (CGR-System) – projektneutral nach dem Review-Profil des Repos. Use
   when users want a ChatGPT review prompt, a second opinion from ChatGPT or Codex, a
   reply prompt to ChatGPT feedback, the next review round, or a structured cross-LLM critique. Do not
   trigger for normal chat handovers, prompts for the next Claude session, or
@@ -308,7 +308,7 @@ User hat die Antwort in den Chat gepastet (oder als Datei geschickt). Vor der Ei
 
 **Ergebnisse zurück ins Repo (Auswahlfrage, nie automatisch):**
 - „Entscheidungen an Ergebnis-Ort“ → jede getroffene Entscheidung als Eintrag am Ergebnis-Ort des Profils
-  (Beispiele BPM und Heidi: [`references/beispiele.md`](references/beispiele.md#ergebnis-ort)). Schreiben tut doc-pflege (Modus 7a/2),
+  (Beispiele BPM und Heidi: [`references/beispiele.md`](references/beispiele.md#ergebnis-ort)). Schreiben tut doc-pflege (Abschnitte „Neue Doc“ und „Begleit-Docs“),
   dieser Skill liefert die fertigen Einträge.
 - „Offene Punkte als Tasks“ → `tracker neu` je Punkt im Schema des Projekts (`<PRÄFIX>-NNN | KÜRZEL | …`),
   mit Verweis auf `CGR-<id> r<N>` in der Beschreibung
