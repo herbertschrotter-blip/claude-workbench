@@ -173,10 +173,19 @@ Aufgaben zu Phase 5 (cc-steuerung) und Phase 6 (doc-pflege, tracker). **Phase 4 
       Fallback über `projects/`/Memory und die Aussage „projektspezifisch“ (212 → 109 Zeilen)
 - [x] Lieferung v0.38.2/v0.39.1 an Herbert: audit, chat-wechsel, chatgpt-review, code-erstellen, doc-pflege,
       git-commit-helper, mockup-erstellen, tracker (je ein Upload, 28.09.2026)
-- [ ] Grenzen audit ↔ doc-pflege ↔ modul-bauplan festziehen (doc-pflege Modus 3, 4 und 6 als öffentliche Modi entfernen)
-- [ ] Descriptions anpassen, jeweils mit Eval
+- [x] Grenzen audit ↔ doc-pflege ↔ modul-bauplan festziehen (doc-pflege Modus 3, 4 und 6 als öffentliche Modi entfernen)
+      – modul-bauplan ist in projekt-anlegen aufgegangen; prüfen = audit, ändern = doc-pflege. audit v0.59.0 (Doku-Validierung
+      übernommen, Modul 8 Skills; Inventar `docs/skill-refactors/2026-10-22-audit.md`), doc-pflege v0.60.0 (Modi mit Namen,
+      Prüfen nach dem Schreiben, Skill-Profil v1; Inventar `docs/skill-refactors/2026-10-22-doc-pflege.md`), Verweise in
+      chat-wechsel v0.60.1 und chatgpt-review v0.60.2; INDEX-Konfliktpaare audit ↔ doc-pflege und audit ↔ skill-pflege
+- [x] Descriptions anpassen, jeweils mit Eval – ohne Projektnamen als Zuständigkeit: audit, doc-pflege, chatgpt-review,
+      code-erstellen v0.60.3, mockup-erstellen v0.60.4, ticket v0.60.5, tracker v0.60.6; Routing-Eval je Skill 3/3 (einzige
+      Abweichung: Ziel-Fall `sitzung-real-neustart-kein-skill` 0.83, Grundmessung 0.50, Thema sitzung); alle hochgeladen
+      (22./23.10.2026). Die Entwürfe vom 28.09.2026 (`docs/skill-refactors/entwuerfe/`) sind damit entfernt.
 
-**Abnahme:** keine kopierten Querschnittsregeln mehr; cc-steuerung löst in Claude Code nicht aus.
+**Abnahme:** keine kopierten Querschnittsregeln mehr; cc-steuerung löst in Claude Code nicht aus. **Phase 5 abgeschlossen am
+23.10.2026.** Offen bleibt die echte Sitzung EXT-03 (audit ↔ code-review) nach der audit-Description, Vergleichswert 3/3
+(`quality/real-environment/README.md`); Herbert am PC nach dem Plugin-Update.
 
 ### Phase 6 – Skill für Skill verkleinern
 
