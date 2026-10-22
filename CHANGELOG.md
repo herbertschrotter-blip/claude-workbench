@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.58.4] — 2026-10-22
+
+- **skills/doc-pflege, Fix (mockup-erstellen-003):** Description – „Do not trigger for …“ nennt jetzt auch „mockup
+  approvals (mockup-erstellen)“; der Abnahme-Eintrag eines Mockups, auch in einer README, gehört zu mockup-erstellen.
+  INDEX: neues Konfliktpaar doc-pflege ↔ mockup-erstellen. Description 894 Zeichen.
+
 ## [v0.58.3] — 2026-10-22
 
 - **skills/code-erstellen, Fix (mockup-erstellen-003):** Description – „Do not trigger for UI mockups (HTML-Entwürfe)“

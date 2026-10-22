@@ -11,7 +11,8 @@ description: >
   Kapitelvorlagen, INDEX.md-Routing, Bauplan-Statuslisten, Handoff-Dokumente,
   or Sitzungsabschluss. Triggers also on bug fixes in documentation (typos,
   broken links, outdated chapters) and structural refactoring of existing docs. Do not trigger for code implementation,
-  automatic post-change advisory checks, or generic project discussion
+  automatic post-change advisory checks, mockup approvals (mockup-erstellen),
+  or generic project discussion
   without explicit doc intent.
 ---
 

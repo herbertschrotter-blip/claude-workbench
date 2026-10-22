@@ -52,6 +52,7 @@ Abschnitt „Vorrang / Delegation“.
 | code-erstellen ↔ mockup-erstellen | Code → code-erstellen; HTML-Mockup → mockup-erstellen, auch eine Änderung am bestehenden Projekt-Mockup mitten in einem Ticket- oder Code-Ablauf; Quellen und Generator-Skripte des Mockups → mockup-erstellen |
 | code-erstellen ↔ git-commit-helper | Code-Änderung samt Commit-Vorschlag → code-erstellen; ausdrücklicher Commit-Wunsch → git-commit-helper |
 | code-erstellen ↔ doc-pflege | Doku-Hinweise aus code-erstellen lösen doc-pflege nicht aus; ausdrücklicher Doku-Auftrag → doc-pflege |
+| doc-pflege ↔ mockup-erstellen | Abnahme eines Mockups festhalten, auch in einer README → mockup-erstellen; sonstige Doku → doc-pflege |
 | code-erstellen ↔ tracker | Code, auch mit Aufgabenbezug („mach BSM-002“, „weiter mit BSM-014“) → code-erstellen, tracker setzt nur den Status; ausdrücklicher Tracker-Befehl → tracker |
 | ticket ↔ tracker / code-erstellen | Ticketnummer oder Ticket-Befehl → ticket (ruft tracker und code-erstellen selbst auf); Aufgabe ohne Ticket → tracker; Bugfix ohne Ticket → code-erstellen |
 | audit ↔ code-erstellen | read-only Prüfung → audit; Fixes → code-erstellen (nach Auswahlfrage) |
