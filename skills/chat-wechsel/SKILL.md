@@ -4,7 +4,7 @@ description: >
   Erstellt die Übergabe an die nächste Claude-Sitzung: einen vollständigen
   Handover-Prompt mit Stand, Erledigtem, offenen Punkten, nächsten Schritten,
   Entscheidungen und Regeln (aus den Profilen); in Claude Code zusätzlich vorher
-  den Sitzungsabschluss im Repo (doc-pflege Modus 8). Use when users want to continue in a new chat or session, ask for
+  den Sitzungsabschluss im Repo (doc-pflege, Sitzungsabschluss). Use when users want to continue in a new chat or session, ask for
   a session handover, a continuation prompt, or a next-chat summary. Do not trigger for ChatGPT review prompts,
   generic prompt requests, or casual goodbyes like "tschüss" or "gute Nacht".
 ---
@@ -17,7 +17,7 @@ description: >
 
 - **Cowork-Chat:** Ein Handover-Prompt im Chat (PROMPT-STRUKTUR: `references/prompt-struktur.md`). Der Chat hat kein
   Repo-Gedächtnis, also trägt der Prompt den Stand.
-- **Claude Code:** Erst **doc-pflege Modus 8 (Sitzungsabschluss)** – Statusliste/Aufgabenquelle, Befunde,
+- **Claude Code:** Erst **doc-pflege, Sitzungsabschluss** – Statusliste/Aufgabenquelle, Befunde,
   Stand-Abschnitt, offene Punkte, Commit + Push nach der Push-Policy –, dann **derselbe vollständige Handover-Prompt** nach
   PROMPT-STRUKTUR (Herbert, 16.09.2026: „der war in BPM immer viel umfangreicher“). Der Prompt darf den
   Repo-Stand zusammenfassen, verweist aber für Details auf HANDOFF/Bauplan statt sie zu kopieren. Der
@@ -61,7 +61,7 @@ welcher zuerst dran ist.
   | Situation | Optionen |
   |-----------|----------|
   | Link-Prüfung findet tote Verweise | "Korrigieren", "Mit Warnung übernehmen", "Weglassen" |
-  | Claude Code: uncommittete Änderungen beim Abschluss | "Jetzt committen (Modus 8)", "Als offen vermerken", "Abbrechen" |
+  | Claude Code: uncommittete Änderungen beim Abschluss | "Jetzt committen (Sitzungsabschluss)", "Als offen vermerken", "Abbrechen" |
   | Batch-Abschluss: erledigte Tasks | "Alle als Done markieren", "Einzeln wählen", "Keine" |
   | Batch-Abschluss: erledigte Tasks einzeln wählen | multi_select mit allen Task-Namen |
   | Batch-Anlage: neue Tasks aus Chat | "Alle anlegen", "Einzeln wählen", "Keine" |
@@ -126,7 +126,7 @@ Cowork-Chat stehen in [references/cowork.md](references/cowork.md), Abschnitt �
 
 ## ABLAUF IN CLAUDE CODE (Sitzungsabschluss + vollständiger Prompt)
 
-1. **doc-pflege Modus 8 (Sitzungsabschluss)** ausführen: Statusliste/Aufgabenquelle ↔ Tracker, Befunde und
+1. **doc-pflege, Sitzungsabschluss** ausführen: Statusliste/Aufgabenquelle ↔ Tracker, Befunde und
    Entscheidungen, Stand-Abschnitt (Heidi: HANDOFF 3e), offene Punkte als Checkliste (HANDOFF 4), Doku-Checkliste
    des Commit-Profils, Commit + Push nach der Push-Policy (Grundsätze). Uncommittete Änderungen → Auswahlfrage.
 2. **ClickUp-Abgleich** nach [references/tracker-abgleich.md](references/tracker-abgleich.md) (Batch-Abschluss über tracker),
@@ -192,7 +192,7 @@ Jeder Verweis im Prompt muss stimmen, sonst startet die nächste Sitzung mit fal
 4. Kompakt aber vollständig
 5. Kopierfähig als Markdown-Codeblock
 6. Version prüfen
-7. Keine Datei — direkt im Chat; Claude Code: zusätzlich vorher Stand ins Repo (Modus 8)
+7. Keine Datei — direkt im Chat; Claude Code: zusätzlich vorher Stand ins Repo (doc-pflege, Sitzungsabschluss)
 8. Pending Quickload-Änderungen explizit nennen
 9. **ClickUp-Abgleich VOR Übergabeprompt** — offene Tasks laden + Chat scannen
 10. **Batch-Abschluss per Auswahlfrage** (nicht Prosa-Liste)
@@ -205,7 +205,7 @@ Jeder Verweis im Prompt muss stimmen, sonst startet die nächste Sitzung mit fal
 17. **Memory-Cleanup nur mit Bestätigung** — bei Einträgen die in diesem Chat bearbeitet wurden per Auswahlfrage fragen, nie stillschweigend entfernen
 18. **Link-Prüfung vor der Ausgabe** — Dateien, Abschnitte, Task-IDs, Version (Abschnitt „Link-Prüfung“)
 19. **Regeln-Block aus den Profilen** erzeugen, nicht aus einer festen Liste
-20. **Claude Code: erst doc-pflege Modus 8, dann vollständiger Handover-Prompt** — Kurzform nur auf Wunsch; Details verweisen auf HANDOFF/Bauplan statt sie zu kopieren
+20. **Claude Code: erst doc-pflege, Sitzungsabschluss, dann vollständiger Handover-Prompt** — Kurzform nur auf Wunsch; Details verweisen auf HANDOFF/Bauplan statt sie zu kopieren
 
 ---
 
@@ -230,7 +230,7 @@ Jeder Verweis im Prompt muss stimmen, sonst startet die nächste Sitzung mit fal
 - **Memory-Einträge stillschweigend entfernen nach Abschluss** — Herbert muss explizit bestätigen
 - **Prompt mit toten Verweisen ausgeben** (umbenannte Dateien, fehlende Abschnitte, falsche Task-IDs oder Version)
 - **BPM-Regeln oder BPM-NNN in den Prompt eines anderen Projekts schreiben** — Regeln und Präfix aus den Profilen
-- **In Claude Code den Stand nur in den Prompt schreiben statt ins Repo** (HANDOFF/Bauplan) — Modus 8 kommt immer zuerst
+- **In Claude Code den Stand nur in den Prompt schreiben statt ins Repo** (HANDOFF/Bauplan) — der Sitzungsabschluss kommt immer zuerst
 - **In Claude Code ungefragt nur den kurzen Startprompt liefern** — der User erwartet den vollständigen Handover-Prompt
 - **Sitzung mit uncommitteten Änderungen übergeben** ohne Auswahlfrage
 - **Den Prompt im neuen Fenster selbst absenden oder das alte Fenster schließen** — beides entscheidet der User

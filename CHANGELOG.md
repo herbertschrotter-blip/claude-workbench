@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.1] — 2026-10-22
+
+- **skills/chat-wechsel, Safe Patch (Umbau Phase 5, Schritt 3):** Verweise auf doc-pflege über den Abschnittsnamen statt
+  der Modusnummer: 7× „doc-pflege Modus 8“ bzw. „Modus 8“ → „doc-pflege, Sitzungsabschluss“ (Description, Zweck,
+  Grundsätze, Ablauf in Claude Code, Regeln 7 und 20, VERBOTEN). Sonst unverändert; Description 542 Zeichen.
+
 ## [v0.60.0] — 2026-10-22
 
 - **skills/doc-pflege, Refactor (Umbau Phase 5, Grenze audit ↔ doc-pflege):** prüfen = audit, ändern = doc-pflege.
