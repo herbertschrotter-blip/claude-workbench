@@ -53,7 +53,7 @@ einem Ticket- oder Code-Ablauf („erst ins Mockup einbauen“).
 **Wichtig:** Mockup-erstellen liefert HTML in die Mockup-Ablage des Profils. Sobald es um
 echten Code (XAML/C#, TypeScript/Lit) geht, gehört die Arbeit in code-erstellen. Umgekehrt
 ruft code-erstellen diesen Skill über den **Mockup-Hook** (Deep + UI + Profil „Mockup-Pflicht: ja“)
-auf und wartet auf die festgehaltene Abnahme (Kapitel 3, Schritt 4b).
+auf und wartet auf die festgehaltene Abnahme (Abschnitt „Workflow“, Schritt 4b).
 
 ---
 
@@ -100,106 +100,33 @@ Cowork per DC). Felder:
 | Feld | Bedeutung | BPM | Heidi |
 |------|-----------|-----|-------|
 | Ablage | Ordner für Mockups | `Docs/Mockups/<Modul>/NN_Fenster/` | `dreame_x60/mockups/` (flach) |
-| Namensschema | Datei- und Ordnernamen | `NN_Fenster/NN_Variante.html` (Kapitel 1) | `<thema>.html`, klein, ohne Umlaute; ein Mockup = alle betroffenen Seiten mit Tabs |
+| Namensschema | Datei- und Ordnernamen | `NN_Fenster/NN_Variante.html` (`references/sitemap.md#Namenskonvention`) | `<thema>.html`, klein, ohne Umlaute; ein Mockup = alle betroffenen Seiten mit Tabs |
 | Design-Quelle | Datei mit den gültigen Tokens | `Colors.xaml`, `UI_UX_Guidelines.md`, `WPF_UI_Architecture.md`, `Icons.xaml` | `dreame_x60/card/src/styles/tokens.ts` (`--dx-*`), Designvorgabe „Automotive Dark Bento“ |
 | Referenz-Mockup | Stilvorlage für neue Mockups | letztes Mockup im selben Modul | `dreame_x60/mockups/bento.html` |
 | Token-Form im HTML | wie Tokens im Mockup stehen | Hex-Werte aus Colors.xaml | CSS-Variablen `--dx-*` mit denselben Werten wie tokens.ts (`:root`-Block) |
 | Ansichten | Pflichtansichten je Mockup | Desktop | Desktop **und** 390 px (Smartphone) nebeneinander, Tablet wenn Container-Regeln betroffen |
-| Sitemap / Klick-Navigation | Kapitel 1 und 5–8 anwenden? | ja | nein (Tabs in der Datei, keine Kanten) |
+| Sitemap / Klick-Navigation | `references/sitemap.md` anwenden? | ja | nein (Tabs in der Datei, keine Kanten) |
 | Vorschau | wie der User das Mockup sieht | Visualizer (Cowork) | Claude Code: Browser-Bereich (Datei öffnen) oder Datei per SendUserFile; Cowork: Visualizer |
 | Abnahme-Ort | wo die Abnahme festgehalten wird | `_SITEMAP.md` (Status ✅) | Bauplan Abschnitt 7 (Seitentabelle: „Abgenommen von Herbert am <Datum> (Mockup <Datei>)“) und Notiz in Abschnitt 10; Abweichung zu v1 → PD-Eintrag 10a |
 | Commit-Modul | Modulname für den Commit | `Docs` | `Doku` |
 
-**Fehlt das Profil:** BPM-Werte aus diesem Skill annehmen (Kapitel 1–8) – nur wenn das Repo
+**Fehlt das Profil:** BPM-Werte aus diesem Skill und `references/sitemap.md` annehmen – nur wenn das Repo
 tatsächlich `Docs/Mockups/` hat; sonst Auswahlfrage „Profil anlegen (Vorschlag aus dem Repo)“.
 
 ---
 
-## 1. NAMENSKONVENTION (VERBINDLICH bei Profil „Sitemap: ja“ – BPM)
+## Sitemap und Klick-Navigation (Profil „Sitemap: ja“)
 
-### Ordnerstruktur (ab 2026-05)
-
-Jedes Fenster (Screen, Wizard, Dialog) bekommt **einen eigenen Ordner**. Mockup-Dateien
-liegen innerhalb dieses Ordners. Damit lassen sich Wizard-Schritte, Tab-Varianten und
-Design-Varianten sauber gruppieren.
-
-```
-Docs/Mockups/
-├── <Modul>/
-│   ├── _SITEMAP.md                       ← Navigationskanten (siehe Kapitel 6)
-│   ├── NN_Fenster/
-│   │   ├── NN_Variante.html
-│   │   └── ...
-│   ├── NN_NaechstesFenster/
-│   │   └── ...
-│   └── _Archiv/
-│       └── ...
-└── ...
-```
-
-### Schema
-
-```
-<Modul>/NN_Fenster/NN_Variante.html
-```
-
-| Teil | Beschreibung | Beispiel |
-|------|-------------|----------|
-| **Modul** | Modulname aus der App | PlanManager, Settings |
-| **NN_Fenster** | Ordner pro Fenster, NN = Navigationstiefe (2-stellig) | 01_Projektuebersicht, 04_ProfilWizard |
-| **NN_Variante** | Datei innerhalb des Fenster-Ordners. NN = Reihenfolge bei Mehrfach-Files | 01_Hauptansicht, 01_Datei, 05_Erkennung |
-
-### NN-Vergabe für Fenster-Ordner
-
-- **01** — Hauptseite des Moduls (z.B. Projektübersicht)
-- **02** — Detail-/Unterseite (z.B. Projektdetail)
-- **03+** — weitere Screens, Dialoge, Wizards in der Reihenfolge des Auftretens
-
-### NN-Vergabe für Dateien innerhalb eines Fenster-Ordners
-
-- **Single-Screen-Fenster:** eine Datei, z.B. `01_Hauptansicht.html` oder `01_<Fenstername>.html`
-- **Tab-Ansichten:** eine Datei pro Tab, NN entspricht Tab-Reihenfolge
-- **Wizard-Schritte:** eine Datei pro Schritt, NN = Schritt-Nummer
-- **Design-Varianten während Klärungsphase:** `01_Variante_Kompakt.html`, `01_Variante_Breit.html` — nach Auswahl gelöscht (Memory-Regel: Mockup-Varianten aufräumen)
-
-### Modul-Ordner
-
-Ordnername = Modulname aus der App:
-- `PlanManager`
-- `Settings` (oder `Einstellungen`, je nach App-Namen)
-- `Foto` (wenn Modul gebaut wird)
-- `Zeiterfassung` (wenn Modul gebaut wird)
-- `Bautagebuch` (wenn Modul gebaut wird)
-
-### Beispiele
-
-```
-PlanManager/01_Projektuebersicht/01_Projektuebersicht.html
-PlanManager/02_Projektdetail/01_Profile.html
-PlanManager/02_Projektdetail/02_ManuellSortieren.html
-PlanManager/02_Projektdetail/03_Sync.html
-PlanManager/03_ImportVorschau/01_ImportVorschau.html
-PlanManager/04_ProfilWizard/01_Datei.html
-PlanManager/04_ProfilWizard/02_Segmente.html
-PlanManager/04_ProfilWizard/03_Index.html
-PlanManager/04_ProfilWizard/04_Zielordner.html
-PlanManager/04_ProfilWizard/05_Erkennung.html
-PlanManager/_Archiv/00_Gesamtuebersicht.html
-Settings/01_Allgemein/01_Allgemein.html
-Settings/02_DevTools/01_Log.html
-Settings/02_DevTools/02_Reset.html
-```
-
-### Sonderregeln
-
-- Keine Umlaute in Ordner- und Dateinamen (ue statt ü, ae statt ä)
-- Keine Leerzeichen (Underscore als Trenner)
-- Archiv-Ordner: `_Archiv/` mit Unterstrich-Prefix → sortiert ans Ende
-- Bestehende einzelne Mockup-Dateien (Legacy-Stand vor 2026-05) werden bei Bedarf in passenden Fenster-Ordner verschoben
+Hat das Profil „Sitemap / Klick-Navigation: ja“ (BPM), gelten zusätzlich die Regeln in
+[references/sitemap.md](references/sitemap.md): Namenskonvention mit Ordner je Fenster, Klick-Navigation zwischen den
+Mockups, `_SITEMAP.md` mit Selbstcheck und die Abläufe für ein neues oder nachträglich eingefügtes Fenster. Vor jedem
+Mockup in einem solchen Projekt lesen. Ohne „Sitemap: ja“ wird die Reference nicht geladen.
 
 ---
 
-## 2. DOCS LADEN (PFLICHT vor Mockup-Erstellung)
+## Docs laden
+
+Pflicht vor der Mockup-Erstellung.
 
 Der Skill speichert KEINE Farbwerte, Spacing, Token-Namen.
 Stattdessen werden die **Design-Quelle** und das **Referenz-Mockup** aus dem Profil gelesen
@@ -228,7 +155,7 @@ Vor Erstellung eines neuen Mockups die Ablage des Profils listen:
 Cowork:      list_directory → Docs/Mockups/<Modul>/
 Claude Code: Glob → <Ablage>/*.html   (Heidi: dreame_x60/mockups/)
 ```
-- Prüfe ob `NN_Fenster/`-Ordner schon existiert (dann ist es eine neue Variante, kein neues Fenster — siehe Kapitel 7)
+- Prüfe ob `NN_Fenster/`-Ordner schon existiert (dann ist es eine neue Variante, kein neues Fenster — siehe `references/sitemap.md#Neues Fenster anlegen`)
 - Bei Update einer bestehenden Mockup-Datei: Per Auswahlfrage fragen (Archivieren, Überschreiben, Abbrechen).
   Heidi: abgelöste Mockups bleiben liegen und werden im Bauplan als „abgelöst durch <Datei>“ vermerkt (wie `seiten.html` → `bento.html`)
 
@@ -239,7 +166,7 @@ Vor jedem neuen Mockup:
 read_file → Docs/Mockups/<Modul>/_SITEMAP.md
 ```
 - Bestehende Navigationskanten kennen (welche Fenster gibt es schon? wer ruft was auf?)
-- Bei totem Pfad (`alert('Mockup folgt: X')`): prüfen ob X jetzt existiert → Cleanup (siehe Kapitel 6)
+- Bei totem Pfad (`alert('Mockup folgt: X')`): prüfen ob X jetzt existiert → Cleanup (siehe `references/sitemap.md#Sitemap und Selbstcheck`)
 
 ### Design-Referenz aus bestehenden Screens
 
@@ -250,7 +177,9 @@ Wenn ein neuer Screen im gleichen Modul/Stil wie ein bestehender sein soll:
 
 ---
 
-## 3. WORKFLOW (VERBINDLICH)
+## Workflow
+
+Verbindlich.
 
 ### Schritt 1 — Kontext sammeln
 - Welches Modul? Welcher Screen?
@@ -259,7 +188,7 @@ Wenn ein neuer Screen im gleichen Modul/Stil wie ein bestehender sein soll:
 - Gibt es einen bestehenden Screen als Stil-Referenz?
 
 ### Schritt 2 — Docs laden
-- Design-Quelle und Referenz-Mockup des Profils (Kapitel 2); BPM zusätzlich Quickload-First-Pass, Colors.xaml
+- Design-Quelle und Referenz-Mockup des Profils (Abschnitt „Docs laden“); BPM zusätzlich Quickload-First-Pass, Colors.xaml
 - `_SITEMAP.md` des betroffenen Moduls (nur BPM)
 - Aufgabenquelle des Schritts (Heidi: Bauplan-Karte, Akzeptanz = was das Mockup zeigen muss)
 - Memory prüfen auf Design-Entscheidungen (z.B. Karten-Design-Regeln; Heidi: Bauplan Abschnitt 10, PD-Register)
@@ -289,8 +218,8 @@ Wenn ein neuer Screen im gleichen Modul/Stil wie ein bestehender sein soll:
 - Erst nach User-Bestätigung
 - **Claude Code:** Write in die Ablage des Profils (Repo-Wurzel + Ablage); kein zusätzlicher Trigger nötig
 - **Cowork:** via DC `write_file` in `<workFolder>/<Ablage>/…`; User muss DC explizit triggern ("dc", "cc", "auf platte", "speichern")
-- Dateiname nach Namensschema des Profils (BPM: Kapitel 1)
-- Nur bei Profil „Sitemap: ja“: Sitemap aktualisieren (Kapitel 6), Aufrufer-HTMLs patchen (Kapitel 5 + 7), tote Pfade scannen (Kapitel 7)
+- Dateiname nach Namensschema des Profils (BPM: `references/sitemap.md#Namenskonvention`)
+- Nur bei Profil „Sitemap: ja“: Sitemap aktualisieren (`references/sitemap.md#Sitemap und Selbstcheck`), Aufrufer-HTMLs patchen (`references/sitemap.md#Interaktivität und Klick-Navigation`, `references/sitemap.md#Neues Fenster anlegen`), tote Pfade scannen (`references/sitemap.md#Neues Fenster anlegen`)
 
 ### Schritt 4b — Abnahme festhalten (Pflicht, sobald der User abnimmt)
 - Auswahlfrage „Abgenommen / Änderungen nötig / Später“ – erst nach der Vorschau der finalen Datei
@@ -309,7 +238,7 @@ Wenn ein neuer Screen im gleichen Modul/Stil wie ein bestehender sein soll:
 
 ---
 
-## 4. HTML-REGELN FÜR MOCKUPS
+## HTML-Regeln für Mockups
 
 ### Standalone-fähig
 - Mockup-HTML muss im Browser allein öffenbar sein
@@ -342,228 +271,11 @@ Wenn ein neuer Screen im gleichen Modul/Stil wie ein bestehender sein soll:
 ### Interaktivität
 - Hover-Effekte über `onmouseover`/`onmouseout` erlaubt
 - Tab-Wechsel via einfaches JS erlaubt
-- **Klick-Navigation zwischen Mockups: PFLICHT bei Profil „Sitemap: ja“** — siehe Kapitel 5; Heidi: Tabs innerhalb der Datei, Zustände (Leerlauf/Lauf/Fehler) als umschaltbare Varianten
+- **Klick-Navigation zwischen Mockups: PFLICHT bei Profil „Sitemap: ja“** — siehe `references/sitemap.md#Interaktivität und Klick-Navigation`; Heidi: Tabs innerhalb der Datei, Zustände (Leerlauf/Lauf/Fehler) als umschaltbare Varianten
 - Keine komplexe Logik — es ist ein Mockup, kein Prototyp
 
 ---
 
-## 5. INTERAKTIVITÄT & KLICK-NAVIGATION (PFLICHT bei Profil „Sitemap: ja“, ab 2026-05)
-
-Alle Mockups werden als **durchklickbarer Prototyp** ausgelegt. Buttons, Tabs, Karten,
-Sidebar-Einträge, Wizard-Weiter/Zurück: alles bekommt ein Klick-Ziel.
-
-### Klickbare Elemente
-
-Jedes interaktive Element bekommt:
-```html
-onclick="location.href='<relativer_pfad>'"
-```
-
-Plus visueller Hinweis auf Klickbarkeit (mindestens `cursor:pointer`, idealerweise Hover-Effekt).
-
-### Relative Pfade
-
-Pfade beziehen sich auf den Ordner des aktuellen Mockups:
-
-```
-gleicher Fenster-Ordner:     ./<NN_Variante>.html         (z.B. Wizard-Schritt → nächster Schritt)
-Geschwister-Fenster:         ../<NN_Fenster>/<datei>.html  (z.B. Projektübersicht → Projektdetail)
-Anderes Modul:               ../../<Modul>/<NN_Fenster>/<datei>.html  (z.B. Sidebar Settings)
-```
-
-### Tote Pfade (Ziel-Mockup existiert noch nicht)
-
-Wenn das Ziel-Mockup geplant aber noch nicht gebaut ist:
-
-```html
-onclick="alert('Mockup folgt: <Fenstername>')"
-style="border: 1px dashed #858585; opacity: 0.7;"
-```
-
-Plus visueller Hinweis (gestrichelter Rand, reduzierte Deckkraft) — damit User beim
-Durchklicken sieht: hier ist Klickbarkeit geplant, aber Ziel fehlt noch.
-
-Tote Pfade werden in der Sitemap mit Status `🟡 tot` markiert (Kapitel 6).
-
-### Navigation-Verhalten
-
-- **Gleicher Tab** (Default — natürliche App-Navigation, Browser-Zurück funktioniert)
-- Kein `target="_blank"` — Mockups simulieren echte App-Navigation, nicht externe Links
-- Sidebar/Modulleisten verlinken zwischen Modul-Ordnern
-
-### Beispiele
-
-**Projektübersicht-Karte klickt zur Detail-Ansicht:**
-```html
-<div class="projekt-karte" onclick="location.href='../02_Projektdetail/01_Profile.html'">
-  ...
-</div>
-```
-
-**Wizard "Weiter →"-Button:**
-```html
-<button onclick="location.href='./02_Segmente.html'">Weiter →</button>
-```
-
-**Sidebar Settings-Eintrag aus PlanManager-Modul:**
-```html
-<div onclick="location.href='../../Settings/01_Allgemein/01_Allgemein.html'">⚙ Einstellungen</div>
-```
-
-**Toter Pfad (Mockup noch nicht da):**
-```html
-<button onclick="alert('Mockup folgt: ImportVorschau')"
-        style="border:1px dashed #858585;opacity:0.7;">Import starten</button>
-```
-
----
-
-## 6. SITEMAP & SELBSTCHECK (ab 2026-05, nur bei Profil „Sitemap: ja“)
-
-### `_SITEMAP.md` pro Modul-Ordner
-
-Zentrale Wahrheit für Navigationskanten. Wird bei jedem neuen Mockup gelesen und
-nach Mockup-Erstellung aktualisiert.
-
-**Speicherort:** `Docs/Mockups/<Modul>/_SITEMAP.md`
-
-### Format
-
-```markdown
-# <Modul> — Sitemap
-
-## Fenster
-
-| Ordner | Status | Datei(en) |
-|---|---|---|
-| 01_Projektuebersicht | ✅ aktiv | 01_Projektuebersicht.html |
-| 02_Projektdetail | ✅ aktiv | 01_Profile.html, 02_ManuellSortieren.html, 03_Sync.html |
-| 04_ProfilWizard | 🟡 in Arbeit | 05_Erkennung.html (1-4 fehlen) |
-
-## Navigationskanten
-
-| Quelle | Ziel | Trigger | Status |
-|---|---|---|---|
-| 01_Projektuebersicht/01_Projektuebersicht.html | 02_Projektdetail/01_Profile.html | Projekt-Karte (Klick) | ✅ |
-| 02_Projektdetail/01_Profile.html | 01_Projektuebersicht/01_Projektuebersicht.html | Zurück-Pfeil (←) | ✅ |
-| 02_Projektdetail/01_Profile.html | 04_ProfilWizard/01_Datei.html | "+ Neuen Dokumenttyp" | 🟡 tot |
-| 02_Projektdetail/01_Profile.html | 04_ProfilWizard/01_Datei.html | "✎ Profil" pro Profil | 🟡 tot |
-| 04_ProfilWizard/01_Datei.html | 04_ProfilWizard/02_Segmente.html | "Weiter →" | 🟡 tot |
-```
-
-### Status-Symbole
-
-- **✅ aktiv** — beide Mockups existieren, Klick-Navigation funktioniert
-- **🟡 tot** — Ziel-Mockup fehlt noch, Aufrufer hat `alert('Mockup folgt: X')`
-- **❌ kaputt** — Pfad-Inkonsistenz (z.B. Datei verschoben, Link nicht angepasst)
-
-### Pflege-Pflicht
-
-- **Vor jedem neuen Mockup:** Sitemap lesen
-- **Nach jedem neuen Mockup:** Sitemap aktualisieren (neue Kanten ergänzen, tote → aktiv wenn Ziel jetzt da)
-- **Bei Umbenennung/Verschiebung:** alle Pfade in Sitemap UND in HTML-onclick-Refs anpassen
-- **Bei Mockup-Löschung:** Sitemap-Einträge entfernen, eingehende Kanten auf `🟡 tot` setzen oder Aufrufer-Mockups patchen
-
-### Selbstcheck
-
-Vor Commit:
-
-1. **Sitemap-Kanten vs HTML-onclick-Refs vergleichen**
-   - Jede Kante in Sitemap muss als `onclick` im Quell-HTML existieren
-   - Jeder `onclick` im HTML muss als Kante in der Sitemap stehen
-2. **Datei-Existenz prüfen**
-   - Jedes Ziel in `onclick="location.href='...'"` muss als Datei existieren
-   - Falls nicht → Kante als `🟡 tot` markieren ODER `alert('Mockup folgt: X')` verwenden
-3. **Diskrepanzen melden** statt stillschweigend zu korrigieren — User entscheidet
-
----
-
-## 7. WORKFLOW: NEUES FENSTER ANLEGEN (A+B kombiniert, nur bei Profil „Sitemap: ja“)
-
-Wenn ein komplett neues Fenster (Screen, Wizard, Dialog) angelegt wird, läuft der
-Skill folgenden Sub-Workflow ab:
-
-### Schritt 1 — User fragen (B-Mechanik)
-
-Per Auswahlfrage oder Prosa (bei freiem Text-Input):
-
-- **Eingehende Links:** Aus welchen bestehenden Fenstern wird das neue aufgerufen?
-  - Liste der vorhandenen Fenster aus Sitemap als Optionen
-  - Plus "Keine eingehenden Links" (z.B. neues Hauptmenü)
-- **Trigger im Aufrufer:** Welcher Button/Karte/Tab löst die Navigation aus?
-  - Freier Text-Input (z.B. "Button 'Neuen Dokumenttyp anlernen'")
-- **Ausgehende Links / Zurück-Verhalten:** Wohin kehrt das neue Fenster zurück?
-  - Aufrufer (typisch bei Dialogen) | Hauptseite | Anderes Fenster | Nirgends (Standalone)
-- **NN-Vergabe:** nächste freie Nummer, oder dazwischen-rücken (dann müssen nachfolgende renamed werden)
-
-### Schritt 2 — Aufrufer-HTMLs patchen (B-Mechanik)
-
-Für jede genannte Eingangs-Quelle:
-1. HTML-Datei laden
-2. Passende Klick-Stelle suchen (Button-Label, Karte mit bekanntem Text, Tab)
-3. `onclick="location.href='<pfad_zum_neuen_fenster>'"` einfügen
-4. Falls bisher `alert('Mockup folgt: X')` mit dem genauen Fenster-Namen drin war → ersetzen
-
-### Schritt 3 — Neues Mockup erstellen
-
-Standard-Workflow (Kapitel 3) für das neue Fenster:
-- Stil-Referenz: bestehende Mockups im selben Modul
-- Klick-Navigation: Zurück-Pfeil/Schließen-Button mit `onclick` zum angegebenen Rückkehr-Ziel
-- Tote Pfade für noch nicht existente Folge-Mockups
-
-### Schritt 4 — Sitemap aktualisieren (A-Persistenz)
-
-`_SITEMAP.md` patchen:
-- Neuen Fenster-Eintrag in "Fenster"-Tabelle
-- Neue Kanten in "Navigationskanten"-Tabelle (eingehend + ausgehend)
-- Status entsprechend: `✅` wenn beide Seiten existieren, `🟡 tot` wenn Ziel/Quelle fehlt
-
-### Schritt 5 — Tote Pfade scannen
-
-In allen HTML-Files des Moduls nach `alert('Mockup folgt: <neues_fenster>')` suchen:
-- Wenn gefunden → durch echten `location.href`-Link ersetzen
-- Sitemap-Status entsprechend von `🟡 tot` auf `✅` aktualisieren
-
-### Schritt 6 — Selbstcheck
-
-Kapitel 6 — Sitemap-Kanten vs HTML-onclick-Refs vergleichen, Datei-Existenz prüfen.
-
----
-
-## 8. WORKFLOW: NACHTRÄGLICH FENSTER HINZUFÜGEN (nur bei Profil „Sitemap: ja“)
-
-Wenn ein Fenster nachträglich (nach mehreren bereits gebauten Mockups) hinzugefügt
-wird, gilt der gleiche Workflow wie Kapitel 7, plus:
-
-### Zusatz-Schritt — Bidirektionalität prüfen
-
-Beim nachträglichen Einfügen verändern sich oft auch **bestehende Navigationsflüsse**:
-
-- Bestehendes Fenster A ruft jetzt zusätzlich das neue Fenster N auf
-- Bestehendes Fenster B verlinkt evtl. auf N statt auf altes Fenster C
-- Sitemap-Reorganisation möglich (NN-Vergabe)
-
-**Aktion:** Per Auswahlfrage fragen ob bestehende Flüsse angepasst werden müssen.
-
-### NN-Reorganisation (Vorsicht)
-
-Falls die NN-Vergabe geändert werden soll (z.B. neues Fenster zwischen alten 02 und 03
-→ alle ab 03 hochrücken):
-
-- ALLE Mockup-Ordner umbenennen
-- ALLE relativen Pfade in allen `onclick="location.href='...'"` anpassen
-- Sitemap komplett neu pflegen
-
-Das ist aufwendig. **Default:** neue Nummer am Ende vergeben (z.B. 06_NeuesFenster),
-auch wenn es thematisch zwischen 02 und 03 gehört. Sitemap stellt den logischen Fluss
-ohnehin separat dar.
-
-### Sitemap-Cleanup auch hier
-
-Wie in Kapitel 7 Schritt 5: tote Pfade auf das neue Fenster scannen und ersetzen,
-Sitemap-Status nachziehen.
-
----
 
 ## VERBOTEN
 
@@ -582,8 +294,8 @@ Sitemap-Status nachziehen.
 - **BPM-Ablage oder -Namensschema für ein anderes Projekt annehmen** – alles aus dem Mockup-Profil
 - **Externe Ressourcen im Mockup** (Web-Fonts, CDN), wenn das Projekt sie verbietet
 - Prosa-Fragen bei festen Entscheidungsoptionen (z.B. Archiv-vs-Überschreiben-Entscheidung)
-- **Mockup ohne Klick-Navigation auf interaktive Elemente speichern** (Profil „Sitemap: ja“) — alle Buttons/Tabs/Karten brauchen `onclick` (Kapitel 5)
-- **Sitemap-Update vergessen nach Mockup-Erstellung** (Profil „Sitemap: ja“) — `_SITEMAP.md` ist Single Source of Truth (Kapitel 6)
+- **Mockup ohne Klick-Navigation auf interaktive Elemente speichern** (Profil „Sitemap: ja“) — alle Buttons/Tabs/Karten brauchen `onclick` (`references/sitemap.md#Interaktivität und Klick-Navigation`)
+- **Sitemap-Update vergessen nach Mockup-Erstellung** (Profil „Sitemap: ja“) — `_SITEMAP.md` ist Single Source of Truth (`references/sitemap.md#Sitemap und Selbstcheck`)
 - **Tote Pfade nicht prüfen vor Mockup-Erstellung** — `alert('Mockup folgt: X')` muss ersetzt werden wenn X jetzt existiert
-- **Aufrufer-HTMLs nicht patchen** beim Anlegen eines neuen Fensters — Workflow Kapitel 7 Schritt 2 ist Pflicht
-- **Pfade in onclick ohne Selbstcheck speichern** — Datei-Existenz und Sitemap-Konsistenz prüfen (Kapitel 6)
+- **Aufrufer-HTMLs nicht patchen** beim Anlegen eines neuen Fensters — `references/sitemap.md#Neues Fenster anlegen`, Schritt 2 ist Pflicht
+- **Pfade in onclick ohne Selbstcheck speichern** — Datei-Existenz und Sitemap-Konsistenz prüfen (`references/sitemap.md#Sitemap und Selbstcheck`)

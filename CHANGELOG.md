@@ -8,6 +8,14 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.58.1] — 2026-10-22
+
+- **skills/mockup-erstellen, Refactor (Split, bei mockup-erstellen-003):** `SKILL.md` lag mit rund 573 Zeilen über der
+  Grenze von 500. Die Kapitel nur für Profil „Sitemap: ja“ (Namenskonvention, Klick-Navigation, Sitemap und
+  Selbstcheck, neues und nachträgliches Fenster) ziehen wörtlich nach `references/sitemap.md`; im Kern verweist ein
+  kurzer Abschnitt darauf. Überschriften ohne Nummern, Verweise über Datei und Überschrift statt „Kapitel N“. Keine
+  Regel entfällt: Regel-Inventar `docs/skill-refactors/2026-10-22-mockup-erstellen.md`. Lieferung ab jetzt als Zip.
+
 ## [v0.58.0] — 2026-10-22
 
 - **skills/projekt-anlegen, Feature (projekt-anlegen-002, Skill-Auswertung 21.10.2026):** neuer Auslöser – ein
