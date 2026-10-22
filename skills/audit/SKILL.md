@@ -1,16 +1,19 @@
 ---
 name: audit
 description: >
-  Prüft read-only die Konsistenz zwischen Code und Projektdokumentation nach
-  Doku- und Code-Profil des Repos (BPM: INDEX-Routing, Frontmatter, Quickloads;
-  Heidi: Bauplan-Statusliste, Entitäts-Vertrag ↔ contract.ts, HANDOFF,
-  PD-Register). Use when users want a consistency audit, a documentation-vs-code
-  check, a Frontmatter or Quickload validation, a Bauplan check, a check of a
-  project against its ground rules (Grundsatzregeln, e.g. Home Assistant), or a
-  systematic read-only review of project rules, including whether an index or
-  router file matches the descriptions of the skills, modules or docs it
-  lists. Do not trigger for code
-  implementation, build debugging, or general code review without doc/context
+  Prüft read-only, ob Code, Projektdoku und Skills zueinander passen, nach dem
+  Skill-Profil des Repos: Doku gegen Code, Doku-Validierung (z. B. Frontmatter,
+  Quickload, Router, Statuslisten), Aufgaben im Tracker gegen die
+  Aufgabenquelle, Grundsatzregeln eines Stacks, im Skill-Repo die Skills gegen
+  INDEX und Qualitätsregeln; ändert selbst nichts. Use when users want to
+  prüfen, checken, auditieren, or validieren without changes — a consistency
+  audit, a documentation-vs-code check, a Frontmatter or Quickload
+  validation, a check of a project against its ground rules (Grundsatzregeln,
+  e.g. Home Assistant), a check whether an index or router file matches the
+  descriptions of the skills, modules or docs it lists, or a systematic
+  read-only review of project rules. Do not trigger for writing documentation
+  or fixing findings (doc-pflege), code implementation (code-erstellen), build
+  debugging, or general code review of a function or diff without doc
   comparison.
 ---
 
@@ -18,12 +21,17 @@ description: >
 
 ## Zweck
 
-Prüft ob Code und Docs konsistent sind. **Was** geprüft wird, steht in den Profilen des
-Repos (CLAUDE.md): Feld „Validierung“ des **Doku-Profils**, „Schichten / Kopplung“ und
-„Aufgabenquelle“ des **Code-Profils**, dazu die Stack-Referenzen von code-erstellen
-(`references/stacks/<key>.md`) für die Code-Seite. audit führt keine eigenen Prüfregeln;
-es ist der Read-only-Läufer über diese Regeln. BPM: INDEX-Routing, Frontmatter, Quickload,
-Schema, DI. Heidi: Bauplan, Vertrag, HANDOFF, PD-Register.
+Prüft read-only, ob Code, Projektdoku, Aufgaben im Tracker und – im Skill-Repo – die Skills
+zueinander passen. **Was** geprüft wird, steht im **Skill-Profil** des Repos (CLAUDE.md,
+Abschnitt „Profile laden“): `Doku.Validierungsregeln` und `Doku.Router`,
+`Code.Architekturregeln` und `Code.Aufgabenquelle`, `Modul.Grundsatzregeln`, dazu die
+Stack-Referenzen von code-erstellen (`references/stacks/<key>.md`) für die Code-Seite; in Repos
+ohne Skill-Profil das Feld „Validierung“ des **Doku-Profils** und „Schichten / Kopplung“ und
+„Aufgabenquelle“ des **Code-Profils**. Im Skill-Repo kommen `docs/skill-quality.md` und die
+Skill-Tabelle der `INDEX.md` dazu (Modul 8). audit erfindet keine Prüfregeln; es ist der
+Read-only-Läufer über diese Regeln. Eigene Prüflisten führt es nur für die Doku-Validierung von
+Projekten ohne solche Regeln im Profil (`references/doku-validierung.md`). BPM: INDEX-Routing,
+Frontmatter, Quickload, Schema, DI. Heidi: Bauplan, Vertrag, HANDOFF, PD-Register.
 
 ---
 
@@ -36,19 +44,21 @@ sondern delegieren.**
 | Hauptabsicht | Zuständiger Skill |
 |--------------|-------------------|
 | Code schreiben oder ändern (Fix, Feature, Refactor) | **code-erstellen** |
-| Doku schreiben, ADR, Konzept, Frontmatter-Pflege | **doc-pflege** |
+| Doku schreiben oder Befunde beheben, ADR, Konzept, Frontmatter-Pflege | **doc-pflege** |
+| Skill ändern (auch Skill-Befunde beheben) | **skill-pflege** |
 | UI-Entwurf als HTML-Mockup | **mockup-erstellen** |
 | Commit-Befehl, Commit-Message | **git-commit-helper** |
 | ClickUp-Task-Aktion | **tracker** |
 
 Nur wenn die Hauptabsicht **read-only Konsistenzprüfung** ist
-(Audit-Report, Frontmatter-Check, Code-vs-Doc-Abgleich, INDEX-Validierung),
-bleibt audit zuständig.
+(Audit-Report, Frontmatter-Check, Code-vs-Doc-Abgleich, INDEX-Validierung,
+Skill-Prüfung im Skill-Repo), bleibt audit zuständig.
 
 **Wichtig:** Nach einem Audit-Report bietet audit KEINE Fixes selbst an.
 Die im Report empfohlenen Aktionen werden per Auswahlfrage an
 den passenden Skill delegiert (code-erstellen für Code-Fixes, doc-pflege
-für Doc-Fixes) oder als Aufgaben über **tracker** angelegt (Abschnitt
+für Doc-Fixes, skill-pflege für Skill-Befunde) oder als Aufgaben über
+**tracker** angelegt (Abschnitt
 „Nach dem Report“). audit ist der Analyse-Skill, nicht der Fix-Skill.
 
 ---
@@ -63,7 +73,7 @@ für Doc-Fixes) oder als Aufgaben über **tracker** angelegt (Abschnitt
   | Modus-Auswahl (A oder B) | Vollaudit, Teilaudit, Abbrechen |
   | Teilaudit: welches Modul | Modul-Namen aus dem Router des Profils (BPM: INDEX.md; Heidi: Karte/Backend/Doku/Tools); „nur Grundsatz“, wenn das Profil Grundsatzregeln nennt |
   | Vollaudit-Warnung vor Start | Starten, Als Teilaudit starten, Abbrechen |
-  | Nach dem Report: was mit den Befunden | Als Tasks anlegen (tracker), An code-erstellen/doc-pflege, Nur Report |
+  | Nach dem Report: was mit den Befunden | Als Tasks anlegen (tracker), An code-erstellen/doc-pflege/skill-pflege, Nur Report |
 
   Prosa nur bei einer offenen Frage ohne feste Optionen oder wenn der Nutzer eine Präferenz signalisiert hat.
 - **Branch** nach der Branch-Policy im Skill-Profil der `CLAUDE.md`: `current` → der aktuelle Branch aus der Shell
@@ -81,12 +91,20 @@ Cowork: bei DC-Operationen Arbeitsverzeichnis nach **cc-steuerung**, Abschnitt �
 
 ## Profile laden (Pflicht vor jedem Audit)
 
-1. `CLAUDE.md` des Repos: Abschnitte `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router)
+1. `CLAUDE.md` des Repos, Abschnitt `## Skill-Profil` (Spezifikation `docs/skill-profile-v1.md` im
+   Skill-Repo). Pflichtfelder für audit: die Grundfelder, `Doku.Router`, `Doku.Validierungsregeln`;
+   `Code.Architekturregeln`, wenn Code geprüft wird; `Tracker.Config`, wenn der Tracker geprüft wird.
+   Dazu, was die Module brauchen: `Code.Stacks`, `Code.Aufgabenquelle`, `Doku.Pflichtdokumente`, im
+   Skill-Repo der Check `skill-validation` unter `### Checks`. Fehlt ein Pflichtfeld oder steht es auf
+   `fehlt`: genau dieses Feld melden und nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“,
+   fragen; das Profil ergänzt nicht audit, sondern doc-pflege (Projekt-Init) oder der Nutzer.
+2. Fehlt der Abschnitt: `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router)
    und `## Code-Profil` (Schichten/Kopplung, Aufgabenquelle, Stacks, Tests)
-2. Stack-Referenzen `skills/code-erstellen/references/stacks/<key>.md` für jeden Schlüssel in `Stacks:`
-3. Fehlt das Doku-Profil: `INDEX.md` + `DOC-STANDARD.md` (BPM-Weg). Fehlt beides: Auswahlfrage
-   „Profil anlegen (doc-pflege Modus 0)“ / „Ohne Profil, ich nenne die Docs“ – nie raten.
-4. Skill-Profil, Bereich `### Modul` (für Modul 7): `Grundsatzregeln` (Verweis auf das Regelwerk; `none` → Modul 7
+3. Stack-Referenzen `skills/code-erstellen/references/stacks/<key>.md` für jeden Schlüssel in
+   `Code.Stacks` bzw. `Stacks:`
+4. Fehlt auch das Doku-Profil: `INDEX.md` + `DOC-STANDARD.md` (BPM-Weg). Fehlt beides: Auswahlfrage
+   „Profil anlegen (doc-pflege, Projekt-Init)“ / „Ohne Profil, ich nenne die Docs“ – nie raten.
+5. Skill-Profil, Bereich `### Modul` (für Modul 7): `Grundsatzregeln` (Verweis auf das Regelwerk; `none` → Modul 7
    entfällt), `Manifest` (Pfad oder Muster der Modul-Manifeste), `Prüfumfang` (Positivliste der lesbaren Bereiche),
    `Nachweise` (optional: Zuordnung Check/Testfall → Teilnachweis). Ein Verweis, der nicht auflöst, ist ein Befund; ein
    fehlender benötigter Wert wird erfragt, nie geraten. Beim Teilaudit „nur Grundsatz“ werden Doku- und Tracker-Werte
@@ -108,8 +126,8 @@ nur für die geprüften Schritte → 10/10a für Befunde und Register.
 ## 2 Modi
 
 ### Modus A — Vollaudit
-Alle 7 Module (Modul 7 nur, wenn das Profil Grundsatzregeln nennt). Token-intensiv — vor Start per Auswahlfrage
-bestätigen lassen.
+Alle 8 Module (Modul 7 nur, wenn das Profil Grundsatzregeln nennt; Modul 8 nur im Skill-Repo). Token-intensiv — vor
+Start per Auswahlfrage bestätigen lassen.
 
 ### Modus B — Teilaudit
 Nur relevantes Modul.
@@ -212,27 +230,14 @@ Heidi:
 
 ### Modul 6 — Formale Doc-Prüfung nach Profil
 
-Für die detaillierten Prüfregeln siehe **doc-pflege Modus 6** (Validierung nach Profil;
-BPM Stufe A Formal/Blocker, Stufe B Semantisch/Warnung; Heidi-Prüfliste ebendort).
+Neutral: Halten die Docs die Validierungsregeln des Projekts ein?
 
-Heidi-Kurzprüfung: Karten mit allen Feldern (Voraussetzung, Ziel, Nicht ändern, Akzeptanz);
-Statusliste ohne Lücken; keine Notiz ohne Datum/Art/Schwere; PD-Tabelle vollständig gefüllt.
-
-BPM-Kurzprüfung hier:
-
-#### 6a. Frontmatter-Vollständigkeit
-- Frontmatter vorhanden? Pflichtfelder? doc_id eindeutig?
-
-#### 6b. Quickload-Vollständigkeit
-- Quickload vorhanden bei source_of_truth/secondary?
-- Kapitel-Feld stimmt mit H2s?
-
-#### 6c. Cross-Checks
-- INDEX referenziert nur Docs mit gültigem Frontmatter?
-- source_of_truth hat Quickload?
-- historical NICHT als Primary im Router?
-- Keine doppelten doc_ids?
-- Fachliche Invarianten nicht widersprüchlich zwischen Docs?
+- Die Prüfregeln stehen in `Doku.Validierungsregeln` des Skill-Profils (ohne Skill-Profil: Feld „Validierung“ des
+  Doku-Profils).
+- `none`: Das Projekt führt bewusst keine Doku-Validierung; Modul 6 entfällt.
+- Ohne Skill-Profil und ohne Feld „Validierung“ gelten die Prüflisten in
+  [references/doku-validierung.md](references/doku-validierung.md): je Projekt Stufe A (Blocker) und Stufe B (Warnung).
+- Im Skill-Repo zeigt das Feld auf die Skill-Prüfung; die läuft nur einmal, in Modul 8.
 
 ---
 
@@ -251,6 +256,23 @@ Neutral: Hält das Projekt die Grundsatzregeln ein, auf die `Modul.Grundsatzrege
 | Stack | Reference |
 |---|---|
 | `home-assistant` | [`references/grundsatz/home-assistant.md`](references/grundsatz/home-assistant.md) |
+
+---
+
+### Modul 8 — Skills (im Skill-Repo)
+
+Neutral: Passen die Skills zu INDEX und Qualitätsregeln?
+
+Nur im Skill-Repo (Repo mit `skills/<name>/SKILL.md` und `docs/skill-quality.md`); sonst entfällt das Modul.
+
+- **Mechanik:** Check `skill-validation` des Skill-Profils, mit JSON-Bericht in eine Datei außerhalb des Repos (audit
+  schreibt nichts ins Repo). Fehler → ❌, Warnungen → ⚠️. Läuft der Check auf dieser Maschine nicht, gilt das Ergebnis
+  der automatischen Prüfung zum aktuellen Stand; fehlt auch das, ist die Mechanik „Nachweis offen“.
+- **Urteil** nach `docs/skill-quality.md`, Abschnitt „Urteil – audit“: Description zu breit oder zu eng, Kollisionen
+  mit anderen Skills, Neutralität, inhaltliche Doppelungen, Schnitt Kern/References, Eval-Fälle realistisch.
+- **INDEX ↔ Descriptions:** Skill-Tabelle der `INDEX.md` gegen die Descriptions – jeder Ordner unter `skills/` hat eine
+  Zeile und umgekehrt; Zuständigkeit und Auslöser der Zeile decken sich mit der Description.
+- **Befunde** → skill-pflege bzw. `tracker issue <skill>` (Abschnitt „Nach dem Report“).
 
 ---
 
@@ -343,9 +365,11 @@ eine Auswahlfrage:
   Ein Sammel-Task pro Modul mit den Befunden als Checkliste in der Beschreibung; ❌-Befunde mit
   Priorität `high`, ⚠️ `normal`. Bei ≤ 3 Befunden auch je Befund ein Task (Auswahlfrage).
   Alle ClickUp-Operationen über den tracker-Skill, nie direkt.
-- **„An code-erstellen / doc-pflege“** → Befunde als Aufgabenliste an den Fix-Skill übergeben
-  (Code-Befunde → code-erstellen, Doc-Befunde → doc-pflege Modus 5/6); der Fix-Skill startet erst
-  nach eigener Bestätigung.
+  Skill-Befunde (Modul 8) stattdessen als `tracker issue <skill>: Audit: …`, je Skill ein Issue mit
+  den Befunden als Checkliste.
+- **„An code-erstellen / doc-pflege / skill-pflege“** → Befunde als Aufgabenliste an den Fix-Skill
+  übergeben (Code-Befunde → code-erstellen, Doc-Befunde → doc-pflege, Abschnitt „Doku pflegen“,
+  Skill-Befunde → skill-pflege); der Fix-Skill startet erst nach eigener Bestätigung.
 - **„Nur Report“** → Report bleibt; Hinweis, dass Befunde ohne Task beim nächsten Audit wieder auftauchen.
 
 Bei Heidi zusätzlich: Befunde, die eine Entscheidung von Herbert brauchen (Regel-Widerspruch,
@@ -375,7 +399,8 @@ Entscheidung offen) – eintragen tut doc-pflege, nicht audit.
 - Ladereihenfolge des Profils ignorieren (BPM: Quickload-Laderegel)
 - Prosa-Fragen bei festen Entscheidungsoptionen (Modus-Auswahl, Modul-Auswahl für Teilaudit)
 - Branch automatisch annehmen (Branch-Policy lesen, Shell fragen oder Auswahlfrage)
-- Eigene Prüfregeln erfinden statt Doku-/Code-Profil und Stack-Referenzen zu lesen
+- Eigene Prüfregeln erfinden statt Skill-Profil (bzw. Doku-/Code-Profil), Stack-Referenzen und
+  `references/doku-validierung.md` zu lesen
 - BPM-Prüfpunkte (DB-Schema, DI, Frontmatter) auf ein Projekt anwenden, das sie laut Profil nicht hat
 - Befunde ohne Datei und Stelle melden
 - Report beenden ohne Auswahlfrage „Tasks / Fix-Skill / Nur Report“

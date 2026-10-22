@@ -16,7 +16,7 @@ wiederholt sie nicht.
 
 | Skill | Zuständig für | Löst aus bei |
 |-------|---------------|--------------|
-| **audit** | Konsistenz zwischen Code und Doku prüfen, dazu Prüfung gegen Grundsatzregeln (Modul 7, z. B. HA), read-only; Befunde → tracker oder Fix-Skill | "audit", "prüfe alles", "konsistenzcheck", "passt die Doku noch zum Code", "hält das Projekt die Grundsatzregeln ein", "passen INDEX und Skill-Beschreibungen zusammen" |
+| **audit** | Konsistenz zwischen Code und Doku prüfen, Doku-Validierung (Frontmatter, Quickload, Router, Statuslisten), Prüfung gegen Grundsatzregeln (Modul 7, z. B. HA), im Skill-Repo die Skills gegen INDEX und Qualitätsregeln (Modul 8), read-only; Befunde → tracker oder Fix-Skill | "audit", "prüfe alles", "konsistenzcheck", "prüfe die Doku", "prüfe frontmatter", "passt die Doku noch zum Code", "hält das Projekt die Grundsatzregeln ein", "passen INDEX und Skill-Beschreibungen zusammen" |
 | **cc-steuerung** | Desktop Commander im Cowork-Chat (Modalität, WIE statt WAS); nie in Claude Code | im Cowork-Chat: "cc mach", "dc lies", "direkt auf den PC" |
 | **chat-wechsel** | Übergabe an die nächste Sitzung (Handover-Prompt; in Claude Code vorher Sitzungsabschluss über doc-pflege, mit tmux gleich neues Fenster im Projekt mit Remote Control) | "neuer chat", "übergabe", "chat wechsel" |
 | **chatgpt-review** | Review-Gespräch mit ChatGPT: Prompts, Runden selbst über die Codex CLI (sonst Codeblock zum Kopieren), Archiv (CGR) nach der Review-Config des Repos | "besprich mit ChatGPT", "zweite Meinung", "lass Codex das reviewen", "Runde N" |
@@ -56,6 +56,8 @@ Abschnitt „Vorrang / Delegation“.
 | code-erstellen ↔ tracker | Code, auch mit Aufgabenbezug („mach BSM-002“, „weiter mit BSM-014“) → code-erstellen, tracker setzt nur den Status; ausdrücklicher Tracker-Befehl → tracker |
 | ticket ↔ tracker / code-erstellen | Ticketnummer oder Ticket-Befehl → ticket (ruft tracker und code-erstellen selbst auf); Aufgabe ohne Ticket → tracker; Bugfix ohne Ticket → code-erstellen |
 | audit ↔ code-erstellen | read-only Prüfung → audit; Fixes → code-erstellen (nach Auswahlfrage) |
+| audit ↔ doc-pflege | Doku prüfen oder validieren, nichts ändern → audit; Doku schreiben oder Befunde beheben → doc-pflege |
+| audit ↔ skill-pflege | Skills prüfen (INDEX, Qualitätsregeln) → audit; Skill ändern, auch nach einem Befund → skill-pflege |
 | chat-wechsel ↔ sitzung | Übergabe mit Handover-Prompt (auch mit neuem Fenster) → chat-wechsel; vorhandenes Gespräch finden, fortsetzen, Fenster verwalten oder wiederherstellen → sitzung |
 | chat-wechsel ↔ chatgpt-review | Übergabe an Claude → chat-wechsel; Review-Prompt für ChatGPT → chatgpt-review; unklar → Auswahlfrage |
 | projekt-anlegen ↔ code-erstellen | neues Projekt anlegen, Repo holen und einrichten oder ein bestehendes Repo für die Skills einrichten (Skill-Profil, Configs) → projekt-anlegen; ein neues Projekt bekommt dort nur technische Funktionsfähigkeit (Start, Schichten verbunden, Konfiguration, Tests, gegebenenfalls neutrale Datenhaltung). Fachliches Verhalten und jede Änderung in einem bestehenden Projekt → code-erstellen. Enthält ein Auftrag beides: erst das Grundgerüst (projekt-anlegen), dann code-erstellen. Altbestand ohne eigenes Projekt (Pakete, Skripte, Karten im Konfigurationsordner) neu aufbauen → projekt-anlegen; Änderung in einem bestehenden Projekt-Repo → code-erstellen |

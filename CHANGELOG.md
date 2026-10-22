@@ -8,6 +8,20 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.59.0] — 2026-10-22
+
+- **skills/audit, Refactor (Umbau Phase 5, Grenze audit ↔ doc-pflege):** prüfen = audit, ändern = doc-pflege.
+  - Description neu ohne Projektnamen (960 Zeichen): Doku gegen Code, Doku-Validierung, Tracker gegen Aufgabenquelle,
+    Grundsatzregeln, im Skill-Repo die Skills; Do-not: Doku schreiben oder Befunde beheben (doc-pflege).
+  - Profile laden liest zuerst das Skill-Profil v1; Doku- und Code-Profil bleiben als Rückfall.
+  - Modul 6 prüft nach `Doku.Validierungsregeln` (`none` → entfällt); die Prüflisten aus doc-pflege Modus 6 stehen in
+    der neuen Reference `references/doku-validierung.md`, die Kurzprüfungen sind darin aufgegangen.
+  - Neu Modul 8 „Skills (im Skill-Repo)“: Prüfskript, Urteil nach `docs/skill-quality.md`, INDEX gegen Descriptions;
+    Befunde an skill-pflege bzw. `tracker issue`.
+  - Verweise auf doc-pflege über Abschnittsnamen statt Modusnummern.
+  - Regel-Inventar `docs/skill-refactors/2026-10-22-audit.md` (109 Zeilen, keine DROP). INDEX: Zeile audit,
+    Konfliktpaare audit ↔ doc-pflege und audit ↔ skill-pflege.
+
 ## [v0.58.5] — 2026-10-22
 
 - **skills/audit, Fix (audit-001):** Description – „Use when …“ nennt jetzt auch die Prüfung, ob eine Index- oder
