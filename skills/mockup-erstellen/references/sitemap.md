@@ -15,7 +15,7 @@ Workflow und HTML-Regeln stehen in `SKILL.md`.
 
 Verbindlich bei Profil „Sitemap: ja“ (BPM).
 
-### Ordnerstruktur (ab 2026-05)
+### Ordnerstruktur
 
 Jedes Fenster (Screen, Wizard, Dialog) bekommt **einen eigenen Ordner**. Mockup-Dateien
 liegen innerhalb dieses Ordners. Damit lassen sich Wizard-Schritte, Tab-Varianten und
@@ -62,7 +62,7 @@ Docs/Mockups/
 
 ### Modul-Ordner
 
-Ordnername = Modulname aus der App:
+Ordnername = Modulname aus der App (Beispiel BPM):
 - `PlanManager`
 - `Settings` (oder `Einstellungen`, je nach App-Namen)
 - `Foto` (wenn Modul gebaut wird)
@@ -93,13 +93,13 @@ Settings/02_DevTools/02_Reset.html
 - Keine Umlaute in Ordner- und Dateinamen (ue statt ü, ae statt ä)
 - Keine Leerzeichen (Underscore als Trenner)
 - Archiv-Ordner: `_Archiv/` mit Unterstrich-Prefix → sortiert ans Ende
-- Bestehende einzelne Mockup-Dateien (Legacy-Stand vor 2026-05) werden bei Bedarf in passenden Fenster-Ordner verschoben
+- Einzelne Mockup-Dateien außerhalb eines Fenster-Ordners werden bei Bedarf in den passenden Fenster-Ordner verschoben
 
 ---
 
 ## Interaktivität und Klick-Navigation
 
-Pflicht bei Profil „Sitemap: ja“ (ab 2026-05).
+Pflicht bei Profil „Sitemap: ja“.
 
 Alle Mockups werden als **durchklickbarer Prototyp** ausgelegt. Buttons, Tabs, Karten,
 Sidebar-Einträge, Wizard-Weiter/Zurück: alles bekommt ein Klick-Ziel.
@@ -172,7 +172,7 @@ Tote Pfade werden in der Sitemap mit Status `🟡 tot` markiert (Abschnitt „Si
 
 ## Sitemap und Selbstcheck
 
-Ab 2026-05, nur bei Profil „Sitemap: ja“.
+Nur bei Profil „Sitemap: ja“.
 
 ### `_SITEMAP.md` pro Modul-Ordner
 
@@ -237,9 +237,9 @@ Vor Commit:
 A+B kombiniert, nur bei Profil „Sitemap: ja“.
 
 Wenn ein komplett neues Fenster (Screen, Wizard, Dialog) angelegt wird, läuft der
-Skill folgenden Sub-Workflow ab:
+Skill folgenden Sub-Workflow ab, in dieser Reihenfolge:
 
-### Schritt 1 — User fragen (B-Mechanik)
+### User fragen (B-Mechanik)
 
 Per Auswahlfrage oder Prosa (bei freiem Text-Input):
 
@@ -252,7 +252,7 @@ Per Auswahlfrage oder Prosa (bei freiem Text-Input):
   - Aufrufer (typisch bei Dialogen) | Hauptseite | Anderes Fenster | Nirgends (Standalone)
 - **NN-Vergabe:** nächste freie Nummer, oder dazwischen-rücken (dann müssen nachfolgende renamed werden)
 
-### Schritt 2 — Aufrufer-HTMLs patchen (B-Mechanik)
+### Aufrufer-HTMLs patchen (B-Mechanik)
 
 Für jede genannte Eingangs-Quelle:
 1. HTML-Datei laden
@@ -260,27 +260,27 @@ Für jede genannte Eingangs-Quelle:
 3. `onclick="location.href='<pfad_zum_neuen_fenster>'"` einfügen
 4. Falls bisher `alert('Mockup folgt: X')` mit dem genauen Fenster-Namen drin war → ersetzen
 
-### Schritt 3 — Neues Mockup erstellen
+### Neues Mockup erstellen
 
 Standard-Workflow (`SKILL.md`, Abschnitt „Workflow“) für das neue Fenster:
 - Stil-Referenz: bestehende Mockups im selben Modul
 - Klick-Navigation: Zurück-Pfeil/Schließen-Button mit `onclick` zum angegebenen Rückkehr-Ziel
 - Tote Pfade für noch nicht existente Folge-Mockups
 
-### Schritt 4 — Sitemap aktualisieren (A-Persistenz)
+### Sitemap aktualisieren (A-Persistenz)
 
 `_SITEMAP.md` patchen:
 - Neuen Fenster-Eintrag in "Fenster"-Tabelle
 - Neue Kanten in "Navigationskanten"-Tabelle (eingehend + ausgehend)
 - Status entsprechend: `✅` wenn beide Seiten existieren, `🟡 tot` wenn Ziel/Quelle fehlt
 
-### Schritt 5 — Tote Pfade scannen
+### Tote Pfade scannen
 
 In allen HTML-Files des Moduls nach `alert('Mockup folgt: <neues_fenster>')` suchen:
 - Wenn gefunden → durch echten `location.href`-Link ersetzen
 - Sitemap-Status entsprechend von `🟡 tot` auf `✅` aktualisieren
 
-### Schritt 6 — Selbstcheck
+### Selbstcheck nach dem Anlegen
 
 Abschnitt „Sitemap und Selbstcheck“ — Sitemap-Kanten vs HTML-onclick-Refs vergleichen, Datei-Existenz prüfen.
 
@@ -318,5 +318,5 @@ ohnehin separat dar.
 
 ### Sitemap-Cleanup auch hier
 
-Wie in „Neues Fenster anlegen“, Schritt 5: tote Pfade auf das neue Fenster scannen und ersetzen,
+Wie in „Neues Fenster anlegen“, Abschnitt „Tote Pfade scannen“: tote Pfade auf das neue Fenster scannen und ersetzen,
 Sitemap-Status nachziehen.

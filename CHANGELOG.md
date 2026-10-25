@@ -8,6 +8,18 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.7] — 2026-10-25
+
+- **skills/mockup-erstellen, Refactor (Umbau Phase 6):** Kern ohne Projektwerte und ohne Cowork-Werkzeuge.
+  - Voraussetzung liest zuerst das Skill-Profil v1 (`Mockup.Ablage`, `Designquelle`, `Ansichten`, `Abnahme-Ort`); das
+    alte Mockup-Profil bleibt als Rückfall, mit Spalte „Skill-Profil“.
+  - Neu `references/beispiele.md` (Profilwerte, Docs laden, Abnahme-Ort und Commit von BPM und Heidi) und
+    `references/cowork.md` (Lesen, Visualizer-Vorschau, Speichern über Desktop Commander, Visualizer-Variablen).
+  - Workflow-Schritte mit Namen statt Nummern; Verweise über Abschnittsnamen; in `references/sitemap.md` die
+    Datumsangaben gestrichen und die Schrittüberschriften ohne Nummer.
+  - Regel-Inventar `docs/skill-refactors/2026-10-25-mockup-erstellen.md` (50 alte Zeilen, keine DROP-Zeile; nur Historie
+    gestrichen). README: Aufbau. Description unverändert.
+
 ## [v0.60.6] — 2026-10-23
 
 - **skills/tracker, Safe Patch (Umbau Phase 5, Schritt 8):** Description ohne Projektnamen: „Projekt-Tasks (BPM, Heidi,
