@@ -120,5 +120,6 @@ Abkürzungen im Neu-Ort: `S` = `SKILL.md`, `B` = `references/beispiele.md`, `C` 
 - **Zeilen:** `SKILL.md` 304 → 294; References 322 + 59 + 31. Keine Projektwerte mehr im Kern außer den Hinweisen auf B
   und dem Rückfall „nur wenn das Repo `Docs/Mockups/` hat“ (R013).
 - **Description:** unverändert (911 Zeichen).
-- **Prüfskript:** nach dem Push in der CI.
-- **Routing-Eval:** wird nach dem Commit eingetragen (`--tag mockup-erstellen`).
+- **Prüfskript:** CI `validate-skills` für 7fb60b4 grün (Lauf 40171408860).
+- **Routing-Eval** (7fb60b4, `--runs 3 --tag mockup-erstellen`): 16/16 Fälle mit 3/3. Report
+  `quality/evals/results/2026-10-25T07-04-29-900Z/`.
