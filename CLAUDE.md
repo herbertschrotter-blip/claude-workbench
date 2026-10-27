@@ -76,5 +76,5 @@ HA. Das Skill-Log dieses Rechners liegt unter `/data/home/.claude/skill-log/` (`
 ## Review-Profil
 
 Steht in `.claude/skill-config/review.md` (Skill-Profil → Review): Ablage, Themen, Repos, Kontextquelle, Pflicht-Blöcke,
-Reviewer-Rollen und Ergebnis-Orte je Thema. Dieser Abschnitt bleibt als Verweis, bis chatgpt-review die Config direkt liest
-(Umbau Phase 5/6).
+Reviewer-Rollen und Ergebnis-Orte je Thema. chatgpt-review liest die Config direkt (Skill-Profil → Review); dieser
+Abschnitt ist nur ein Verweis.

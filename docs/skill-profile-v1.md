@@ -212,8 +212,9 @@ Nur das Skill-Repo hat ein Profil (`CLAUDE.md`, Configs `review.md` und `tracker
 anderen Repos keine Profile an; dort entsteht eines erst, wenn ein Skill es braucht und Herbert zustimmt (Abschnitt
 „Fehlende Werte“).
 
-Bis die Skills in den Umbau-Phasen 5 und 6 das Profil lesen, bleiben ihre bisherigen Quellen als Verweise erhalten:
-der Abschnitt `## Review-Profil` in der CLAUDE.md des Skill-Repos. `projects/` ist seit 07.10.2026 entfernt (tracker liest
+Bis die Skills in den Umbau-Phasen 5 und 6 das Profil lesen, bleiben ihre bisherigen Quellen als Verweise erhalten.
+chatgpt-review liest die Review-Config seit v0.60.9 direkt; der Abschnitt `## Review-Profil` der CLAUDE.md des
+Skill-Repos ist nur noch ein Verweis darauf. `projects/` ist seit 07.10.2026 entfernt (tracker liest
 die Tracker-Config); seine Werte liegen in den Projekt-Repos. Entwürfe für die Profile von BPM und Heidi stehen in
 `docs/chatgpt-reviews/CGR-2026-09-24-skillsystem/r2/02-chatgpt-response.md` (Abschnitt 5) – nur als Ausgangspunkt, falls
 ein Projekt das Profil einführt; die Werte müssen dann im jeweiligen Repo geprüft werden.
