@@ -12,4 +12,3 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| chat-wechsel | v0.60.8 | 2725790 | Zip: SKILL.md + references/ (6 Dateien) | 2026-10-27 |
