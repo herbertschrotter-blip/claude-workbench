@@ -136,4 +136,4 @@ Abkürzungen im Neu-Ort: `S` = `SKILL.md`, `B` = `references/beispiele.md`, `C` 
 - **Qualität:** `SKILL.md` 237 Zeilen; References unter 200 Zeilen, `cowork.md` (200) und `beispiele.md` mit
   Inhaltsverzeichnis; keine Projektwerte außerhalb von `beispiele.md`; keine Historie; Werkzeugnamen nur in Cowork-Teilen
   bzw. `clickup_get_task` als nötiges Werkzeug.
-- **Routing-Eval:** offen (nach dem Commit).
+- **Routing-Eval:** `--tag chat-wechsel` nach Commit 2725790: 15 Fälle, alle 3/3 (Score 1.00). CI-Lauf 40489915404 grün.
