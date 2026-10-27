@@ -1,7 +1,8 @@
 # PROMPT-STRUKTUR (beide Umgebungen)
 
 Aufbau des Handover-Prompts im Cowork-Chat wie in Claude Code (`SKILL.md`, Abschnitte „ABLAUF IN CLAUDE CODE“ und
-„Ablauf im Cowork-Chat“).
+„Ablauf im Cowork-Chat“). Platzhalter in spitzen Klammern kommen aus dem Skill-Profil; Beispielwerte:
+[beispiele.md](beispiele.md).
 
 ```
 # [Projektname] Teil [N+1]
@@ -11,7 +12,7 @@ Weiterführung aus **[Projektname] Teil [N]**.
 ---
 
 ## Aktueller Stand
-- **App-Version:** [Version]
+- **Version:** [Version aus Commit.Versionsquelle]
 - **Letzter Commit:** [Hash + Message]
 - **Branch:** [Branch]
 - **Chat-URL Teil [N]:** [aktuelle Chat-URL falls bekannt]
@@ -21,10 +22,10 @@ Weiterführung aus **[Projektname] Teil [N]**.
 
 ## Offene Punkte (aus ClickUp + Chat)
 
-### ClickUp offen (BPM: nach Liste gruppiert; Ein-Listen-Projekte: nach Status):
-PlanManager:
+### ClickUp offen (mehrere Listen: nach Liste gruppiert; Ein-Listen-Projekte: nach Status):
+<Liste oder Status>:
 - [Priority] [Meilenstein] <PRÄFIX>-NNN | Beschreibung
-Docs:
+<Liste oder Status>:
 - [Priority] [Meilenstein] <PRÄFIX>-NNN | Beschreibung
 (nur Listen/Status mit offenen Tasks auflisten)
 
@@ -35,7 +36,7 @@ Docs:
 | 86c9xxx | erstellt | Thema (<PRÄFIX>-NNN) |
 (nur wenn Einträge vorhanden — sonst Sektion weglassen; nur Cowork)
 
-### Offene Punkte aus Memory (gefiltert nach Rubriken):
+### Offene Punkte aus Memory (gefiltert nach Rubriken; nur Cowork):
 
 #### VERIFY
 - [Eintragstext]
@@ -63,7 +64,7 @@ Docs:
 - [Neue Fachliche Invarianten die noch eingetragen werden müssen]
 
 ## Nächste Schritte (geplant)
-- [Prioritäten — basierend auf V1 + high/urgent zuerst]
+- [Prioritäten — nach Meilenstein und Priorität laut Tracker-Config, high/urgent zuerst]
 
 ## Aktive Entscheidungen
 - [Architektur-Entscheidungen]
@@ -75,14 +76,14 @@ Docs:
 - [Docs die gelesen werden sollten]
 - [Docs deren Quickload/Invarianten veraltet sein könnten]
 
-## Regeln (Erinnerung) — aus den Profilen der CLAUDE.md erzeugt, nicht fest
-- Commit: <Format, Modul-Namen, Versionsquelle, Bump-Regel aus dem Commit-Profil>
-- Tracker: <Präfix, Liste, Übergänge aus der Tracker-Config>; tracker-Skill ist einzige Schreibschnittstelle zu ClickUp
-- Docs: <Pflicht-Docs, Ladereihenfolge, Aufgabenquelle aus dem Doku-Profil>
-- Code: <Testbefehl, Pflicht-Branch, Auslieferung aus dem Code-Profil>; Code-Arbeit nur mit dem Skill code-erstellen (vor
+## Regeln (Erinnerung) — aus dem Skill-Profil der CLAUDE.md erzeugt, nicht fest
+- Commit: <Commit.Format, Commit.Module, Commit.Versionsquelle, Commit.Versionsregel>
+- Tracker: <Präfix, Liste, Übergänge aus Tracker.Config>; tracker-Skill ist einzige Schreibschnittstelle zu ClickUp
+- Docs: <Doku.Router, Doku.Pflichtdokumente, Code.Aufgabenquelle>
+- Code: <Code.Tests, Branch-Policy, Code.Auslieferung>; Code-Arbeit nur mit dem Skill code-erstellen (vor
   der ersten Dateiänderung laden); Tickets → ticket, Mockups → mockup-erstellen, Doku → doc-pflege, ClickUp → tracker
 - Ein Schritt pro Antwort; nachfragen wenn Kontext fehlt → Auswahlfrage bei festen Optionen
 - Wer committet: Cowork der User; Claude Code Claude selbst
-(BPM ohne Profile: User committet und pusht selbst · Commit-Format [vX.Y.Z] Modul, Typ: Kurztitel · Docs Quickload-First-Pass →
-Pflichtlesen → Langform · DOC-STANDARD.md · ClickUp Space "BPM Entwicklung" ist Source of Truth · Task-Nummern BPM-NNN)
+(Projekt ohne Profil: Regeln aus dem Rückfall in SKILL.md, Abschnitt „Voraussetzung: Skill-Profil“; Beispiel in
+beispiele.md, Abschnitt „Regeln ohne Profil (BPM)“)
 ```

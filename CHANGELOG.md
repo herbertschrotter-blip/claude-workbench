@@ -8,6 +8,19 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.8] — 2026-10-27
+
+- **skills/chat-wechsel, Refactor (Umbau Phase 6):** Kern ohne Projektwerte, Cowork-Regeln in der Cowork-Reference.
+  - Neuer Abschnitt „Voraussetzung: Skill-Profil“ (`Doku.Sitzungsabschluss`, `Doku.Entscheidungs-Ort`,
+    `Commit.Push-Policy`, `Commit.Versionsquelle`, `Tracker.Config`); die alten Profilabschnitte bleiben Rückfall.
+  - Neu `references/beispiele.md` (Orte, Startprompt, ClickUp-Abgleich und Regeln ohne Profil von BPM und Heidi).
+  - `references/cowork.md` übernimmt den Ablauf im Cowork-Chat, die Regeln zu Chat-URL, `[ANKER-LIVE]` und Memory-Rubriken
+    und die zugehörigen VERBOTEN-Punkte; im Kern bleibt je ein Verweis.
+  - `references/prompt-struktur.md` und `references/tracker-abgleich.md` mit Platzhaltern und Feldern des Skill-Profils;
+    Auswahlfragen als Handlung statt `ask_user_input_v0`.
+  - Regel-Inventar `docs/skill-refactors/2026-10-27-chat-wechsel.md` (66 alte Zeilen, gestrichen nur Historie). README:
+    Aufbau. Description unverändert.
+
 ## [v0.60.7] — 2026-10-25
 
 - **skills/mockup-erstellen, Refactor (Umbau Phase 6):** Kern ohne Projektwerte und ohne Cowork-Werkzeuge.

@@ -19,13 +19,13 @@ description: >
   Repo-Gedächtnis, also trägt der Prompt den Stand.
 - **Claude Code:** Erst **doc-pflege, Sitzungsabschluss** – Statusliste/Aufgabenquelle, Befunde,
   Stand-Abschnitt, offene Punkte, Commit + Push nach der Push-Policy –, dann **derselbe vollständige Handover-Prompt** nach
-  PROMPT-STRUKTUR (Herbert, 16.09.2026: „der war in BPM immer viel umfangreicher“). Der Prompt darf den
-  Repo-Stand zusammenfassen, verweist aber für Details auf HANDOFF/Bauplan statt sie zu kopieren. Der
-  Startprompt des Doku-Profils (Heidi: Bauplan Abschnitt 0) steht als Einstiegszeile **im** Prompt.
+  PROMPT-STRUKTUR. Der Prompt darf den Repo-Stand zusammenfassen, verweist aber für Details auf die Orte aus
+  `Doku.Sitzungsabschluss` (z. B. Übergabe-Doc, Bauplan) statt sie zu kopieren. Nennt das Projekt einen Startprompt
+  (in der Doku hinter `Doku.Sitzungsabschluss`), steht er als Einstiegszeile **im** Prompt.
   Eine Kurzform (nur Startprompt) gibt es nur, wenn der User sie ausdrücklich verlangt („kurzer Prompt“).
 
-Projektwerte (Präfix, Listen, Commit-Format, Doc-Namen, Testbefehl) kommen aus den Profilen der CLAUDE.md
-(Commit-, Tracker-, Code-, Doku-Profil); ohne Profil gilt der BPM-Weg (Memory `[CLICKUP]`, INDEX.md).
+Projektwerte (Präfix, Listen, Commit-Format, Doc-Namen, Testbefehl) kommen aus dem Skill-Profil der CLAUDE.md
+(Abschnitt „Voraussetzung: Skill-Profil“). Beispielwerte zweier Projekte: `references/beispiele.md`.
 
 ---
 
@@ -91,6 +91,28 @@ welcher zuerst dran ist.
 
 ---
 
+## Voraussetzung: Skill-Profil
+
+Die Werte kommen aus dem Skill-Profil der `CLAUDE.md` im Repo (`docs/skill-profile-v1.md` im Skill-Repo):
+
+| Feld | Wofür |
+|------|-------|
+| `Doku.Sitzungsabschluss` | Orte für Stand, offene Punkte und Statusliste; Startprompt, falls das Projekt einen führt |
+| `Doku.Entscheidungs-Ort` | Abschnitt „Aktive Entscheidungen“ im Prompt |
+| `Commit.Push-Policy`, `Branch-Policy` | Push im Sitzungsabschluss, Branch im Prompt (Grundsätze) |
+| `Commit.Versionsquelle` | Version im Prompt und in der Link-Prüfung |
+| `Tracker.Config` | ClickUp-Abgleich, wenn Aufgaben eingebunden sind (Präfix, Listen, Statusmodell) |
+| `Commit.*`, `Code.*`, `Doku.*` | Regeln-Block des Prompts |
+
+1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Teil entfällt im Prompt.
+2. **Rückfall:** die älteren Abschnitte `## Commit-Profil`, `## Tracker-Profil`, `## Code-Profil` und `## Doku-Profil`
+   der CLAUDE.md.
+3. **Fehlt beides:** im Cowork-Chat der Memory-Eintrag `[CLICKUP]`, im Repo der Router (meist `INDEX.md`), soweit
+   vorhanden; was dann noch fehlt, per Auswahlfrage nach der Profil-Regel „Fehlende Werte“ (Profil ergänzen / einmalig
+   nennen / abbrechen). Nie raten.
+
+---
+
 ## TRIGGER
 
 Ja: "neuer chat", "nächster chat", "session beenden", "chat wechsel",
@@ -107,8 +129,9 @@ Nein: "pause", "tschüss", "gute nacht"
 |------|-----------|
 | Handover-Prompt aufbauen (beide Umgebungen) | [references/prompt-struktur.md](references/prompt-struktur.md) |
 | ClickUp-Abgleich vor dem Übergabeprompt: offene Tasks, Chat-Scan, Batch-Abschluss, ClickUp nicht erreichbar | [references/tracker-abgleich.md](references/tracker-abgleich.md) |
-| Cowork-Chat: Memory-Scan, Chat-Anker-Übergabe, Chat-URL im Übergabe-Prompt | [references/cowork.md](references/cowork.md) |
+| Cowork-Chat: Ablauf, Memory-Scan, Chat-Anker-Übergabe, Chat-URL im Übergabe-Prompt, Regeln und VERBOTEN | [references/cowork.md](references/cowork.md) |
 | Claude Code in tmux: neues Fenster für die nächste Sitzung | [references/neues-fenster.md](references/neues-fenster.md) |
+| Beispielwerte zweier Projekte (Startprompt, Orte, Gruppierung, Regeln ohne Profil) | [references/beispiele.md](references/beispiele.md) |
 
 ---
 
@@ -118,35 +141,27 @@ Nein: "pause", "tschüss", "gute nacht"
 
 **Claude Code:** Das Memory ist ein Ordner mit Dateien (Typen `user`/`feedback`/`project`/`reference`) und
 bleibt über Sitzungen erhalten – es muss **nicht** in den Prompt kopiert werden. Stattdessen: offene Punkte,
-die nur im Chat entstanden sind, gehören in den Doc-Ort des Doku-Profils (Heidi: HANDOFF Abschnitt 4 /
-Bauplan Abschnitt 10), erledigte Merker werden mit Herberts Bestätigung als Datei entfernt. Die Schritte für den
-Cowork-Chat stehen in [references/cowork.md](references/cowork.md), Abschnitt „Memory-Scan (PFLICHT bei Handover)“.
+die nur im Chat entstanden sind, gehören an den Ort für offene Punkte aus `Doku.Sitzungsabschluss`, erledigte Merker
+werden mit Bestätigung des Nutzers als Datei entfernt. Die Schritte für den Cowork-Chat stehen in
+[references/cowork.md](references/cowork.md), Abschnitt „Memory-Scan (PFLICHT bei Handover)“.
 
 ---
 
 ## ABLAUF IN CLAUDE CODE (Sitzungsabschluss + vollständiger Prompt)
 
 1. **doc-pflege, Sitzungsabschluss** ausführen: Statusliste/Aufgabenquelle ↔ Tracker, Befunde und
-   Entscheidungen, Stand-Abschnitt (Heidi: HANDOFF 3e), offene Punkte als Checkliste (HANDOFF 4), Doku-Checkliste
-   des Commit-Profils, Commit + Push nach der Push-Policy (Grundsätze). Uncommittete Änderungen → Auswahlfrage.
+   Entscheidungen, Stand-Abschnitt, offene Punkte als Checkliste (Orte aus `Doku.Sitzungsabschluss`), Doku-Check
+   des Skill-Profils (`Commit.Doku-Check`), Commit + Push nach der Push-Policy (Grundsätze). Uncommittete Änderungen →
+   Auswahlfrage.
 2. **ClickUp-Abgleich** nach [references/tracker-abgleich.md](references/tracker-abgleich.md) (Batch-Abschluss über tracker),
    **Memory**: erledigte Merker mit Bestätigung entfernen.
 3. **Link-Prüfung** auf den Stand-Abschnitt und den Startprompt.
 4. **Handover-Prompt nach PROMPT-STRUKTUR ausgeben** ([references/prompt-struktur.md](references/prompt-struktur.md);
-   vollständig, als Markdown-Codeblock). Erste Zeile darin ist
-   der Startprompt des Doku-Profils, z.B.:
-
-```
-> Lies CLAUDE.md, docs/HANDOFF.md (Abschnitt 3e + 4) und docs/dreame_x60/BAUPLAN.md. Nimm die nächste offene
-> Aufgabe aus der Statusliste (Abschnitt 1): <DX-NNN | Kürzel | Schritt>. Prüfe Voraussetzungen, lies ihre Karte
-> in Abschnitt 8 und arbeite nur diese Aufgabe ab (Skills: tracker start, code-erstellen nach Code-Profil).
-> Regeln: Abschnitt 2. Widerspruch Code ↔ Bauplan → Befund in Abschnitt 10, Aufgabe blockiert, stoppen.
-```
-
-   Quelle des Musters: Feld „Startprompt“ im Doku-Profil (Heidi: Bauplan Abschnitt 0). Danach folgen die
+   vollständig, als Markdown-Codeblock). Erste Zeile darin ist der Startprompt des Projekts, falls es einen führt
+   (Muster: [references/beispiele.md](references/beispiele.md), Abschnitt „Startprompt“). Danach folgen die
    Abschnitte der PROMPT-STRUKTUR: Aktueller Stand, Erledigt in dieser Sitzung, Offene Punkte (ClickUp nach
-   Status, Chat, Sonstiges), Nächste Schritte, Aktive Entscheidungen, Kontext/Warnungen, Regeln aus den Profilen.
-   Memory-Sektion: in Claude Code die relevanten Memory-Dateien nennen (Titel), nicht kopieren.
+   Liste oder Status, Chat, Sonstiges), Nächste Schritte, Aktive Entscheidungen, Kontext/Warnungen, Regeln aus dem
+   Skill-Profil. Memory-Sektion: in Claude Code die relevanten Memory-Dateien nennen (Titel), nicht kopieren.
 5. **Neues Fenster** (nur wenn die Sitzung in tmux läuft): Umgebung prüfen, per Auswahlfrage anbieten, dann ein
    tmux-Fenster im Projekt-Repo mit `claude --remote-control` anlegen und den Prompt dort einfügen, nicht absenden.
    Ablauf: [references/neues-fenster.md](references/neues-fenster.md).
@@ -156,56 +171,45 @@ Cowork-Chat stehen in [references/cowork.md](references/cowork.md), Abschnitt �
 
 ## Ablauf im Cowork-Chat
 
-Der Chat hat kein Repo-Gedächtnis, der Handover-Prompt trägt den Stand. Die Einzelheiten stehen in den References:
-
-1. **ClickUp-Abgleich** vor dem Übergabeprompt: [references/tracker-abgleich.md](references/tracker-abgleich.md).
-2. **Memory-Scan** nach den Rubriken, erledigte Merker nur mit Bestätigung entfernen:
-   [references/cowork.md](references/cowork.md), Abschnitt „Memory-Scan (PFLICHT bei Handover)“.
-3. **Chat-Anker-Übergabe:** `[ANKER-LIVE]` in den Prompt übernehmen, nach der Prompt-Erstellung aus dem Memory leeren:
-   [references/cowork.md](references/cowork.md), Abschnitt „Chat-Anker-Übergabe (nur Cowork)“.
-4. **Chat-URL** des endenden Chats ermitteln: [references/cowork.md](references/cowork.md), Abschnitt „Chat-URL in
-   Übergabe-Prompt (nur Cowork)“.
-5. **Link-Prüfung** (unten).
-6. **Handover-Prompt** nach [references/prompt-struktur.md](references/prompt-struktur.md) als Markdown-Codeblock direkt
-   im Chat ausgeben.
+Der Chat hat kein Repo-Gedächtnis, der Handover-Prompt trägt den Stand: ClickUp-Abgleich, Memory-Scan,
+Chat-Anker-Übergabe, Chat-URL, Link-Prüfung, dann der Prompt im Chat. Reihenfolge, Regeln und VERBOTEN:
+[references/cowork.md](references/cowork.md), Abschnitt „Ablauf im Cowork-Chat“.
 
 ---
 
 ## Link-Prüfung (PFLICHT vor der Ausgabe)
 
 Jeder Verweis im Prompt muss stimmen, sonst startet die nächste Sitzung mit falschen Annahmen
-(Beispiel: `heidi-panel-v2.js`, das seit dem Umbau `dreame_x60.js` heißt).
+(Beispiel: eine Datei, die seit einem Umbau anders heißt).
 
-1. **Dateien und Pfade:** jede genannte Datei existiert (Claude Code: Glob; Cowork: DC `list_directory`)
-2. **Abschnitte:** genannte Kapitel/Abschnitte existieren in der Datei (Grep auf die Überschrift)
+1. **Dateien und Pfade:** jede genannte Datei existiert (Datei suchen bzw. Ordner listen)
+2. **Abschnitte:** genannte Kapitel/Abschnitte existieren in der Datei (Suche nach der Überschrift)
 3. **Task-IDs:** jede `<PRÄFIX>-NNN` existiert im Tracker mit dem genannten Status (tracker read-only, `clickup_get_task`)
-4. **Versionen:** Version im Prompt = Versionsquelle des Commit-Profils (Heidi: package.json)
+4. **Versionen:** Version im Prompt = `Commit.Versionsquelle` des Skill-Profils
 5. Tote Verweise → Auswahlfrage „Korrigieren / Mit Warnung übernehmen / Weglassen“; nie stumm übernehmen
 
 ---
 
 ## REGELN
 
-1. Automatisch sammeln — nicht nachfragen was rein soll
-2. Chat-Nummer korrekt — N+1
-3. Nichts vergessen — inkl. pending Frontmatter, neue Invarianten
-4. Kompakt aber vollständig
-5. Kopierfähig als Markdown-Codeblock
-6. Version prüfen
-7. Keine Datei — direkt im Chat; Claude Code: zusätzlich vorher Stand ins Repo (doc-pflege, Sitzungsabschluss)
-8. Pending Quickload-Änderungen explizit nennen
-9. **ClickUp-Abgleich VOR Übergabeprompt** — offene Tasks laden + Chat scannen
-10. **Batch-Abschluss per Auswahlfrage** (nicht Prosa-Liste)
-11. **Keine automatischen ClickUp-Mutationen ohne Auswahlfrage-Bestätigung**
-12. **Nächste Schritte basierend auf V1 + Priority ableiten**
-13. **Sonstige offene Punkte** (Pending Commits, Frontmatter, Invarianten) ZUSÄTZLICH zu ClickUp auflisten
-14. **Aktuelle Chat-URL** in Übergabe-Prompt einfügen (für Nachpflege)
-15. **`[ANKER-LIVE]` aus Memory in Übergabeprompt kopieren** und danach aus Memory leeren — Anker reisen per Prompt, nicht per Memory
-16. **Memory-Scan nach 4 Rubriken** (`[VERIFY]`, `[ARCH-OPEN]`, `[INFRA-TODO]`, `[REVIEW-PENDING]`) durchführen und als Sektion `## Offene Punkte aus Memory` in Prompt einfügen
-17. **Memory-Cleanup nur mit Bestätigung** — bei Einträgen die in diesem Chat bearbeitet wurden per Auswahlfrage fragen, nie stillschweigend entfernen
-18. **Link-Prüfung vor der Ausgabe** — Dateien, Abschnitte, Task-IDs, Version (Abschnitt „Link-Prüfung“)
-19. **Regeln-Block aus den Profilen** erzeugen, nicht aus einer festen Liste
-20. **Claude Code: erst doc-pflege, Sitzungsabschluss, dann vollständiger Handover-Prompt** — Kurzform nur auf Wunsch; Details verweisen auf HANDOFF/Bauplan statt sie zu kopieren
+- Automatisch sammeln — nicht nachfragen was rein soll
+- Chat-Nummer korrekt — N+1
+- Nichts vergessen — inkl. pending Frontmatter, neue Invarianten
+- Kompakt aber vollständig
+- Kopierfähig als Markdown-Codeblock
+- Version prüfen
+- Keine Datei — direkt im Chat; Claude Code: zusätzlich vorher Stand ins Repo (doc-pflege, Sitzungsabschluss)
+- Pending Quickload-Änderungen explizit nennen
+- **ClickUp-Abgleich VOR Übergabeprompt** — offene Tasks laden + Chat scannen
+- **Batch-Abschluss per Auswahlfrage** (nicht Prosa-Liste)
+- **Keine automatischen ClickUp-Mutationen ohne Auswahlfrage-Bestätigung**
+- **Nächste Schritte nach Meilenstein und Priorität laut Tracker-Config ableiten**
+- **Sonstige offene Punkte** (Pending Commits, Frontmatter, Invarianten) ZUSÄTZLICH zu ClickUp auflisten
+- **Link-Prüfung vor der Ausgabe** — Dateien, Abschnitte, Task-IDs, Version (Abschnitt „Link-Prüfung“)
+- **Regeln-Block aus dem Skill-Profil** erzeugen, nicht aus einer festen Liste
+- **Claude Code: erst doc-pflege, Sitzungsabschluss, dann vollständiger Handover-Prompt** — Kurzform nur auf Wunsch; Details verweisen auf die Orte aus `Doku.Sitzungsabschluss` statt sie zu kopieren
+- Cowork-Chat zusätzlich: Chat-URL, `[ANKER-LIVE]`, Memory-Scan nach Rubriken, Memory-Cleanup nur mit Bestätigung
+  ([references/cowork.md](references/cowork.md), Abschnitt „Regeln im Cowork-Chat“)
 
 ---
 
@@ -222,15 +226,12 @@ Jeder Verweis im Prompt muss stimmen, sonst startet die nächste Sitzung mit fal
 - **Tasks automatisch in ClickUp erstellen/schließen ohne Auswahlfrage-Bestätigung**
 - **ClickUp-Schreiboperationen direkt ausführen (→ tracker-Skill nutzen)**
 - **Pending Commits/Doc-Updates/Frontmatter-Updates vergessen nur weil ClickUp da ist**
-- Chat-URLs raten oder erfinden — bei Unsicherheit Feld leer lassen
-- **`[ANKER-LIVE]`-Einträge im alten Chat-Memory belassen nach Übergabe** — müssen geleert werden
-- **Anker-Sektion im Prompt als leere Tabelle einfügen wenn keine Anker vorhanden** — dann Sektion komplett weglassen
-- **`[CLICKUP]`- oder `[SKILL-ISSUES]`-Memories in Handover-Prompt übernehmen** — das sind dauerhafte Konventionen, nicht offene Punkte
-- **Rubriken `[VERIFY]`, `[ARCH-OPEN]`, `[INFRA-TODO]`, `[REVIEW-PENDING]` als leere H3-Blöcke einfügen** wenn Rubrik keine Einträge hat
-- **Memory-Einträge stillschweigend entfernen nach Abschluss** — Herbert muss explizit bestätigen
+- **Memory-Einträge stillschweigend entfernen nach Abschluss** — der Nutzer muss explizit bestätigen
 - **Prompt mit toten Verweisen ausgeben** (umbenannte Dateien, fehlende Abschnitte, falsche Task-IDs oder Version)
-- **BPM-Regeln oder BPM-NNN in den Prompt eines anderen Projekts schreiben** — Regeln und Präfix aus den Profilen
-- **In Claude Code den Stand nur in den Prompt schreiben statt ins Repo** (HANDOFF/Bauplan) — der Sitzungsabschluss kommt immer zuerst
+- **Regeln oder Präfix eines anderen Projekts in den Prompt schreiben** — Regeln und Präfix aus dem Skill-Profil
+- **In Claude Code den Stand nur in den Prompt schreiben statt ins Repo** (Orte aus `Doku.Sitzungsabschluss`) — der Sitzungsabschluss kommt immer zuerst
 - **In Claude Code ungefragt nur den kurzen Startprompt liefern** — der User erwartet den vollständigen Handover-Prompt
 - **Sitzung mit uncommitteten Änderungen übergeben** ohne Auswahlfrage
 - **Den Prompt im neuen Fenster selbst absenden oder das alte Fenster schließen** — beides entscheidet der User
+- Was nur im Cowork-Chat verboten ist (Chat-URLs raten, Anker im Memory belassen, leere Sektionen, dauerhafte
+  Memories im Prompt): [references/cowork.md](references/cowork.md), Abschnitt „VERBOTEN im Cowork-Chat“

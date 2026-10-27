@@ -1,13 +1,13 @@
 # ClickUp-Integration (vor Übergabeprompt)
 
 Gilt in beiden Umgebungen vor dem Handover-Prompt (`SKILL.md`, Abschnitte „ABLAUF IN CLAUDE CODE“ und „Ablauf im
-Cowork-Chat“).
+Cowork-Chat“). Beispielwerte (BPM, Heidi): [beispiele.md](beispiele.md), Abschnitt „ClickUp-Abgleich“.
 
 ## Schritt 1: Offene Tasks laden
 
 1. Space/Listen-ID und Präfix aus der **Tracker-Config** (Claude Code: Skill-Profil der CLAUDE.md → Tracker → Config) bzw. dem Memory-Eintrag `[CLICKUP]` (Cowork) lesen
 2. `clickup_filter_tasks(list_ids/space_ids: [...], statuses: <offene Status laut Statusmodell der Tracker-Config>)` – read-only, über den tracker-Skill
-3. Tasks gruppieren: mehrere Listen → nach Liste (BPM); eine Liste → nach Status (Heidi: in development, testing, backlog)
+3. Tasks gruppieren: mehrere Listen → nach Liste; eine Liste → nach Status (Status laut Statusmodell der Tracker-Config)
 
 ## Schritt 2: Chat-Verlauf scannen
 
@@ -26,59 +26,32 @@ Strukturierte Übersicht im Chat zeigen:
 ### ClickUp Tracker — Batch-Abschluss
 
 **Im Chat erledigt — als Done markieren?**
-- <PRÄFIX>-003 | DB-Anbindung Orchestrator        (Beispiel BPM; Heidi: DX-031 | KARTE | 4.4 dx-planer …)
-- <PRÄFIX>-007 | CS8629 Warning behoben
-- <PRÄFIX>-012 | Token-Migration
+- <PRÄFIX>-NNN | <Kurztitel>
+- <PRÄFIX>-NNN | <Kurztitel>
 
 **Im Chat neu erkannt — Task anlegen?**
-- PlanManager — <neues Problem aus diesem Chat>
-- Docs — <neuer Doc-Punkt>
+- <Liste> — <neues Problem aus diesem Chat>
+- <Liste> — <neuer Doc-Punkt>
 
 **Weiterhin offen laut ClickUp:**
-PlanManager (4):
-- [high] [V1] BPM-004 | 5998er Statikplaene Erkennung
-- [normal] [V1] BPM-008 | Mockup ManuellSortieren
+<Liste oder Status> (<Anzahl>):
+- [<Priority>] [<Meilenstein>] <PRÄFIX>-NNN | <Kurztitel>
 ...
-Docs (1):
-- [normal] [V1-Nice] BPM-015 | ADR-050 schreiben
 ```
 
 Dann **zwei Auswahlfragen** (multiSelect):
 
-**Erster Aufruf — Done-Markierungen:**
-```
-ask_user_input_v0(
-  questions: [{
-    question: "Welche Tasks als Done markieren?",
-    type: "multi_select",
-    options: [
-      "BPM-003 | DB-Anbindung Orchestrator",
-      "BPM-007 | CS8629 Warning behoben",
-      "BPM-012 | Token-Migration",
-      "Keine"
-    ]
-  }]
-)
-```
+**Erste Auswahlfrage — Done-Markierungen** (Mehrfachauswahl): „Welche Tasks als Done markieren?“; Optionen: je
+erledigtem Task `<PRÄFIX>-NNN | <Kurztitel>`, dazu „Keine“.
 
-**Zweiter Aufruf — Neue Tasks:**
-```
-ask_user_input_v0(
-  questions: [{
-    question: "Welche neuen Tasks anlegen?",
-    type: "multi_select",
-    options: [
-      "PlanManager — <neues Problem>",
-      "Docs — <neuer Doc-Punkt>",
-      "Keine"
-    ]
-  }]
-)
-```
+**Zweite Auswahlfrage — Neue Tasks** (Mehrfachauswahl): „Welche neuen Tasks anlegen?“; Optionen: je erkanntem Punkt
+`<Liste> — <Beschreibung>`, dazu „Keine“.
+
+Mehr als vier Optionen auf mehrere Fragen verteilen (Grenze des Frage-Werkzeugs).
 
 ## Schritt 4: Nach Bestätigung ausführen
 
-- Done-Tasks: `tracker done` pro ausgewähltem Task (Status laut Übergängen des Projekts – Heidi `testing`, BPM `done`; Commit-Felder bzw. Kommentar)
+- Done-Tasks: `tracker done` pro ausgewähltem Task (Status laut Übergängen der Tracker-Config; Commit-Felder bzw. Kommentar)
 - Neue Tasks: `tracker neu` pro ausgewähltem Task (Fragemodus per Auswahlfrage im tracker-Skill, Präfix des Projekts)
 - Cowork: Memory `[CLICKUP]` Eintrag aktualisieren: `Letzte Sync: Teil <N>`; Claude Code: `Next` in der Tracker-Config, wenn Tasks angelegt wurden
 

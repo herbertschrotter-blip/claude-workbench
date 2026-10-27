@@ -1,13 +1,29 @@
-# Cowork-Chat – Memory-Scan, Chat-Anker, Chat-URL
+# Cowork-Chat – Ablauf, Memory-Scan, Chat-Anker, Chat-URL
 
-Gilt nur im Cowork-Chat. Einstieg und Reihenfolge: `SKILL.md`, Abschnitt „Ablauf im Cowork-Chat“.
+Gilt nur im Cowork-Chat. Kern und gemeinsame Regeln: `SKILL.md`; hier steht, was im Cowork-Chat dazukommt.
 
 ## Inhalt
 
+- Ablauf im Cowork-Chat
 - Memory-Scan (PFLICHT bei Handover): Memory lesen, Rubriken, NICHT übernehmen, Eskalations-Hinweis mit
   Fragilitäten-Check, Prüfung vor Prompt-Abschluss, Sektion im Handover-Prompt
 - Chat-Anker-Übergabe (nur Cowork): `[ANKER-LIVE]` lesen, klassifizieren, in den Prompt übernehmen, Memory leeren
 - Chat-URL in Übergabe-Prompt (nur Cowork)
+- Regeln im Cowork-Chat
+- VERBOTEN im Cowork-Chat
+
+## Ablauf im Cowork-Chat
+
+Der Chat hat kein Repo-Gedächtnis, der Handover-Prompt trägt den Stand. Die Einzelheiten stehen in den References:
+
+1. **ClickUp-Abgleich** vor dem Übergabeprompt: [tracker-abgleich.md](tracker-abgleich.md).
+2. **Memory-Scan** nach den Rubriken, erledigte Merker nur mit Bestätigung entfernen: Abschnitt „Memory-Scan (PFLICHT
+   bei Handover)“ unten.
+3. **Chat-Anker-Übergabe:** `[ANKER-LIVE]` in den Prompt übernehmen, nach der Prompt-Erstellung aus dem Memory leeren:
+   Abschnitt „Chat-Anker-Übergabe (nur Cowork)“ unten.
+4. **Chat-URL** des endenden Chats ermitteln: Abschnitt „Chat-URL in Übergabe-Prompt (nur Cowork)“ unten.
+5. **Link-Prüfung** (`SKILL.md`, Abschnitt „Link-Prüfung“).
+6. **Handover-Prompt** nach [prompt-struktur.md](prompt-struktur.md) als Markdown-Codeblock direkt im Chat ausgeben.
 
 ## Memory-Scan (PFLICHT bei Handover)
 
@@ -68,7 +84,7 @@ Volldoku inklusive Sofortmaßnahmen und Beispielen:
 Vor dem Finalisieren des Prompts:
 
 1. Einträge durchgehen: Wurde in diesem Chat einer erledigt?
-2. Wenn ja: Herbert fragen (per Auswahlfrage):
+2. Wenn ja: den Nutzer fragen (per Auswahlfrage):
    > "Folgende Memory-Punkte wurden in diesem Chat bearbeitet. Entfernen?"
 3. Bei Bestätigung: `memory_user_edits(command: "remove")` pro Eintrag
 4. **Nie stillschweigend entfernen**
@@ -112,7 +128,7 @@ memory_user_edits(command: "view")
 
 ### Schritt 2: Einträge klassifizieren
 
-- Typ `offen` → TEMP-Anker ohne Task (Phase 1 Ausarbeitung)
+- Typ `offen` → TEMP-Anker ohne Task
 - Typ `erstellt` → Task existiert, aber noch nicht erledigt
 - Typ `erledigt` → sollte eigentlich nicht auftauchen (wird bei `tracker done` entfernt)
 
@@ -163,3 +179,22 @@ Ermittlung der aktuellen Chat-URL:
 3. Wenn keine URL ermittelbar: Feld im Prompt leer lassen + Hinweis
 
 **Nicht raten.** Lieber Feld leer als falsche URL.
+
+---
+
+## Regeln im Cowork-Chat
+
+Zusätzlich zu den REGELN in `SKILL.md`:
+
+- **Aktuelle Chat-URL** in Übergabe-Prompt einfügen (für Nachpflege)
+- **`[ANKER-LIVE]` aus Memory in Übergabeprompt kopieren** und danach aus Memory leeren — Anker reisen per Prompt, nicht per Memory
+- **Memory-Scan nach 4 Rubriken** (`[VERIFY]`, `[ARCH-OPEN]`, `[INFRA-TODO]`, `[REVIEW-PENDING]`) durchführen und als Sektion `## Offene Punkte aus Memory` in Prompt einfügen
+- **Memory-Cleanup nur mit Bestätigung** — bei Einträgen die in diesem Chat bearbeitet wurden per Auswahlfrage fragen, nie stillschweigend entfernen
+
+## VERBOTEN im Cowork-Chat
+
+- Chat-URLs raten oder erfinden — bei Unsicherheit Feld leer lassen
+- **`[ANKER-LIVE]`-Einträge im alten Chat-Memory belassen nach Übergabe** — müssen geleert werden
+- **Anker-Sektion im Prompt als leere Tabelle einfügen wenn keine Anker vorhanden** — dann Sektion komplett weglassen
+- **`[CLICKUP]`- oder `[SKILL-ISSUES]`-Memories in Handover-Prompt übernehmen** — das sind dauerhafte Konventionen, nicht offene Punkte
+- **Rubriken `[VERIFY]`, `[ARCH-OPEN]`, `[INFRA-TODO]`, `[REVIEW-PENDING]` als leere H3-Blöcke einfügen** wenn Rubrik keine Einträge hat
