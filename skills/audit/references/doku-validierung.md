@@ -3,7 +3,8 @@
 Prüflisten für audit, Modul 6 („Formale Doc-Prüfung nach Profil“, `../SKILL.md#Modul 6 — Formale Doc-Prüfung nach
 Profil`): was bei der Doku-Validierung eines Projekts geprüft wird. Vorrang hat `Doku.Validierungsregeln` des
 Skill-Profils (ohne Skill-Profil: Feld „Validierung“ des Doku-Profils); diese Listen gelten nur, wenn ein Projekt dort
-keine Regeln führt. Bei `none` entfällt die Prüfung.
+keine Regeln führt. Bei `none` entfällt die Prüfung. Passt keine der Listen zum Projekt, fragt audit
+`Doku.Validierungsregeln` nach „Fehlende Werte“ (`docs/skill-profile-v1.md`) ab; eine fremde Liste gilt nicht.
 
 Befunde als Tabelle (Doc, Stelle, Befund, Vorschlag); bei mehreren Lösungen Auswahlfrage. Nichts stillschweigend
 korrigieren, was eine Entscheidung des Users ist (Status, Freigaben).

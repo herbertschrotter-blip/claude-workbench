@@ -8,6 +8,16 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.2] — 2026-10-28
+
+- **skills/audit, Refactor (Umbau Phase 6):** neuer Abschnitt „Voraussetzung: Skill-Profil“ (Feldtabelle; Rückfall auf
+  Doku-/Code-Profil, dann Beispielwerte, sonst „Fehlende Werte“ statt „Profil anlegen“) und „Fall → Reference“.
+  - Modul 1–5 prüfen neutral nach Profilfeldern, Modul 1 zusätzlich das Skill-Profil selbst
+    (`docs/skill-profile-v1.md#Prüfung`); Modul-Überschriften behalten Nummer und Namen, Ablauf ohne Nummern.
+  - BPM- und Heidi-Werte in neuer `references/beispiele.md`, Cowork-Teil in neuer `references/cowork.md`; „Task“ →
+    „Aufgabe“; die `clickup_*`-Werkzeugnamen entfallen (freigegeben), gelesen wird über tracker.
+  - Description unverändert. Regel-Inventar `docs/skill-refactors/2026-10-28-audit.md` (121 alte Zeilen).
+
 ## [v0.62.1] — 2026-10-28
 
 - **skills/doc-pflege, Refactor (Umbau Phase 6):** „Voraussetzung: Skill-Profil“ wie bei chat-wechsel (Feldtabelle;

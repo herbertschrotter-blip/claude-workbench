@@ -22,16 +22,14 @@ description: >
 ## Zweck
 
 Prüft read-only, ob Code, Projektdoku, Aufgaben im Tracker und – im Skill-Repo – die Skills
-zueinander passen. **Was** geprüft wird, steht im **Skill-Profil** des Repos (CLAUDE.md,
-Abschnitt „Profile laden“): `Doku.Validierungsregeln` und `Doku.Router`,
-`Code.Architekturregeln` und `Code.Aufgabenquelle`, `Modul.Grundsatzregeln`, dazu die
-Stack-Referenzen von code-erstellen (`references/stacks/<key>.md`) für die Code-Seite; in Repos
-ohne Skill-Profil das Feld „Validierung“ des **Doku-Profils** und „Schichten / Kopplung“ und
-„Aufgabenquelle“ des **Code-Profils**. Im Skill-Repo kommen `docs/skill-quality.md` und die
-Skill-Tabelle der `INDEX.md` dazu (Modul 8). audit erfindet keine Prüfregeln; es ist der
-Read-only-Läufer über diese Regeln. Eigene Prüflisten führt es nur für die Doku-Validierung von
-Projekten ohne solche Regeln im Profil (`references/doku-validierung.md`). BPM: INDEX-Routing,
-Frontmatter, Quickload, Schema, DI. Heidi: Bauplan, Vertrag, HANDOFF, PD-Register.
+zueinander passen. **Was** geprüft wird, steht im **Skill-Profil** des Repos (Abschnitt
+„Voraussetzung: Skill-Profil“), dazu die Stack-Referenzen von code-erstellen
+(`references/stacks/<key>.md`) für die Code-Seite. Im Skill-Repo kommen `docs/skill-quality.md`
+und die Skill-Tabelle der `INDEX.md` dazu (Abschnitt „Modul 8 — Skills (im Skill-Repo)“). audit
+erfindet keine Prüfregeln; es ist der Read-only-Läufer über diese Regeln. Eigene Prüflisten führt
+es nur für die Doku-Validierung von Projekten ohne solche Regeln im Profil
+(`references/doku-validierung.md`). Wie das in zwei Projekten aussieht, zeigt
+[references/beispiele.md](references/beispiele.md).
 
 ---
 
@@ -48,7 +46,7 @@ sondern delegieren.**
 | Skill ändern (auch Skill-Befunde beheben) | **skill-pflege** |
 | UI-Entwurf als HTML-Mockup | **mockup-erstellen** |
 | Commit-Befehl, Commit-Message | **git-commit-helper** |
-| ClickUp-Task-Aktion | **tracker** |
+| Aktion an einer Aufgabe im Tracker | **tracker** |
 
 Nur wenn die Hauptabsicht **read-only Konsistenzprüfung** ist
 (Audit-Report, Frontmatter-Check, Code-vs-Doc-Abgleich, INDEX-Validierung,
@@ -71,62 +69,89 @@ für Doc-Fixes, skill-pflege für Skill-Befunde) oder als Aufgaben über
   | Situation | Optionen |
   |-----------|----------|
   | Modus-Auswahl (A oder B) | Vollaudit, Teilaudit, Abbrechen |
-  | Teilaudit: welches Modul | Modul-Namen aus dem Router des Profils (BPM: INDEX.md; Heidi: Karte/Backend/Doku/Tools); „nur Grundsatz“, wenn das Profil Grundsatzregeln nennt |
+  | Teilaudit: welches Modul | Modul-Namen aus dem Router des Profils (`Doku.Router`; Beispiele in `references/beispiele.md`, Abschnitt „Teilaudit: Modulnamen“); „nur Grundsatz“, wenn das Profil Grundsatzregeln nennt |
   | Vollaudit-Warnung vor Start | Starten, Als Teilaudit starten, Abbrechen |
-  | Nach dem Report: was mit den Befunden | Als Tasks anlegen (tracker), An code-erstellen/doc-pflege/skill-pflege, Nur Report |
+  | Nach dem Report: was mit den Befunden | Als Aufgaben anlegen (tracker), An code-erstellen/doc-pflege/skill-pflege, Nur Report |
 
   Prosa nur bei einer offenen Frage ohne feste Optionen oder wenn der Nutzer eine Präferenz signalisiert hat.
 - **Branch** nach der Branch-Policy im Skill-Profil der `CLAUDE.md`: `current` → der aktuelle Branch aus der Shell
   (`git branch --show-current`); `fixed:<branch>` → der aktuelle Branch muss dieser sein, sonst Auswahlfrage
-  (auf dem aktuellen Branch prüfen / abbrechen). Ohne Shell gilt bei `fixed:<branch>` dieser Branch, bei `current` eine Auswahlfrage. Ohne Skill-Profil: Branch aus Chat-Kontext verwenden; mit Shell (Claude Code:
-  Bash/PowerShell, Cowork: DC) `git branch --show-current`; ohne Shell und unbekannt: Auswahlfrage mit den
-  Branch-Namen aus `git branch -a`. NIE automatisch einen Branch annehmen.
+  (auf dem aktuellen Branch prüfen / abbrechen). Ohne Shell gilt bei `fixed:<branch>` dieser Branch, bei `current` eine Auswahlfrage. Ohne Skill-Profil: Branch aus Chat-Kontext verwenden; mit Shell
+  `git branch --show-current` (Shell im Cowork-Chat: `references/cowork.md`); ohne Shell und unbekannt: Auswahlfrage
+  mit den Branch-Namen aus `git branch -a`. NIE automatisch einen Branch annehmen.
 
 ## Arbeitsverzeichnis (PFLICHT bei Dateizugriff)
 
 Claude Code: Repo-Wurzel der Sitzung (`git rev-parse --show-toplevel`).
-Cowork: bei DC-Operationen Arbeitsverzeichnis nach **cc-steuerung**, Abschnitt „Arbeitsverzeichnis“, ermitteln.
+Cowork-Chat: [references/cowork.md](references/cowork.md), Abschnitt „Arbeitsverzeichnis“.
 
 ---
 
-## Profile laden (Pflicht vor jedem Audit)
+## Voraussetzung: Skill-Profil (Pflicht vor jedem Audit)
 
-1. `CLAUDE.md` des Repos, Abschnitt `## Skill-Profil` (Spezifikation `docs/skill-profile-v1.md` im
-   Skill-Repo). Pflichtfelder für audit: die Grundfelder, `Doku.Router`, `Doku.Validierungsregeln`;
-   `Code.Architekturregeln`, wenn Code geprüft wird; `Tracker.Config`, wenn der Tracker geprüft wird.
-   Dazu, was die Module brauchen: `Code.Stacks`, `Code.Aufgabenquelle`, `Doku.Pflichtdokumente`, im
-   Skill-Repo der Check `skill-validation` unter `### Checks`. Fehlt ein Pflichtfeld oder steht es auf
-   `fehlt`: genau dieses Feld melden und nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“,
-   fragen; das Profil ergänzt nicht audit, sondern doc-pflege (Projekt-Init) oder der Nutzer.
-2. Fehlt der Abschnitt: `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router)
-   und `## Code-Profil` (Schichten/Kopplung, Aufgabenquelle, Stacks, Tests)
-3. Stack-Referenzen `skills/code-erstellen/references/stacks/<key>.md` für jeden Schlüssel in
-   `Code.Stacks` bzw. `Stacks:`
-4. Fehlt auch das Doku-Profil: `INDEX.md` + `DOC-STANDARD.md` (BPM-Weg). Fehlt beides: Auswahlfrage
-   „Profil anlegen (doc-pflege, Projekt-Init)“ / „Ohne Profil, ich nenne die Docs“ – nie raten.
-5. Skill-Profil, Bereich `### Modul` (für Modul 7): `Grundsatzregeln` (Verweis auf das Regelwerk; `none` → Modul 7
-   entfällt), `Manifest` (Pfad oder Muster der Modul-Manifeste), `Prüfumfang` (Positivliste der lesbaren Bereiche),
-   `Nachweise` (optional: Zuordnung Check/Testfall → Teilnachweis). Ein Verweis, der nicht auflöst, ist ein Befund; ein
-   fehlender benötigter Wert wird erfragt, nie geraten. Beim Teilaudit „nur Grundsatz“ werden Doku- und Tracker-Werte
-   nicht verlangt.
+Die Werte kommen aus dem Skill-Profil der `CLAUDE.md` im Repo (Spezifikation `docs/skill-profile-v1.md` im Skill-Repo).
+Pflicht für audit sind die Grundfelder, `Doku.Router` und `Doku.Validierungsregeln`; die übrigen Felder, wenn das Modul
+läuft, das sie braucht.
+
+| Feld | Wofür |
+|------|-------|
+| Grundfelder (`Profil-Version`, `Projekt-ID`, `Repo`, `Branch-Policy`) | Pflicht; Branch (Grundsätze), Profil-Prüfung im Router-Selbst-Check |
+| `Doku.Router` | Pflicht; Router-Selbst-Check, Modulnamen für das Teilaudit |
+| `Doku.Validierungsregeln` | Pflicht; formale Doc-Prüfung (`none` → das Modul entfällt) |
+| `Doku.Standard` | Doc-Laderegel, Format des Routers |
+| `Doku.Pflichtdokumente` | Kern-Docs und Begleit-Docs |
+| `Doku.Entscheidungs-Ort` | Notiz-Vorschläge nach dem Report |
+| `Code.Architekturregeln` | Pflicht, wenn Code geprüft wird |
+| `Code.Stacks` | Stack-Referenzen; Reference für die Grundsatzregeln |
+| `Code.Aufgabenquelle` | Kern-Docs vs. Code, Aufgabenquelle ↔ Tracker |
+| `Code.Tests` | Testergebnis beim Vollaudit (Tool-Strategie) |
+| `Tracker.Config` | Pflicht, wenn der Tracker geprüft wird; Präfix und Statusmodell |
+| Check `skill-validation` unter `### Checks` | im Skill-Repo die Mechanik der Skill-Prüfung |
+| `Modul.Grundsatzregeln` | Verweis auf das Regelwerk; `none` → „Modul 7 — Grundsatzregeln“ entfällt |
+| `Modul.Manifest` | Pfad oder Muster der Modul-Manifeste |
+| `Modul.Prüfumfang` | Positivliste der lesbaren Bereiche |
+| `Modul.Nachweise` | optional: Zuordnung Check/Testfall → Teilnachweis |
+
+1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Prüfpunkt oder das Modul entfällt.
+2. **Rückfall:** die älteren Abschnitte `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router) und `## Code-Profil`
+   (Schichten/Kopplung, Aufgabenquelle, Stacks, Tests) der CLAUDE.md.
+3. **Fehlt beides:** der Rückfall eines Projekts aus `references/beispiele.md`, Abschnitt „Rückfall ohne Profil“, wenn
+   das Repo dessen Merkmale hat.
+4. **Was dann noch fehlt** oder auf `fehlt` steht: genau dieses Feld melden und nach `docs/skill-profile-v1.md`,
+   Abschnitt „Fehlende Werte“, fragen (Profil ergänzen / Wert einmalig nennen / abbrechen); fehlt das Profil ganz, mit
+   einem Vorschlag aus dem Repo. Das Profil ergänzt nicht audit, sondern doc-pflege (Projekt-Init) oder der Nutzer. Nie
+   raten.
+
+Stack-Referenzen: `skills/code-erstellen/references/stacks/<key>.md` für jeden Schlüssel in `Code.Stacks` bzw. `Stacks:`.
+
+Ein Verweis, der nicht auflöst, ist ein Befund; ein fehlender benötigter Wert wird erfragt, nie geraten. Beim Teilaudit
+„nur Grundsatz“ werden Doku- und Tracker-Werte nicht verlangt.
+
+## Fall → Reference
+
+| Fall | Reference |
+|------|-----------|
+| Beispielwerte zweier Projekte: Modulnamen, Rückfall ohne Profil, Ladefolge, Prüfpunkte je Modul, Notiz-Ort, Suchmuster | [references/beispiele.md](references/beispiele.md) |
+| Prüflisten der Doku-Validierung für Projekte ohne eigene Regeln | [references/doku-validierung.md](references/doku-validierung.md) |
+| Prüfverfahren der Grundsatzregeln je Stack | Tabelle im Abschnitt „Modul 7 — Grundsatzregeln“ |
+| Cowork-Chat: Arbeitsverzeichnis, Dateien auflisten und suchen, Shell | [references/cowork.md](references/cowork.md) |
 
 ## Doc-Laderegel
 
-Ladereihenfolge des Doku-Profils. BPM (DOC-STANDARD.md Kapitel 8):
-1. INDEX.md → Routing
-2. Frontmatter + Quickload → Filter
-3. Fachliche Invarianten → Prüfen
-4. Langform nur bei Bedarf
+Ladereihenfolge des Projekts aus `Doku.Standard`; ohne eigene Regel diese Grundfolge:
+1. Router (`Doku.Router`) → welche Docs gelten
+2. Kopf bzw. Kurzfassung der Docs → filtern
+3. Langform nur für die geprüften Stellen
 
-Heidi: CLAUDE.md → HANDOFF 3e/4 → Bauplan Statusliste (1), Regeln (2), Vertrag (4) → Karten (8)
-nur für die geprüften Schritte → 10/10a für Befunde und Register.
+Beispiele zweier Projekte: `references/beispiele.md`, Abschnitt „Doc-Laderegel“.
 
 ---
 
 ## 2 Modi
 
 ### Modus A — Vollaudit
-Alle 8 Module (Modul 7 nur, wenn das Profil Grundsatzregeln nennt; Modul 8 nur im Skill-Repo). Token-intensiv — vor
+Alle 8 Module („Modul 7 — Grundsatzregeln“ nur, wenn das Profil Grundsatzregeln nennt; „Modul 8 — Skills (im
+Skill-Repo)“ nur im Skill-Repo). Token-intensiv — vor
 Start per Auswahlfrage bestätigen lassen.
 
 ### Modus B — Teilaudit
@@ -136,8 +161,8 @@ Nur relevantes Modul.
 
 ## Ablauf
 
-### Schritt 1: Profile und Router laden (Abschnitt „Profile laden“)
-### Schritt 2: Prüfmodule – je Modul die neutrale Frage, darunter die Prüfpunkte je Projekt (BPM als Beispiel, Heidi aus den Profilen)
+### Profil und Router laden (Abschnitt „Voraussetzung: Skill-Profil“)
+### Prüfmodule – je Modul die neutrale Frage und die Prüfpunkte aus dem Profil (Beispiele zweier Projekte: `references/beispiele.md`, Abschnitt „Prüfpunkte je Modul“)
 
 ---
 
@@ -145,17 +170,11 @@ Nur relevantes Modul.
 
 Neutral: Zeigt der Router des Profils nur auf Dinge, die es gibt, und im richtigen Format?
 
-BPM (INDEX.md):
-- Routing-Einträge → Docs existieren?
-- Code Entry Points → Dateien existieren?
-- Referenzimplementierungen → existieren?
-- Routing-Format korrekt (Primary/Secondary/Reference)?
-- historical Docs als Primary? → ❌
-
-Heidi (CLAUDE.md „Repo-Aufbau“, HANDOFF Abschnitt 5, Bauplan Abschnitt 5 Zielstruktur):
-- Genannte Pfade, Werkzeuge und Docs existieren (`tools/*.ps1`, `docs/dreame_x60/*.md`, `heidi/archiv/`)?
-- Profile in der CLAUDE.md vollständig (Commit, Tracker, Code, Doku) und untereinander widerspruchsfrei (Modulnamen, Testbefehl, Pfade)?
-- Zielstruktur (Abschnitt 5) ↔ tatsächliche Ordner `src/{domain,ha,components,shared,styles}`?
+- Jedes Ziel des Routers (`Doku.Router`) existiert: Docs, Code-Einstiege, genannte Pfade, Werkzeuge und Ordner.
+- Das Format des Routers folgt `Doku.Standard`.
+- Das Skill-Profil nach `docs/skill-profile-v1.md`, Abschnitt „Prüfung“: Version gültig; Bereiche vollständig, die die
+  genutzten Skills brauchen; Dateien und Überschriften hinter `ref:` vorhanden; Profil und Prosa der CLAUDE.md
+  widerspruchsfrei; keine unbekannten Felder oder veralteten Pfade.
 
 ---
 
@@ -163,17 +182,10 @@ Heidi (CLAUDE.md „Repo-Aufbau“, HANDOFF Abschnitt 5, Bauplan Abschnitt 5 Zie
 
 Neutral: Stimmt das, was die Kern-Docs versprechen, im Code?
 
-BPM:
-#### 2a. DB-Schema-Check
-#### 2b. DSGVO-Check
-#### 2c. Architektur-Check
-#### 2d. UI-Konsistenz-Check
-
-Heidi:
-#### 2a. Vertrag → Code: jede Entität/jeder Dienst aus Bauplan Abschnitt 4 ist in `contract.ts` erreichbar (`ENTITIES`, `ROBOT_FEATURES`, `roomEntity`, `SERVICES`)
-#### 2b. Verbotenes im Repo: `H:\.storage`, `secrets.yaml`, Datenbanken, `prognose/presence_log.csv`, `prognose/runlog.csv`, `access_token`/GPS in Fixtures und Abzügen → jeder Treffer ❌
-#### 2c. Regeln Abschnitt 2 im Code: kein `shouldUpdate` in der Shell; Schreiben nach HA nur über `DxApi`; Komponenten lesen nur Views aus Selektoren; keine externen Ressourcen; nichts fest verdrahtet, was Roboter/HA liefern (Räume, Optionen, Namen)
-#### 2d. Statusliste → Code: jeder Schritt `fertig`/`eingespielt` hat Dateien, Tests (`tests/unit`, `tests/e2e`) und einen Commit; `offen` hat keinen Code, der schon behauptet fertig zu sein
+- Was `Doku.Pflichtdokumente` und `Code.Architekturregeln` zusagen (Schema, Schichten, Verträge, verbotene Muster),
+  findet sich im Code.
+- Was die Aufgabenquelle (`Code.Aufgabenquelle`) als fertig führt, hat Code, Tests und einen Commit; Offenes hat keinen
+  Code, der schon behauptet, fertig zu sein.
 
 ---
 
@@ -181,17 +193,8 @@ Heidi:
 
 Neutral: Gibt es im Code etwas, das die Docs nicht kennen?
 
-BPM:
-#### 3a. Interface-Implementierung
-#### 3b. DI-Registrierung
-#### 3c. Dependencies
-#### 3d. Code Entry Points
-
-Heidi:
-#### 3a. Code → Vertrag: Entitäts-IDs oder Dienste im Code (`contract.ts`, `api.ts`, Paket-YAML), die in Abschnitt 4 fehlen
-#### 3b. Komponenten ohne Karte: `src/components/dx-*.ts` ohne Aufgabenkarte in Abschnitt 8 bzw. ohne Eintrag in Abschnitt 7
-#### 3c. Selektoren: jeder `memoizeSelector` in `ALL_SELECTORS`; `ids` vollständig (Proxy-Test vorhanden)
-#### 3d. Abhängigkeiten: `package.json` ↔ Bauplan Abschnitt 3 (Lit, esbuild, Playwright; keine ungenannten Laufzeit-Abhängigkeiten); Version in `package.json`, Lock und Ressourcen-`?v=` gleich
+- Bestandteile im Code (Komponenten, Dienste, Schnittstellen, Registrierungen, Einstiegspunkte), die keine Doku nennt.
+- Abhängigkeiten im Code, die die Doku nicht nennt.
 
 ---
 
@@ -199,15 +202,9 @@ Heidi:
 
 Neutral: Sind die Begleit-Docs aktuell und vollständig?
 
-BPM:
-#### 4a. ADR-Status
-#### 4b. CHANGELOG-Vollständigkeit
-#### 4c. BACKLOG-Aktualität
-
-Heidi:
-#### 4a. PD-Register (10a): jede Abweichung von v1, die im Code oder in Abschnitt 10 genannt ist, hat einen Eintrag mit Status `freigegeben`; kein Eintrag `offen` älter als der zugehörige Bauschritt
-#### 4b. HANDOFF 3e/4: nennt letzten abgeschlossenen Bauschritt und aktuelle Version; offene Punkte haben ClickUp-Bezug oder Begründung
-#### 4c. Plan-Docs (GERAETEPROFIL, PLANER-NACHHOLEN, UX-TRANSITIONS, ENTITAETEN): Stand-Datum vorhanden, „So funktioniert es heute“ stimmt mit dem Code
+- Begleit-Docs aus `Doku.Pflichtdokumente` (z. B. CHANGELOG, ADRs, Backlog, Übergabe) und der Entscheidungs-Ort
+  (`Doku.Entscheidungs-Ort`) sind aktuell und vollständig.
+- Versionsangaben in Doku und Code stimmen überein.
 
 ---
 
@@ -215,16 +212,11 @@ Heidi:
 
 Neutral: Sagen Aufgabenquelle und Tracker dasselbe?
 
-BPM:
-- Module/ vs. Konzepte/ Zuordnung
-- INDEX Routing vollständig?
-- ClickUp-Tasks (BPM-NNN) ↔ BACKLOG
+- Status in der Aufgabenquelle (`Code.Aufgabenquelle`) ↔ Status im Tracker nach dem Statusmodell der Tracker-Config
+  (`Tracker.Config`): Abweichung ⚠️, fehlende Aufgabe ❌.
+- Jede Aufgabe der Aufgabenquelle hat eine im Tracker und umgekehrt.
 
-Heidi:
-- Bauplan Statusliste (Abschnitt 1) ↔ ClickUp `DX-NNN`-Status (Mapping aus der Tracker-Config des Projekts: fertig→shipped/testing, in Arbeit→in development, offen→backlog); Abweichung ⚠️, fehlende Aufgabe ❌
-- Jede Aufgabenkarte hat eine DX-Aufgabe und umgekehrt (Phasen ausgenommen)
-- Notizen in Abschnitt 10 mit Format `- [Datum] [Aufgabe] Art · Schwere: … Entscheidung Herbert: …`; Wünsche mit Post-2.0-Task
-(ClickUp lesen über den tracker-Skill, read-only: `clickup_filter_tasks`, `clickup_get_task`)
+(Tracker lesen über den tracker-Skill, read-only, geschlossene Aufgaben eingeschlossen.)
 
 ---
 
@@ -237,7 +229,9 @@ Neutral: Halten die Docs die Validierungsregeln des Projekts ein?
 - `none`: Das Projekt führt bewusst keine Doku-Validierung; Modul 6 entfällt.
 - Ohne Skill-Profil und ohne Feld „Validierung“ gelten die Prüflisten in
   [references/doku-validierung.md](references/doku-validierung.md): je Projekt Stufe A (Blocker) und Stufe B (Warnung).
-- Im Skill-Repo zeigt das Feld auf die Skill-Prüfung; die läuft nur einmal, in Modul 8.
+- Passt keine dieser Listen zum Projekt: `Doku.Validierungsregeln` nach „Fehlende Werte“ erfragen; keine fremde Liste
+  anwenden.
+- Im Skill-Repo zeigt das Feld auf die Skill-Prüfung; die läuft nur einmal, in „Modul 8 — Skills (im Skill-Repo)“.
 
 ---
 
@@ -281,7 +275,7 @@ Nur im Skill-Repo (Repo mit `skills/<name>/SKILL.md` und `docs/skill-quality.md`
 Befunde immer mit Datei und Stelle (Zeile oder Abschnitt), damit der Fix-Skill direkt hinspringen kann.
 
 ```
-🔍 Audit-Report [Projekt] ([Datum]) — Modus A/B, Profile: Doku ✓ Code ✓ Stacks: <keys>
+🔍 Audit-Report [Projekt] ([Datum]) — Modus A/B, Skill-Profil ✓ (oder Rückfall: <Quelle>) Stacks: <keys>
 ═══════════════════════════════════
 
 📊 Zusammenfassung: X ✅ | Y ⚠️ | Z ❌
@@ -299,7 +293,7 @@ G-18 | ❌ Token in <Datei>:<Zeile> (Wert nicht zitiert)
 Nicht anwendbar (Stufe): G-22
 
 ──────────────────────────────────
-Modul 6 — Frontmatter + Quickload
+Modul 6 — Formale Doc-Prüfung
 ──────────────────────────────────
 ❌ [Doc]: [Problem]
 ⚠️ [Doc]: [Warnung]
@@ -324,7 +318,7 @@ Modul 6 — Frontmatter + Quickload
 
 ## Ergebnisvertrag
 
-Gilt für jede Prüfung gegen ein Regelwerk (Modul 7) und für jedes Projekt; die Reference des Stacks nutzt ihn.
+Gilt für jede Prüfung gegen ein Regelwerk („Modul 7 — Grundsatzregeln“) und für jedes Projekt; die Reference des Stacks nutzt ihn.
 
 **Anwendbarkeit:** Eine Regel gilt, wenn ihre Mindeststufe erreicht und ihr Gegenstand vorhanden ist. Fehlt ein
 vorgeschriebener Bestandteil, ist das ein Befund, kein Grund für „nicht anwendbar“.
@@ -361,32 +355,38 @@ offen“: geprüfte Bereiche, offene Regeln, nächster nötiger Nachweis. Nicht 
 audit ändert nichts – aber es lässt die Befunde nicht im Chat liegen. Direkt nach dem Report
 eine Auswahlfrage:
 
-- **„Als Tasks anlegen“** → `tracker neu` (Schema und Präfix des Projekts, z.B. `DX-NNN | DOKU | Audit: …`).
-  Ein Sammel-Task pro Modul mit den Befunden als Checkliste in der Beschreibung; ❌-Befunde mit
-  Priorität `high`, ⚠️ `normal`. Bei ≤ 3 Befunden auch je Befund ein Task (Auswahlfrage).
+- **„Als Aufgaben anlegen“** → `tracker neu` (Schema und Präfix aus der Tracker-Config des Projekts; Beispiel in
+  `references/beispiele.md`, Abschnitt „Nach dem Report“).
+  Eine Sammel-Aufgabe pro Modul mit den Befunden als Checkliste in der Beschreibung; ❌-Befunde mit
+  Priorität `high`, ⚠️ `normal`. Bei ≤ 3 Befunden auch je Befund eine Aufgabe (Auswahlfrage).
   Alle ClickUp-Operationen über den tracker-Skill, nie direkt.
-  Skill-Befunde (Modul 8) stattdessen als `tracker issue <skill>: Audit: …`, je Skill ein Issue mit
-  den Befunden als Checkliste.
+  Skill-Befunde („Modul 8 — Skills (im Skill-Repo)“) stattdessen als `tracker issue <skill>: Audit: …`, je Skill ein
+  Issue mit den Befunden als Checkliste.
 - **„An code-erstellen / doc-pflege / skill-pflege“** → Befunde als Aufgabenliste an den Fix-Skill
   übergeben (Code-Befunde → code-erstellen, Doc-Befunde → doc-pflege, Abschnitt „Doku pflegen“,
   Skill-Befunde → skill-pflege); der Fix-Skill startet erst nach eigener Bestätigung.
-- **„Nur Report“** → Report bleibt; Hinweis, dass Befunde ohne Task beim nächsten Audit wieder auftauchen.
+- **„Nur Report“** → Report bleibt; Hinweis, dass Befunde ohne Aufgabe beim nächsten Audit wieder auftauchen.
 
-Bei Heidi zusätzlich: Befunde, die eine Entscheidung von Herbert brauchen (Regel-Widerspruch,
-Abweichung von v1), als Notiz-Vorschlag für Bauplan Abschnitt 10 formulieren (Art `Widerspruch`,
-Entscheidung offen) – eintragen tut doc-pflege, nicht audit.
+Befunde, die eine Entscheidung des Nutzers brauchen (Regel-Widerspruch, Abweichung von einer
+Vorgabe), zusätzlich als Notiz-Vorschlag für den Entscheidungs-Ort des Projekts
+(`Doku.Entscheidungs-Ort`) formulieren, Entscheidung offen – eintragen tut doc-pflege, nicht audit.
+Beispiel: `references/beispiele.md`, Abschnitt „Nach dem Report“.
 
 ---
 
 ## Tool-Strategie
 
-- Frontmatter/Quickload (BPM): Nur erste 30 Zeilen jeder Doc; Heidi: Statusliste, Abschnitt 4 und 10a gezielt lesen, Karten nur für geprüfte Schritte
-- Existenz: Cowork `list_directory`, Claude Code `Glob`
-- Content: Cowork `start_search`, Claude Code `Grep` (Muster: Entitäts-IDs, `shouldUpdate`, `callService`, `access_token`, `latitude`)
-- ClickUp (Modul 5): read-only über tracker (`clickup_filter_tasks` mit `include_closed: true`)
-- Teilaudit: max 10 Tool-Calls (Claude Code: Grep-Läufe zählen je einer)
-- Teilaudit „nur Grundsatz“ (Modul 7): max 30 Tool-Calls je Modul-Manifest; Suchen mehrerer Regeln in einem Lauf bündeln
-- Vollaudit: max 35 Tool-Calls; bei Heidi vorher `npm test`-Ergebnis vom User erfragen statt selbst zu bauen (read-only)
+- Docs gezielt lesen: Kopf bzw. Kurzfassung, nur die geprüften Abschnitte (Beispiele: `references/beispiele.md`,
+  Abschnitt „Tool-Strategie“)
+- Existenz: Dateien auflisten
+- Inhalt: suchen, Muster aus den Prüfpunkten des Moduls (Beispiele: `references/beispiele.md`, Abschnitt „Tool-Strategie“)
+- Im Cowork-Chat: `references/cowork.md`, Abschnitt „Dateien auflisten und suchen“
+- Tracker („Modul 5 — Aufgabenquelle ↔ Tracker“): read-only über tracker, geschlossene Aufgaben eingeschlossen
+- Teilaudit: max 10 Tool-Calls (Suchläufe zählen je einer)
+- Teilaudit „nur Grundsatz“ („Modul 7 — Grundsatzregeln“): max 30 Tool-Calls je Modul-Manifest; Suchen mehrerer Regeln in
+  einem Lauf bündeln
+- Vollaudit: max 35 Tool-Calls; das Ergebnis der Tests (`Code.Tests`) vorher vom Nutzer erfragen statt selbst zu bauen
+  (read-only)
 
 ---
 
@@ -396,15 +396,16 @@ Entscheidung offen) – eintragen tut doc-pflege, nicht audit.
 - Annahmen ohne Dateien
 - False Positives als Fehler
 - Vollaudit ohne Auswahlfrage-Vorwarnung
-- Ladereihenfolge des Profils ignorieren (BPM: Quickload-Laderegel)
+- Ladereihenfolge des Profils ignorieren
 - Prosa-Fragen bei festen Entscheidungsoptionen (Modus-Auswahl, Modul-Auswahl für Teilaudit)
 - Branch automatisch annehmen (Branch-Policy lesen, Shell fragen oder Auswahlfrage)
 - Eigene Prüfregeln erfinden statt Skill-Profil (bzw. Doku-/Code-Profil), Stack-Referenzen und
   `references/doku-validierung.md` zu lesen
-- BPM-Prüfpunkte (DB-Schema, DI, Frontmatter) auf ein Projekt anwenden, das sie laut Profil nicht hat
+- Prüfpunkte oder Beispielwerte eines anderen Projekts (`references/beispiele.md`, `references/doku-validierung.md`)
+  auf ein Projekt anwenden, das sie laut Profil nicht hat
 - Befunde ohne Datei und Stelle melden
-- Report beenden ohne Auswahlfrage „Tasks / Fix-Skill / Nur Report“
-- ClickUp direkt schreiben (Tasks nur über tracker, und nur nach Auswahlfrage)
+- Report beenden ohne Auswahlfrage „Aufgaben / Fix-Skill / Nur Report“
+- ClickUp direkt schreiben (Aufgaben nur über tracker, und nur nach Auswahlfrage)
 - **Eine Regel grün melden, weil ein Test existiert** – „Test vorhanden“ ist kein Ausführungsnachweis
 - **Geheime Werte im Report zitieren** oder gesperrte Bereiche öffnen, um darin zu suchen
 - **Außerhalb des Prüfumfangs lesen** (`Modul.Prüfumfang`), wo das Profil ihn begrenzt

@@ -624,7 +624,7 @@ claude-workbench/
 │   └── anthropic-skill-creator/
 │
 ├── skills/
-│   ├── audit/                             ← SKILL.md + references/ (grundsatz/home-assistant)
+│   ├── audit/                             ← SKILL.md + references/ (beispiele, cowork, doku-validierung, grundsatz/home-assistant)
 │   ├── cc-steuerung/
 │   │   ├── SKILL.md
 │   │   └── references/desktop-commander.md
