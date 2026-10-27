@@ -129,4 +129,5 @@ Keine. Es entfällt keine Regel.
 - **Qualität:** `SKILL.md` 418 Zeilen; References mit Inhaltsverzeichnis (`beispiele.md` jetzt 108 Zeilen); BPM und
   Heidi im Kern nur noch in Verweisen auf `beispiele.md`; keine Historie; Werkzeugnamen im Kern nur in den wörtlich
   übernommenen Grundsätzen (Shell je Umgebung) und im Weg codex (Codex CLI als nötiges Werkzeug).
-- **Routing-Eval:** offen (nach dem Commit).
+- **Routing-Eval:** `--tag chatgpt-review` nach Commit 30300ca: 9 Fälle, alle 3/3 (Score 1.00). CI-Läufe 40592511669
+  und 40592649925 grün.
