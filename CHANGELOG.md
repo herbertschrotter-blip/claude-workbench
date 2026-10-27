@@ -8,6 +8,17 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.1] — 2026-10-28
+
+- **skills/doc-pflege, Refactor (Umbau Phase 6):** „Voraussetzung: Skill-Profil“ wie bei chat-wechsel (Feldtabelle;
+  Rückfall auf das ältere `## Doku-Profil`, sonst „Fehlende Werte“ statt BPM-Weg).
+  - Projektwerte von BPM und Heidi (Pfade, Ladereihenfolge, Frühphasen- und Paritätsregel, Orte für den
+    Sitzungsabschluss, Startprompt, Commit-Beispiele) in neuer `references/beispiele.md`, Cowork-Teile in neuer
+    `references/cowork.md`. Die Frühphasen-Regel heißt neutral „Projektregeln für Schema-, Config- und
+    Datenänderungen“; der Sitzungsabschluss ist neutral; Branches ohne Shell über die GitHub-API.
+  - Gestrichen (freigegeben): die Skill-Governance-Liste (doppelt zu skill-pflege und `docs/skill-quality.md`).
+    Description unverändert. Regel-Inventar `docs/skill-refactors/2026-10-28-doc-pflege.md` (131 alte Zeilen).
+
 ## [v0.62.0] — 2026-10-28
 
 - **skills/git-commit-helper, Refactor (Umbau Phase 6) mit neuem Verhalten:** „Voraussetzung: Skill-Profil“ mit

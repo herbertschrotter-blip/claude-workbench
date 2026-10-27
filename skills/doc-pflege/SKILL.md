@@ -24,10 +24,11 @@ description: >
 Schreibt, ändert und korrigiert Projektdokumentation, behebt Befunde aus einem Audit und macht
 den Sitzungsabschluss im Repo; eine Prüfung ohne Änderungsauftrag macht audit. Welche Docs es gibt, wie sie
 aufgebaut sind und was geprüft wird, steht im **Skill-Profil** des Projekts, Bereich Doku
-(Abschnitt „Voraussetzung: Skill-Profil“). BPM: Frontmatter, Quickload und
-Kapitelstruktur nach DOC-STANDARD.md. Heidi: Bauplan (Statusliste, Aufgabenkarten,
-Notizen, PD-Register) und HANDOFF. Initialisiert neue Projekte mit dem Standard-Doc-Set
+(Abschnitt „Voraussetzung: Skill-Profil“). Initialisiert neue Projekte mit dem Standard-Doc-Set
 des Profils. Erzwingt die Vorlagen des Profils bei neuen Docs.
+
+Beispielwerte zweier Projekte (Vorlagen, Router, Orte, Pfade): `references/beispiele.md`. Für jedes Projekt gilt nur
+sein eigenes Profil.
 
 ---
 
@@ -47,7 +48,7 @@ oder andere Aktionen sind, NICHT hier weiterarbeiten, sondern delegieren.**
 
 Nur wenn die Hauptabsicht **echte Doc-Arbeit** ist (neue Doc erstellen,
 bestehende Doc refactoren, Frontmatter/Quickload ergänzen oder korrigieren, ADR schreiben,
-INDEX.md-Routing pflegen, Befunde aus einem Audit beheben, Sitzungsabschluss), bleibt doc-pflege zuständig.
+Router-Einträge pflegen, Befunde aus einem Audit beheben, Sitzungsabschluss), bleibt doc-pflege zuständig.
 
 **Wichtig:** Code-Änderungen, die "Doc-Folgen" haben (neues Schema,
 neue ADR-würdige Entscheidung), werden von code-erstellen oder
@@ -67,7 +68,7 @@ jetzt die Doku" bevor doc-pflege selbst übernimmt.
   |-----------|----------|
   | Modus-Auswahl bei Unsicherheit | Modusnamen als Optionen: Projekt-Init, Router nachziehen, Begleit-Docs, Doku pflegen, Neue Doc oder Umbau, Sitzungsabschluss |
   | Befund beim Prüfen nach dem Schreiben mit mehreren Lösungen | Befund je Option: Doc anpassen, Quelle anpassen, Ignorieren mit Begründung |
-  | Sitzungsabschluss: Aufgabe fertig oder offen? | fertig, offen (Rest im HANDOFF), blockiert (Befund) |
+  | Sitzungsabschluss: Aufgabe fertig oder offen? | fertig, offen (Rest bei den offenen Punkten), blockiert (Befund) |
   | Doc umbauen: Inhalt passt in kein Kapitel | Eigenes Kapitel am Ende, Vorhandenes Kapitel erweitern, Abbrechen |
   | Doku-Hinweis nach Code-Änderung | Jetzt pflegen, Später als Task anlegen, Ignorieren |
   | Schema-/DB-Änderung dokumentieren | "Mit Reset-Anweisung", "Mit Migrations-Kapitel (User will explizit)", "Abbrechen" |
@@ -78,10 +79,11 @@ jetzt die Doku" bevor doc-pflege selbst übernimmt.
   - Freitext-Input nötig
 - **Branch** nach der Branch-Policy im Skill-Profil der `CLAUDE.md`: `current` → der aktuelle Branch aus der Shell
   (`git branch --show-current`); `fixed:<branch>` → der aktuelle muss dieser sein, sonst Auswahlfrage (wechseln /
-  abbrechen). Ohne Shell gilt bei `fixed:<branch>` dieser Branch, bei `current` eine Auswahlfrage. Ohne Skill-Profil: Branch aus Chat-Kontext verwenden. Mit Shell (Claude Code: Bash/PowerShell, Cowork:
-  DC): `git branch --show-current`; nennt ein älteres Profil der `CLAUDE.md` einen Pflicht-Branch und der aktuelle
-  weicht ab → Auswahlfrage. Ohne Shell und unbekannt: per Auswahlfrage fragen (Optionen: Branch-Namen aus
-  `git branch -a`). NIE automatisch einen Branch annehmen.
+  abbrechen). Ohne Shell gilt bei `fixed:<branch>` dieser Branch, bei `current` eine Auswahlfrage. Ohne Skill-Profil: ein
+  in dieser Sitzung schon bekannter Branch; sonst mit Shell `git branch --show-current`; nennt ein älteres Profil der
+  `CLAUDE.md` einen Pflicht-Branch und der aktuelle weicht ab → Auswahlfrage. Ohne Shell und unbekannt: die Branches über
+  die GitHub-API auflisten und per Auswahlfrage wählen lassen (Optionen = Branch-Namen). NIE automatisch einen Branch
+  annehmen.
 - **Push** nach der Push-Policy im Skill-Profil (betrifft den Commit im Sitzungsabschluss):
   - `user-only`: kein Push; der User pusht selbst
   - `allowed`: Push nur, wenn der User es ausdrücklich will
@@ -94,109 +96,80 @@ jetzt die Doku" bevor doc-pflege selbst übernimmt.
 ## Arbeitsverzeichnis (PFLICHT bei Dateizugriff)
 
 Claude Code: Repo-Wurzel der Sitzung (`git rev-parse --show-toplevel`).
-Cowork: bei DC-Operationen Arbeitsverzeichnis nach **cc-steuerung**, Abschnitt „Arbeitsverzeichnis“, ermitteln.
+Im Cowork-Chat: `references/cowork.md`, Abschnitt „Arbeitsverzeichnis“.
 
 ---
 
 ## Voraussetzung: Skill-Profil
 
-1. `CLAUDE.md` des Repos, Abschnitt `## Skill-Profil` (Spezifikation `docs/skill-profile-v1.md` im Skill-Repo; Claude
-   Code liest sie automatisch, Cowork per DC). Pflichtfelder für doc-pflege: die Grundfelder, `Doku.Router`,
-   `Doku.Standard`, `Doku.Entscheidungs-Ort`; `Commit.Push-Policy`, wenn der Sitzungsabschluss committet. Dazu, wo
-   gesetzt: `Doku.Pflichtdokumente`, `Doku.Validierungsregeln` (Abschnitt „Prüfen nach dem Schreiben“),
-   `Doku.Sitzungsabschluss`, `Commit.Doku-Check` (Abschnitt „Doku-Hinweise nach Code-Änderungen“), `Commit.Format`
-   und `Commit.Module` für Doku-Commits. Fehlt ein Pflichtfeld oder steht es auf `fehlt`: genau dieses Feld nennen und
-   nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“, fragen.
-2. Fehlt der Abschnitt: das ältere `## Doku-Profil` der `CLAUDE.md` mit den Feldern unten. Die Spalte „Skill-Profil“
-   nennt das Feld, das es dort ersetzt.
+Die Werte kommen aus dem Skill-Profil der `CLAUDE.md` im Repo (Spezifikation `docs/skill-profile-v1.md` im Skill-Repo;
+im Cowork-Chat: `references/cowork.md`, Abschnitt „Skill-Profil und Docs lesen“):
 
-| Feld | Skill-Profil | Bedeutung | BPM | Heidi |
-|------|--------------|-----------|-----|-------|
-| Doc-Standard | `Doku.Standard` | Regelwerk für Aufbau und Validierung | `DOC-STANDARD.md` (Frontmatter, Quickload, Kapitelvorlagen, Ladereihenfolge Kap. 8) | Bauplan selbst (Abschnitt 0–2, Formate in 8/10/10a) |
-| Router / Index | `Doku.Router` | Wo steht, welche Doc wofür | `INDEX.md` (Task-to-Doc, Primary/Secondary/Reference) | `CLAUDE.md` (Repo-Aufbau) + `docs/HANDOFF.md` Abschnitt 5 |
-| Pflicht-Docs | `Doku.Pflichtdokumente` | Dateien mit Pfad (ersetzt die alte Pfadtabelle) | Tabelle unten „Beispiel BPM“ | `docs/dreame_x60/BAUPLAN.md`, `docs/HANDOFF.md`, `CLAUDE.md`, `heidi/CLAUDE.md`, `docs/dreame_x60/*.md` (Pläne) |
-| Doc-Typen + Vorlagen | `Doku.Standard` | Was neu angelegt wird und wie | ADR, Konzept, Modul-Doc, Architektur (Kapitelvorlagen Kap. 7) | Aufgabenkarte (Voraussetzung/Ziel/Nicht ändern/Akzeptanz/Tests/Dateien), Notiz Abschnitt 10 (Datum/Aufgabe/Art/Schwere/Text/Entscheidung), PD-Eintrag 10a (id/bereich/v1/v2/grund/spec_test/Status), Plan-Doc (Stufen, Stand) |
-| Validierung | `Doku.Validierungsregeln` | Was nach dem Schreiben geprüft wird (Abschnitt „Prüfen nach dem Schreiben“) | Frontmatter/Quickload Stufe A/B | Statusliste ↔ ClickUp ↔ Code; PD-Register vollständig; Notizformat; HANDOFF 3e aktuell; Abschnitt 4 ↔ contract.ts |
-| Frühphasen-Regel | – (Regel im Router oder Standard des Projekts) | Reset statt Migration dokumentieren | ja (INDEX.md Kapitel „Projekt-Phase“) | nein – stattdessen Regel: Abweichung von v1 nur mit PD-Eintrag |
-| Advisory | `Commit.Doku-Check` | Doku-Folgen nach Code-Änderung | Doku-Checkliste des Commit-Profils | Doku-Checkliste des Commit-Profils |
-| Sitzungsabschluss | `Doku.Sitzungsabschluss` | Was am Ende jeder Sitzung zu tun ist | Handover via chat-wechsel | Statusliste, HANDOFF 3e, offene Punkte Abschnitt 4, Commit + Push |
-| Commit-Modul | `Commit.Module` | Modulname für Doku-Commits | `Docs` | `Doku` |
+| Feld | Wofür | Pflicht |
+|------|-------|---------|
+| Grundfelder (`Profil-Version`, `Projekt-ID`, `Repo`, `Branch-Policy`) | Repo und Branch (Grundsätze) | ja |
+| `Doku.Router` | Wo steht, welche Doc wofür (Router nachziehen, Neue Doc) | ja |
+| `Doku.Standard` | Regelwerk für Aufbau, Vorlagen je Doc-Typ, Ladereihenfolge | ja |
+| `Doku.Entscheidungs-Ort` | Befunde und Entscheidungen (Sitzungsabschluss) | ja |
+| `Commit.Push-Policy` | Push im Sitzungsabschluss | wenn der Sitzungsabschluss committet |
+| `Doku.Pflichtdokumente` | Dateien mit Pfad (Doku pflegen, Begleit-Docs) | wo gesetzt |
+| `Doku.Validierungsregeln` | Prüfen nach dem Schreiben | wo gesetzt |
+| `Doku.Sitzungsabschluss` | Orte für Statusliste, Stand, offene Punkte; ob am Ende jeder Sitzung Pflicht | wo gesetzt |
+| `Commit.Doku-Check` | Doku-Hinweise nach Code-Änderungen, Begleit-Docs | wo gesetzt |
+| `Commit.Format`, `Commit.Module` | Doku-Commits | wo gesetzt |
 
-3. **Fehlt beides:** `INDEX.md` + `DOC-STANDARD.md` im Repo als Profil nehmen (BPM-Weg).
-Fehlt auch das: Auswahlfrage „Profil anlegen (Vorschlag aus dem Repo)“ / „Ohne Profil, ich nenne die Docs“.
+1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Teil entfällt. Fehlt ein Pflichtfeld oder
+   steht es auf `fehlt`: genau dieses Feld nennen und nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“, fragen.
+2. **Rückfall:** Fehlt der Abschnitt, das ältere `## Doku-Profil` der `CLAUDE.md` mit den Feldern unten (die
+   Doku-Checkliste steht dort im `## Commit-Profil`). Die Spalte „Skill-Profil“ nennt das Feld, das es dort ersetzt.
 
----
+   | Feld | Skill-Profil | Bedeutung |
+   |------|--------------|-----------|
+   | Doc-Standard | `Doku.Standard` | Regelwerk für Aufbau und Validierung |
+   | Router / Index | `Doku.Router` | Wo steht, welche Doc wofür |
+   | Pflicht-Docs | `Doku.Pflichtdokumente` | Dateien mit Pfad (ersetzt die alte Pfadtabelle) |
+   | Doc-Typen + Vorlagen | `Doku.Standard` | Was neu angelegt wird und wie |
+   | Validierung | `Doku.Validierungsregeln` | Was nach dem Schreiben geprüft wird (Abschnitt „Prüfen nach dem Schreiben“) |
+   | Frühphasen-Regel | – (Regel im Router oder Standard des Projekts) | Regeln für Schema-, Config- und Datenänderungen |
+   | Advisory | `Commit.Doku-Check` | Doku-Folgen nach Code-Änderung |
+   | Sitzungsabschluss | `Doku.Sitzungsabschluss` | Was am Ende jeder Sitzung zu tun ist |
+   | Commit-Modul | `Commit.Module` | Modulname für Doku-Commits |
 
-## Konkrete Pfade (Beispiel BPM – für andere Projekte gilt das Doku-Profil)
-
-| Datei | Pfad im Repo |
-|-------|-------------|
-| INDEX.md | `/INDEX.md` (Repo-Root) |
-| DOC-STANDARD.md | `/Docs/Referenz/DOC-STANDARD.md` |
-| BACKLOG.md | `/Docs/Kern/BACKLOG.md` |
-| ADR.md | `/Docs/Referenz/ADR.md` |
-| DB-SCHEMA.md | `/Docs/Kern/DB-SCHEMA.md` |
-| CHANGELOG.md | `/Docs/Referenz/CHANGELOG.md` |
-| DEPENDENCY-MAP.md | `/Docs/Referenz/DEPENDENCY-MAP.md` |
-| VISION.md | `/Docs/Referenz/VISION.md` |
-| Architektur-Doc | `/Docs/Kern/BauProjektManager_Architektur.md` |
-| CODING_STANDARDS.md | `/Docs/Kern/CODING_STANDARDS.md` |
-| DSVGO-Architektur.md | `/Docs/Kern/DSVGO-Architektur.md` |
+3. **Fehlt beides:** Router und Standard des Repos nehmen, soweit vorhanden (Beispiel: `references/beispiele.md`,
+   Abschnitt „Rückfall ohne Profil (BPM)“). Was dann noch fehlt, per Auswahlfrage nach „Fehlende Werte“: Profil ergänzen
+   (Vorschlag aus dem Repo) / Wert einmalig nennen / Abbrechen. Nie raten.
 
 ---
 
 ## Doc-Laderegel
 
-Dieser Skill liest Docs nach der Ladereihenfolge des Doku-Profils.
-
-BPM (DOC-STANDARD.md Kapitel 8):
-1. INDEX.md → Routing
-2. Frontmatter + Quickload → Filter
-3. Fachliche Invarianten → Prüfen
-4. Pflichtlesen → Laden wenn betroffen
-5. Langform nur bei Bedarf
-
-Heidi:
-1. CLAUDE.md (automatisch) → Repo-Aufbau, Profile
-2. HANDOFF.md Abschnitt 3e + 4 → Stand und offene Punkte
-3. BAUPLAN.md Statusliste (Abschnitt 1) → welche Aufgabe, welcher Status
-4. Nur die betroffene Aufgabenkarte (Abschnitt 8) und Regeln (Abschnitt 2)
-5. Abschnitt 10/10a nur, wenn Befund oder Abweichung einzutragen ist
+Dieser Skill liest Docs nach der Ladereihenfolge des Standards bzw. Routers (`Doku.Standard`, `Doku.Router`).
+Beispiele: `references/beispiele.md`, Abschnitt „Doc-Laderegel“.
 
 ---
 
-## Frühphasen-Regel (PFLICHT bei Schema-/Config-/DB-Doku, wenn das Profil sie führt)
+## Projektregeln für Schema-, Config- und Datenänderungen
 
-Gilt für Projekte mit „Frühphasen-Regel: ja“ im Doku-Profil (BPM). INDEX.md hat dort das
-Kapitel "Projekt-Phase (VERBINDLICH)". Solange dieses Kapitel besteht, gilt für die Doku von
-Schema-/Config-/DB-Änderungen:
+Führt der Router oder der Standard des Projekts eine Regel, wie Schema-, Config- oder Datenänderungen dokumentiert
+werden, gilt sie für jede Doku solcher Änderungen. Zwei Arten kommen vor (Werte zweier Projekte:
+`references/beispiele.md`, Abschnitt „Schema- und Datenänderungen“):
 
-**Statt Migrations-Kapitel → Reset-Anweisung dokumentieren.**
+- **Frühphase: Reset statt Migration.** Solange das Projekt die Frühphase führt:
+  **Statt Migrations-Kapitel → Reset-Anweisung dokumentieren.** Beschreibt eine Doc (z. B. Schema-Doc, ADR,
+  Konzept-Doc) eine Schema-Änderung, NICHT als „Migration von Schema vN auf vN+1“ mit Änderungsschritten formulieren,
+  sondern:
 
-Wenn z.B. DB-SCHEMA.md, ADR.md oder ein Konzept-Doc eine Schema-Änderung
-beschreibt, NICHT formulieren wie "Migration von Schema v2 auf v3":
+  > Schema-Änderung von N auf N+1 (Frühphase, keine Migration):
+  > Betroffene Datei(en): <Datei>
+  > Aktion: User löscht <Datei> → die App erstellt sie beim nächsten Start neu mit Schema vN+1.
 
-❌ Falsch:
-> Migration von SchemaVersion 2 auf 3:
-> 1. ALTER TABLE plans ADD COLUMN ...
-> 2. UPDATE plans SET ... WHERE schema_version = 2
-> 3. UPDATE plans SET schema_version = 3
+  Gleiches gilt für Config-Dateien (z. B. JSON-Configs): betroffene Datei nennen, User löscht sie, App erstellt sie neu.
 
-✅ Richtig:
-> Schema-Änderung von 2 auf 3 (Frühphase, keine Migration):
-> Betroffene Datei(en): bpm.db
-> Aktion: User löscht bpm.db → BPM erstellt sie beim nächsten Start neu mit Schema v3.
-
-Gleiches gilt für JSON-Configs (`profiles/*.json`, `manifest.json`, `settings.json`):
-betroffene Datei nennen, User löscht sie, App erstellt sie neu.
-
-**Ausnahme:** Wenn der User explizit "Migration dokumentieren" sagt
-oder das Frühphasen-Kapitel in INDEX.md offiziell entfernt wurde.
-
-**Heidi hat statt der Frühphasen-Regel die Paritätsregel:** Jede gewollte Abweichung vom
-v1-Verhalten braucht einen PD-Eintrag in Abschnitt 10a mit Status `freigegeben` (Herbert);
-ohne Eintrag ist eine Abweichung ein Fehler. Neue Entität oder Dienst → Abschnitt 4 des
-Bauplans **und** `contract.ts` im selben Commit.
+  **Ausnahme:** Wenn der User explizit "Migration dokumentieren" sagt oder die Regel im Projekt offiziell aufgehoben
+  wurde.
+- **Abweichung nur mit freigegebenem Eintrag.** Verlangt das Projekt für jede gewollte Abweichung von einem
+  Referenzverhalten einen freigegebenen Eintrag (z. B. in einem Register am Entscheidungs-Ort), ist eine Abweichung ohne
+  Eintrag ein Fehler.
 
 ---
 
@@ -217,16 +190,13 @@ So wird sie genutzt:
 
 Die Nachlauf-Checkliste ist `Commit.Doku-Check` im Skill-Profil (im älteren `## Commit-Profil` die
 Doku-Checkliste, gepflegt vom git-commit-helper). Dieser Skill führt keine
-eigene Liste; er liest dieselbe. Beispiel BPM: Neue Tabelle → DB-SCHEMA.md; Architektur-
-entscheidung → ADR.md; neuer Entry Point → INDEX.md; neues Doc → INDEX.md + BACKLOG.md.
-Beispiel Heidi: Bauschritt fertig → Statusliste; Befund/Entscheidung → Abschnitt 10 (Abweichung →
-10a); Stand geändert → HANDOFF 3e; neue Entität/Dienst → Abschnitt 4 + contract.ts.
+eigene Liste; er liest dieselbe. Beispiele: `references/beispiele.md`, Abschnitt „Doku-Hinweise“.
 
 ### Typische Fälle (Change-Class-basiert)
 
 Die Nachlauf-Checkliste wird nach doc-relevanten Änderungen durchlaufen:
-- Neue Tabelle / Schemaänderung / neue Entität im Vertrag
-- Neue Architekturentscheidung / Paritätsabweichung
+- Neue Tabelle / Schemaänderung / neue Entität
+- Neue Architekturentscheidung / gewollte Abweichung von einer Projektregel
 - Neuer Code-Entry-Point (neues Interface, neuer Service, neuer Dialog, neue Komponente)
 - Neues Modul / neuer Workflow mit Benutzerwirkung
 - Neue Abhängigkeit (NuGet, npm, Projektreferenz)
@@ -247,8 +217,7 @@ Die Nachlauf-Checkliste wird nach doc-relevanten Änderungen durchlaufen:
 Statt voller Checkpoint-Checkliste → kurze Merkliste am Ende der Antwort:
 
 ```
-📝 Doc-Hinweis: [DB-SCHEMA.md — neue Spalte angelegt]
-📝 Doc-Hinweis: [ADR.md — neue Architekturentscheidung]
+📝 Doc-Hinweis: [<Doc> — <was sich geändert hat>]
 ```
 
 Nur zutreffende Punkte. Keine Checkliste mit 10 leeren Punkten.
@@ -258,19 +227,19 @@ Der User entscheidet ob und wann die Doc-Pflege erfolgt.
 
 ## Modi
 
+Werte zweier Projekte zu jedem Modus (Doc-Set, Router, Vorlagen, Orte): `references/beispiele.md`.
+
 ### Projekt-Init
 
-**Wann:** "neues Projekt", "init projekt", kein Doku-Profil und keine INDEX.md vorhanden.
-
-Für Details siehe DOC-STANDARD.md Kapitel 3 (BPM).
+**Wann:** "neues Projekt", "init projekt", kein Bereich Doku im Profil und kein Router vorhanden.
 
 Kurzablauf:
 1. Grundinfos sammeln (Projektname, Tech-Stack, Repo, DB?, Aufgabenquelle, Auslieferung)
 2. Repo scannen
 3. **Bereich Doku des Skill-Profils in der CLAUDE.md anlegen** (Felder oben). Fehlt das Skill-Profil ganz, richtet es
    projekt-anlegen ein (Abschnitt „Bestehendes Repo einrichten“); doc-pflege ergänzt danach den Bereich Doku
-4. Standard-Doc-Set laut Profil generieren (BPM: INDEX.md, Architektur.md, BACKLOG.md, CHANGELOG.md, ADR.md, DEPENDENCY-MAP.md, ggf. DB-SCHEMA.md; Heidi-artig: CLAUDE.md, HANDOFF.md, BAUPLAN.md mit Statusliste/Regeln/Vertrag/Aufgabenkarten/Notizen/Register)
-5. Korrekte Vorlagen des Profils (BPM: Frontmatter + Quickload + Kapitelstruktur)
+4. Standard-Doc-Set laut Profil generieren
+5. Korrekte Vorlagen des Profils
 6. Invarianten-Check
 7. Paket dem User vorlegen
 
@@ -280,9 +249,7 @@ Kurzablauf:
 
 **Wann:** Neues Doc, Doc umbenannt, neuer Code-Entry-Point.
 
-Router aus `Doku.Router` laden und Eintrag nachziehen. BPM: INDEX.md, Routing-Eintrag im
-Primary/Secondary/Reference-Format. Heidi: CLAUDE.md „Repo-Aufbau“ und HANDOFF Abschnitt 5
-(Referenzen); neue Plan-Docs unter `docs/dreame_x60/` dort verlinken.
+Router aus `Doku.Router` laden und Eintrag nachziehen.
 
 ---
 
@@ -290,8 +257,7 @@ Primary/Secondary/Reference-Format. Heidi: CLAUDE.md „Repo-Aufbau“ und HANDO
 
 **Wann:** Neue Tabelle, Feature, Architekturentscheidung, Abhängigkeit, neue Entität.
 
-`Commit.Doku-Check` → betroffene Pflicht-Docs ändern (BPM: INDEX.md → Doc-Pflege
-Policy; Heidi: Abschnitt 4 + Abschnitt 10/10a + HANDOFF).
+`Commit.Doku-Check` → betroffene Pflicht-Docs ändern.
 
 ---
 
@@ -308,37 +274,34 @@ Aufgabenliste abarbeiten. Danach die geänderten Docs prüfen (Abschnitt „Prü
 ### Neue Doc oder Umbau
 
 **Wann:** "neues Konzept für X", "erstelle Modul-Doc für Y",
-"refactore PlanManager.md nach Standard", "docs umbauen",
+"refactore <Doc> nach Standard", "docs umbauen",
 oder wenn bei Projekt-Init oder Begleit-Docs ein neues Doc entsteht.
 
 Danach die neue oder umgebaute Doc prüfen (Abschnitt „Prüfen nach dem Schreiben“).
 
 #### Neue Doc
 
-1. Vorlage für den Doc-Typ aus `Doku.Standard` laden (BPM: DOC-STANDARD.md Kapitel 7; Heidi: Muster im Bauplan – Aufgabenkarte, Notiz, PD-Eintrag, Plan-Doc)
-2. Router laden → verwandte Docs identifizieren (BPM: INDEX.md; Heidi: CLAUDE.md, HANDOFF 5)
-3. Quickloads verwandter Docs lesen → Fachliche Invarianten sammeln
-4. Doc mit korrektem Frontmatter + Quickload + Kapitelstruktur erstellen
-5. Invarianten-Check durchführen:
+1. Vorlage für den Doc-Typ aus `Doku.Standard` laden
+2. Router laden → verwandte Docs identifizieren
+3. Kurzfassungen verwandter Docs (z. B. Quickload) lesen → Fachliche Invarianten sammeln
+4. Doc nach der Vorlage des Standards erstellen (z. B. Frontmatter, Quickload, Kapitelstruktur)
+5. Invarianten-Check durchführen – jede Antwort an den Ort, den der Standard dafür vorsieht:
 
 ```
 📋 Invarianten-Check:
 - Gibt es fachliche Regeln die bei JEDER Änderung gelten?
-  → Fachliche Invarianten im Quickload
 - Welche Kapitel müssen IMMER gelesen werden?
-  → Pflichtlesen im Quickload
 - Gibt es Abhängigkeiten zu anderen Modulen?
-  → related_docs im Frontmatter
 ```
 
-6. INDEX.md Routing-Eintrag vorschlagen
+6. Router-Eintrag vorschlagen
 
 #### Doc umbauen
 
-1. Vorlage für den Doc-Typ aus dem Profil laden (BPM: DOC-STANDARD.md)
+1. Vorlage für den Doc-Typ aus dem Profil laden
 2. Bestehende Doc komplett laden
 3. Inhalt auf die Standard-Kapitel mappen
-4. Frontmatter + Quickload ergänzen oder aktualisieren
+4. Pflichtteile der Vorlage (z. B. Frontmatter, Quickload) ergänzen oder aktualisieren
 5. Invarianten-Check (siehe oben)
 6. Vollständigkeits-Check gegen das Original
 
@@ -349,7 +312,6 @@ Danach die neue oder umgebaute Doc prüfen (Abschnitt „Prüfen nach dem Schrei
   aus dem Original in der neuen Struktur vorhanden ist
 - Im Zweifel lieber ein Kapitel zu viel als Inhalt verlieren
 
-**VERBOTEN:** Doc ohne die Vorlage des Profils erstellen (BPM: Frontmatter, Quickload, Kapitelvorlage; Heidi: Karten-/Notiz-/PD-Format).
 **VERBOTEN:** Beim Refactoring Inhalte weglassen, kürzen oder zusammenfassen.
 
 ---
@@ -357,21 +319,19 @@ Danach die neue oder umgebaute Doc prüfen (Abschnitt „Prüfen nach dem Schrei
 ### Sitzungsabschluss
 
 **Wann:** "sitzung abschließen", "wir hören auf", "stand festhalten", nach dem letzten `tracker done`
-einer Sitzung, oder wenn der Bauplan/das Profil es am Ende jeder Sitzung verlangt (Heidi: Startprompt
-Abschnitt 0). Ersetzt nicht chat-wechsel (Übergabeprompt für den nächsten Chat), sondern liefert ihm zu.
+einer Sitzung, oder wenn die Doku hinter `Doku.Sitzungsabschluss` ihn am Ende jeder Sitzung verlangt. Ersetzt nicht
+chat-wechsel (Übergabeprompt für den nächsten Chat), sondern liefert ihm zu.
 
 Ablauf (Orte aus `Doku.Sitzungsabschluss`; im älteren Doku-Profil Feld „Sitzungsabschluss“):
 1. **Aufgabenquelle/Statusliste** nachziehen: jede in der Sitzung angefasste Aufgabe hat den richtigen
-   Status (Heidi: Bauplan Abschnitt 1 ↔ ClickUp DX-Status; fertig / offen / blockiert per Auswahlfrage,
-   wenn unklar)
-2. **Befunde und Entscheidungen** eintragen, Entscheidungen in `Doku.Entscheidungs-Ort` (Heidi: Abschnitt 10,
-   Abweichungen 10a; BPM: ADR/BACKLOG)
-3. **Stand-Abschnitt** schreiben (Heidi: HANDOFF 3e – Version, was gebaut, Stolpersteine; Datum)
-4. **Offene Punkte** als Checkliste (Heidi: HANDOFF Abschnitt 4), erledigte abhaken, neue ergänzen,
-   jede mit ClickUp-Bezug oder Begründung, warum ohne
-5. `Commit.Doku-Check` durchgehen (nichts vergessen: Abschnitt 4, INDEX, CHANGELOG)
-6. Commit `[vX.Y.Z] <Doku-Modul>, Docs: Sitzungsabschluss <Datum> – <Kurztitel>` (git-commit-helper); Push nach
-   der Push-Policy (Grundsätze)
+   Status (Statusliste ↔ Tracker; fertig / offen / blockiert per Auswahlfrage, wenn unklar)
+2. **Befunde und Entscheidungen** eintragen, Entscheidungen in `Doku.Entscheidungs-Ort`
+3. **Stand-Abschnitt** schreiben (Version, was gebaut, Stolpersteine; Datum)
+4. **Offene Punkte** als Checkliste, erledigte abhaken, neue ergänzen, jede mit Tracker-Bezug oder Begründung,
+   warum ohne
+5. `Commit.Doku-Check` durchgehen (nichts vergessen)
+6. Commit im `Commit.Format` mit dem Doku-Modul aus `Commit.Module`, Typ `Docs`, Kurztitel
+   „Sitzungsabschluss <Datum> – <Kurztitel>“ (git-commit-helper); Push nach der Push-Policy (Grundsätze)
 7. Kurzer Abschlussbericht im Chat: erledigt / offen / nächster Schritt – derselbe Text taugt als
    Einstieg für chat-wechsel
 
@@ -389,44 +349,41 @@ Gilt nach Doku pflegen und nach Neue Doc oder Umbau – nur für die Docs, die d
   Tabelle melden (Doc, Stelle, Befund, Vorschlag); bei mehreren Lösungen Auswahlfrage.
 - Nichts stillschweigend korrigieren, was eine Entscheidung des Users ist (Status, Freigaben).
 
-Eine Prüfung ohne Änderungsauftrag („prüfe frontmatter“, „quickload check“, „prüfe die doku“, „stimmt der bauplan“)
+Eine Prüfung ohne Änderungsauftrag („prüfe frontmatter“, „quickload check“, „prüfe die doku“, „stimmt die statusliste“)
 macht audit.
 
 ---
 
 ## Ausgabeformat
 
-- Claude Code: Dateien direkt ändern (Edit/Write); Cowork: SUCHE/ERSETZE oder DC
-- Neue Docs komplett mit der Vorlage des Profils (BPM: Frontmatter + Quickload + Kapitelstruktur)
-- Commit: `Commit.Format` mit dem Doku-Modul aus `Commit.Module`, Typ `Docs` (BPM: `[vX.Y.Z] Docs, Docs: [Kurztitel]`,
-  Heidi: `Doku`)
+- Dateien direkt im Repo ändern; im Cowork-Chat: `references/cowork.md`, Abschnitt „Dateien ändern“
+- Neue Docs komplett mit der Vorlage des Profils
+- Commit: `Commit.Format` mit dem Doku-Modul aus `Commit.Module`, Typ `Docs` (Beispiele: `references/beispiele.md`,
+  Abschnitt „Commit“)
 
 ---
 
-## Skill-Governance
+## References
 
-Bei jeder Änderung an diesem Skill prüfen:
-1. Trigger zu breit geworden?
-2. Redundanz zu anderer Skill-Regel entstanden?
-3. Negativgrenzen noch korrekt?
-4. DOC-STANDARD / INDEX / Doku-Profil betroffen?
-5. Split-Prüfung (`skills/skill-pflege/SKILL.md`, Abschnitt „Split-Prüfung“): Modi noch in einer Datei sinnvoll?
+- `references/beispiele.md` – Werte zweier Projekte zu Profil, Pfaden, Ladereihenfolge, Schema-Regeln,
+  Doku-Hinweisen, Modi, Sitzungsabschluss und Commit
+- `references/cowork.md` – was im Cowork-Chat anders ist (Profil lesen, Arbeitsverzeichnis, Shell, Dateien ändern)
 
 ---
 
 ## VERBOTEN
 
 - Frei inferieren welche Docs betroffen sind — Bereich Doku des Skill-Profils und `Commit.Doku-Check` lesen
-- Docs ohne Frontmatter in Kern/Module/Referenz akzeptieren (BPM)
+- Docs ohne die Pflichtteile akzeptieren, die der Standard für ihren Bereich verlangt (z. B. Frontmatter)
 - Neue Docs ohne die Vorlage des Profils erstellen
 - Doku-Hinweise bei trivialen Änderungen ausgeben
 - Doku-Hinweise als interruptive Checkliste statt kurzer Merkliste ausgeben
-- Ladereihenfolge des Profils ignorieren (BPM: DOC-STANDARD Kapitel 8)
+- Ladereihenfolge des Profils ignorieren
 - Invarianten-Check bei neuen Docs überspringen
 - Branch automatisch annehmen (Branch-Policy, Shell fragen oder Auswahlfrage)
 - Prosa-Fragen bei festen Entscheidungsoptionen (z.B. Modus-Auswahl bei Unsicherheit)
-- Migrations-Kapitel in Doc dokumentieren ohne User-Freigabe (Projekte mit Frühphasen-Regel, BPM: INDEX.md)
-- Abweichung von v1 dokumentieren ohne PD-Eintrag mit Freigabe (Heidi-Paritätsregel)
+- Eine Projektregel für Schema-, Config- oder Datenänderungen ohne Freigabe umgehen (z. B. Migrations-Kapitel statt
+  Reset-Anweisung, Abweichung ohne freigegebenen Eintrag)
 - Statusliste auf `fertig` setzen, solange Tests oder Commit fehlen
-- BPM-Pfade oder -Dateinamen für ein anderes Projekt annehmen — alles aus dem Skill-Profil
+- Pfade oder Dateinamen eines anderen Projekts annehmen (auch aus `references/beispiele.md`) — alles aus dem Skill-Profil
 - Sitzung ohne Sitzungsabschluss beenden, wenn Docs geändert wurden

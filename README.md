@@ -633,7 +633,7 @@ claude-workbench/
 │   ├── code-erstellen/
 │   │   ├── SKILL.md
 │   │   └── references/                ← beispiele, cowork, stacks/
-│   ├── doc-pflege/SKILL.md
+│   ├── doc-pflege/                    ← SKILL.md + references/ (beispiele, cowork)
 │   ├── git-commit-helper/             ← SKILL.md + references/ (beispiele, cowork) + scripts/ (checks.py, Tests)
 │   ├── mockup-erstellen/                 ← SKILL.md + references/ (sitemap, beispiele, cowork)
 │   ├── projekt-anlegen/                   ← SKILL.md + references/ (generator, grundsatz, github, stacks) + scripts/ (Generator, Tests) + templates/ (Bausteine)
