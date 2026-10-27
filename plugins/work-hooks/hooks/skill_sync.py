@@ -26,6 +26,8 @@ MONTH_FILE = re.compile(r"^\d{4}-\d{2}\.jsonl$")
 REPO_NAME = re.compile(r"^[\w.-]+/[\w.-]+$")
 HOME = os.path.expanduser("~")
 CLONE = os.path.join(HOME, ".claude", "skill-log-sammel")
+# Windows: Konsolenprogramme (git) ohne sichtbares Fenster starten; sonst blitzt je Aufruf ein cmd-Fenster auf
+NO_WINDOW = 0x08000000 if os.name == "nt" else 0  # CREATE_NO_WINDOW
 
 
 def setting(env, option):
@@ -40,7 +42,7 @@ def host_name():
 
 def git(*args, cwd=CLONE, timeout=60):
     return subprocess.run(["git", *args], cwd=cwd, capture_output=True, text=True, timeout=timeout,
-                          env=dict(os.environ, GIT_TERMINAL_PROMPT="0"))
+                          env=dict(os.environ, GIT_TERMINAL_PROMPT="0"), creationflags=NO_WINDOW)
 
 
 def copy_own(source, target):
@@ -118,7 +120,8 @@ def main():
         kwargs = {"stdin": subprocess.DEVNULL, "stdout": subprocess.DEVNULL, "stderr": subprocess.DEVNULL,
                   "env": dict(os.environ, SKILL_LOG_REPO=repo)}
         if os.name == "nt":
-            kwargs["creationflags"] = 0x00000008 | 0x00000200  # DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP
+            # versteckte Konsole statt keiner: ohne Konsole öffnet Windows für jedes git ein eigenes Fenster
+            kwargs["creationflags"] = NO_WINDOW | 0x00000200  # CREATE_NO_WINDOW | CREATE_NEW_PROCESS_GROUP
         else:
             kwargs["start_new_session"] = True
         subprocess.Popen([sys.executable, os.path.abspath(__file__), "--jetzt"], **kwargs)
