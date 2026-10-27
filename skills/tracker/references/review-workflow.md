@@ -1,10 +1,17 @@
 # Review-Workflow vor Task-Übergang
 
 Verbindlicher Scope-Check BEVOR ein Task auf done gesetzt wird, ein neuer
-gestartet wird, oder der Arbeitsfokus auf einen anderen Task wechselt.
+gestartet wird, oder der Arbeitsfokus auf einen anderen Task wechselt. Beispiel-Ablauf: `beispiele.md`, Abschnitt
+„Scope-Check“.
 
-Fixt `tracker-006` (fehlender Scope-Check führte in Session Teil 28 zu
-versickernden Besprechungs-Ergebnissen bei 7.1 → 7.6).
+## Inhalt
+
+- Zweck
+- Trigger
+- 4-Punkte-Scope-Check
+- Nach dem Check: Reihenfolge neu vorschlagen
+- Wann der Check ENTFÄLLT
+- VERBOTEN
 
 ---
 
@@ -165,35 +172,3 @@ weitermachen (ohne extra Nachfrage).
 - User-Bestätigung `"so machen wir's"` annehmen ohne Parent/Siblings zu prüfen
 - Gefundene Änderungen nur mündlich notieren, nicht in ClickUp eintragen
 - Check nach dem Task-Übergang nachholen — muss VORHER passieren
-
----
-
-## Beispiel-Ablauf (aus Session Teil 28, Auslöser dieser Regel)
-
-```
-Kontext: Phase 7 der ClaudeSkills-Refactor. Task 7.1 wird auf done gesetzt.
-Im Chat wurde zwischen 7.1 und 7.6 beschlossen, dass alle Skill-internen
-Projekt-Daten aus projects/bpm/ gelesen werden müssen.
-
-OHNE Review-Workflow:
-  → 7.1 wird auf done gesetzt
-  → 7.6 wird gestartet
-  → Erst beim Umsetzen von 7.6 wird bemerkt dass 7.2, 7.3 und 7.4 auch
-    den neuen projects/bpm/-Ansatz brauchen, aber ihre Description das
-    nicht reflektiert.
-  → Chaos, Nachbesserungs-Loop.
-
-MIT Review-Workflow (bevor 7.1 auf done gesetzt wird):
-  Punkt 1: 7.1 Description → passt noch.
-  Punkt 2: Parent Phase-7 → Scope passt, aber DoD erwähnt projects/bpm/ nicht.
-           → Parent-DoD ergänzen.
-  Punkt 3: Siblings 7.2, 7.3, 7.4, 7.5, 7.6 → alle haben Description aus
-           vor-projects/bpm/-Zeit.
-           → Descriptions aller Siblings updaten mit dem neuen Ansatz.
-  Punkt 4: Verweisende offene Tasks → tracker-001/002 verweisen auf 7.x
-           → keine Scope-Änderung für diese, aber sie werden später von 7.6
-             abhängig sein → Dependency setzen.
-
-  Danach Auswahlfrage: "Siblings sind jetzt konsistent. Direkt mit 7.6
-  weitermachen oder die ursprünglich geplante Reihenfolge 7.2 → 7.3 einhalten?"
-```

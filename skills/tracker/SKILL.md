@@ -23,14 +23,37 @@ Das Schema ist in jedem Projekt gleich: Titel `<PRÄFIX>-NNN | <KÜRZEL> | <Kurz
 Chat-Anker `[<PRÄFIX>-ANCHOR-<task-id>]`, dieselben Custom Fields, dasselbe
 Description-Template. **Der Präfix wird pro Projekt festgelegt** und steht mit
 Listen, Kürzeln, Zähler und Feld-IDs in der Tracker-Config des Projekts
-(Skill-Profil der `CLAUDE.md` → Tracker → Config, meist `.claude/skill-config/tracker.md`)
-(BPM: `BPM-NNN`, Anker `[BPM-ANCHOR-…]`, eine Liste je Modul; Heidi: `DX-NNN`,
-Anker `[DX-ANCHOR-…]`, eine Liste). Beispiele in diesem Skill und in
-`references/` zeigen das BPM-Projekt; sie sind Muster, der Präfix ist immer
-der des aktiven Projekts.
+(Abschnitt „Voraussetzung: Skill-Profil“). Der Präfix ist immer der des aktiven
+Projekts; Beispielwerte zweier Projekte stehen nur in `references/beispiele.md`.
 
 Die operativen Details sind in `references/` ausgelagert. Diese Hauptdatei
 ist nur der Routing-Einstieg — je nach Kommando die passende Referenz laden.
+
+---
+
+## Voraussetzung: Skill-Profil
+
+Die Werte kommen aus dem Skill-Profil der `CLAUDE.md` im Repo (`docs/skill-profile-v1.md` im Skill-Repo):
+
+| Feld | Wofür |
+|------|-------|
+| `Tracker.Provider` | `clickup`; bei `none` führt das Projekt keinen Tracker – das melden, nichts anlegen |
+| `Tracker.Config` | die Tracker-Config, meist `.claude/skill-config/tracker.md`, sonst `ref:CLAUDE.md#<Abschnitt>` |
+| `Branch-Policy`, `Commit.Push-Policy` | Branch und Push-Zeile im Nachlauf nach `tracker done` (Grundsätze) |
+
+Aus der Tracker-Config die benötigten Abschnitte lesen (Gliederung nach `docs/skill-profile-v1.md`, Abschnitt
+„Configs unter `.claude/skill-config/`“): Nummernschema und nächste freie Nummer · Listen und Routing ·
+Statusmodell · Felder und Option-IDs · Titel- und Beschreibungsformat · Quittungsformat · Sonderfälle.
+
+1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`, Bereich `### Tracker`).
+2. **Rückfall:** der ältere Abschnitt `## Tracker-Profil` der CLAUDE.md (dort auch die Zeile „Nächste freie Nummer“).
+3. **Fehlt beides** (kein Bereich Tracker, Config auf `fehlt`, Datei existiert nicht): Auswahlfrage nach der
+   Profil-Regel „Fehlende Werte“ – Profil ergänzen / Wert einmalig nennen / Abbrechen. *Profil ergänzen* → Claude
+   schlägt `.claude/skill-config/tracker.md` mit den Werten aus ClickUp vor; angelegt wird erst nach Zustimmung.
+   *Wert einmalig nennen* → Universell-Modus: Claude fragt die konkreten Werte ab, die gerade gebraucht werden. Nie
+   raten.
+
+Im Cowork-Chat kommen Projektkennung, Zähler und Listen aus dem Memory: `references/cowork.md`.
 
 ---
 
@@ -59,16 +82,67 @@ ist nur der Routing-Einstieg — je nach Kommando die passende Referenz laden.
 
 ---
 
+## Vorrang / Delegation an andere Skills
+
+**tracker ist für explizite ClickUp-Task-Aktionen. Wenn die Hauptabsicht
+Code-Arbeit, Doku oder andere inhaltliche Tätigkeit ist, NICHT hier
+weiterarbeiten, sondern delegieren.**
+
+| Hauptabsicht | Zuständiger Skill |
+|--------------|-------------------|
+| Code schreiben oder ändern (auch wenn ein Task-Bezug besteht) | **code-erstellen** |
+| UI-Entwurf als HTML-Mockup | **mockup-erstellen** |
+| Commit-Befehl, Commit-Message, Version-Bump | **git-commit-helper** |
+| Doku schreiben, ADR, Konzept, Frontmatter-Pflege | **doc-pflege** |
+| Konsistenzprüfung Code ↔ Docs | **audit** |
+
+Nur wenn die Hauptabsicht **eine konkrete ClickUp-Task-Aktion** ist
+(`tracker neu`, `tracker done`, `tracker update`, `tracker status`,
+`tracker suche`, Issue anlegen, Scope-Check, Anker setzen),
+bleibt tracker zuständig.
+
+**Wichtig:** tracker wird NICHT automatisch ausgelöst durch Code-Commits
+oder Doc-Änderungen. Andere Skills (code-erstellen, doc-pflege) rufen
+tracker nur aktiv per Auswahlfrage auf ("Passt zu <Task>.
+tracker done?"). Die User-Bestätigung ist Pflicht. Details siehe
+Abschnitt "Integration mit anderen Skills".
+
+---
+
+## Befehl → Reference
+
+| Befehl / Fall | Reference | Inhalt |
+|---------------|-----------|--------|
+| `tracker neu: <Beschreibung>` | `references/create-task.md` | Ablauf, Fragemodus, Description-Template |
+| `tracker issue <skill>: <Titel>` | `references/issue-task.md` | Skill-Issue-Listen-Routing, Issue-ID-Nummerierung, Felder des Issue-Scopes |
+| `tracker start: <Task-ID>` | `references/start-task.md` | Ablauf, Parent-Kaskade, implizite Trigger mit Task-ID, Fokus-Entscheidung |
+| `tracker done: <Task-ID>` | `references/complete-task.md` | Ablauf, Commit-Ermittlung, Commit-Disziplin (ein Task = ein Commit), automatischer Nachlauf, Lieferung nach einem Skill-Issue |
+| `tracker update: <Task-ID> → <Änderung>`, `tracker field: <Task-ID> <Feld> <Wert>` | `references/update-task.md` | gezielte Änderungen |
+| `tracker status`, `tracker next`, `tracker suche: <Stichwort>`, `tracker listen` | `references/search-and-status.md` | Lese-Operationen |
+| `tracker split: <Task-ID>`, `tracker relate: <A> <Bez> <B>` | `references/split-and-relations.md` | Unteraufgaben-Regeln, Dependency-Typen |
+| ≥2 Task-Operationen in einer Antwort; Referenz-Anker in Folge-Antworten | `references/batch-protocol.md` | Pro-Task-Quittung, Batch-Ansage, Batch-Audit, Subtask/Parent-Regeln, Referenz-Anker |
+| vor `tracker done` / `tracker start` / Fokus-Wechsel | `references/review-workflow.md` | 4-Punkte-Scope-Check |
+| `anker setzen: <text>`; Chat-Anker | `references/anker-system.md` | Anker-Format; im Cowork-Chat Registry `[ANKER-LIVE]`, TEMP-ID, Stale-Check |
+| Chat erstellt / erledigt, Chat-Start | `references/chat-url-handling.md` | Chat-URLs ermitteln (nur mit Chat-Feldern und Chat-Suche) |
+| Feldwerte, Nummerierung, Titel, Status | `references/clickup-fields.md` | Custom-Field-Regeln, Nummerierung, Titel-Format, Meilensteine, Priority, Statusmodell |
+| ClickUp-Werkzeuge | `references/clickup-tools.md` | Lade-Pattern, Tool-Inventar, Befehl→Tool-Mapping |
+| Verbote, Automationspolitik | `references/anti-patterns.md` | Automationspolitik, Integration, VERBOTEN-Liste |
+| Cowork-Chat | `references/cowork.md` | Memory-Einträge, Werkzeugsuche, Shell, `[ANKER-LIVE]` im Ablauf, Artifact-Lieferung |
+| Beispiele | `references/beispiele.md` | Werte und Abläufe aus zwei Projekten |
+
+`<Task-ID>` = `<PRÄFIX>-NNN` nach der Tracker-Config, eine Issue-ID (`tracker-NNN`) oder die ClickUp-Task-ID.
+
+---
+
 ## 🚨 Kernregel: Pro-Task-Quittung (Format-Zwang)
 
-Nach **jedem** `clickup_create_task` oder status-änderndem `clickup_update_task`
+Nach **jedem** Anlegen oder Statuswechsel einer Aufgabe
 MUSS im selben Antwort-Block eine Quittungszeile stehen:
 
 ```
 ✅ <PRÄFIX>-NNN — [<PRÄFIX>-ANCHOR-<task-id>] — <typ>: <kurz>
 ```
 
-BPM: `✅ BPM-123 — [BPM-ANCHOR-86c9…] — Feature: …`; Heidi: `✅ DX-031 — [DX-ANCHOR-123z…] — Feature: …`.
 Sollte ein Projekt laut Tracker-Config keine Chat-Anker führen, entfällt der
 Anker-Teil: `✅ <PRÄFIX>-NNN — <Aktion> — <ClickUp-Link>`.
 
@@ -82,16 +156,6 @@ nur wenn das Projekt diese Felder hat — nicht später nachtragen.
 Bei ≥2 Task-Operationen in derselben Antwort greift das **Batch-Protokoll**:
 Batch-Ansage vor Beginn, Pro-Task-Zyklus, Batch-Audit am Ende.
 Vollständige Spec: `references/batch-protocol.md`.
-
-**In Folge-Antworten** die einen Task inhaltlich besprechen (ohne Tool-Call)
-steht oben ein Referenz-Anker:
-```
-Betroffene Tasks in dieser Antwort: [<PRÄFIX>-ANCHOR-<task-id>] <name>.
-```
-Bei Quittung in derselben Antwort entfällt der Referenz-Anker für diesen Task
-(Quittung hat Vorrang). Spec: `references/batch-protocol.md` Kapitel 2b.
-
-Adressiert `tracker-001`, `tracker-004`, `tracker-005`.
 
 ---
 
@@ -107,37 +171,15 @@ betrifft (ohne Tool-Call), MUSS oben ein Referenz-Anker stehen:**
 Betroffene Tasks in dieser Antwort: [<PRÄFIX>-ANCHOR-<task-id>] <n>.
 ```
 
-Mehrere Tasks kommagetrennt (Beispiel BPM):
-```
-Betroffene Tasks in dieser Antwort: [BPM-ANCHOR-86c9feyj9] tracker-005, [BPM-ANCHOR-86c9f7awj] tracker-001.
-```
-
-**Pflicht-Trigger:**
-- Commit-Vorschlag für einen Task
-- Klärungsfrage zu laufendem Task-Fix
-- Fehler-Diagnose während Task-Arbeit
-- Status-Update / Fortschrittsbericht
-- Nachträgliche Analyse oder Konzept-Änderung
-- Jede Folge-Antwort in einem Thread der einen aktiven Task behandelt
-
 **Gilt auch wenn der Task nicht via `tracker neu`/`tracker done` angefasst
-wurde, sondern nur per `clickup_get_task` gelesen, besprochen oder per
-`edit_block` umgesetzt wird** (adressiert tracker-009: "Task übernommen
-ohne neu/done").
-
-**Wann NICHT Pflicht:**
-- Task-ID nur in Aufzählung erwähnt ("die 4 tracker-Issues")
-- Antwort rein über Meta/Tooling (Shell, git, Skill-System)
-- Rückfrage ohne Task-Bezug
-- Reine Begrüßung / Abschluss
+wurde, sondern nur gelesen, besprochen oder umgesetzt wird.**
 
 **Wenn in derselben Antwort eine Pro-Task-Quittung steht** (die bereits
 den Anker inline enthält), entfällt der Referenz-Anker oben für diesen
 Task.
 
-Adressiert `tracker-005`, `tracker-009`.
-
-Details + Beispiele: `references/batch-protocol.md` Kapitel 2b.
+Wann Pflicht und wann nicht, mit Beispielen: `references/batch-protocol.md`, Abschnitt „Referenz-Anker in
+Folge-Antworten (PFLICHT)“.
 
 ---
 
@@ -165,8 +207,6 @@ explizitem User-Skip `"Scope-Check überspringen"`.
 
 Vollständige Spec mit API-Calls und Beispiel-Ablauf: `references/review-workflow.md`.
 
-Adressiert `tracker-006`.
-
 ---
 
 ## 🚨 Kernregel: Automatischer Nachlauf nach tracker done
@@ -176,18 +216,14 @@ niemals passiv auf User-Input warten.**
 
 4 Schritte:
 
-1. **Commit-Hash in der Shell der Umgebung holen** (`git log -1 --format='%h %s'`; Cowork: Desktop Commander, Claude Code: Bash/PowerShell) — nicht vom User anfordern, wenn eine Shell verfügbar ist
+1. **Commit-Hash in der Shell der Umgebung holen** (`git log -1 --format='%h %s'`) — nicht vom User anfordern, wenn eine Shell verfügbar ist
 2. **Custom Fields setzen** (Commit ID, Erledigt-Datum, Chat-Anker erledigt) — nur wenn das Projekt die Felder hat (`clickup-fields.md`); sonst Kommentar mit Version und Commit-Hash am Task
 3. **Zwischenstand-Tabelle im Chat** (Task / Commit-Hash / Status / Push-Stand nach den Grundsätzen „Branch“ und „Push“)
 4. **Folgeoptionen als Auswahlfrage** — niemals Prosa-Frage, niemals still warten
 
 **Ausnahmen:** Zero-Change-Tasks (Schritt 1 entfällt), Batches (Schritte 3-4 nur einmal am Batch-Ende), keine Shell verfügbar (Schritt 1 entfällt → Prosa-Frage nach Hash).
 
-Im Cowork-Chat baut das auf `cc-steuerung-003` auf (DC ist dort Default-Ausführungsmodus).
-
 Vollständige Spec mit Beispiel-Ablauf: `references/complete-task.md` Abschnitt "Automatischer Nachlauf nach tracker done".
-
-Adressiert `tracker-008`.
 
 ---
 
@@ -196,150 +232,9 @@ Adressiert `tracker-008`.
 **Alle projekt-spezifischen Daten (Präfix, nächste freie Nummer, Listen-IDs,
 Custom-Field-IDs, Option-IDs, Modul-Kürzel, Meilenstein-Tags, Status-Werte-Matrix)
 werden zur Laufzeit aus der Tracker-Config des Projekts gelesen — NICHT
-hartkodiert im Skill.**
-
-### Wo die Tracker-Config steht
-
-1. **Claude Code:** Skill-Profil in der `CLAUDE.md` des Repos, Bereich
-   `### Tracker`, Feld `Config:` — meist `.claude/skill-config/tracker.md`,
-   sonst `ref:CLAUDE.md#<Abschnitt>`. Repos ohne Skill-Profil: Abschnitt
-   `## Tracker-Profil` der `CLAUDE.md`.
-   **Cowork-Chat:** Memory-Eintrag `[PROJECT] <n> | Repo: <pfad> | ...` →
-   Tracker-Config im Repo lesen (Shell nach cc-steuerung).
-2. Benötigte Abschnitte lesen (Gliederung nach `docs/skill-profile-v1.md`,
-   Abschnitt „Configs unter `.claude/skill-config/`“): Nummernschema und
-   nächste freie Nummer · Listen und Routing · Statusmodell · Felder und
-   Option-IDs · Titel- und Beschreibungsformat · Quittungsformat · Sonderfälle.
-
-### Fallback wenn die Tracker-Config fehlt
-
-```
-1. Kein Bereich Tracker im Skill-Profil, Config steht auf "fehlt", die Datei
-   existiert nicht (Cowork: kein [PROJECT]-Eintrag)
-2. Auswahlfrage: Profil ergänzen / Wert einmalig nennen / Abbrechen
-   (docs/skill-profile-v1.md, Abschnitt "Fehlende Werte")
-3. Profil ergänzen → Claude schlägt .claude/skill-config/tracker.md mit den
-   Werten aus ClickUp vor; angelegt wird erst nach Zustimmung
-   (Cowork: [PROJECT]-Eintrag ins Memory, memory_user_edits)
-4. Wert einmalig nennen → Universell-Modus: Claude fragt die konkreten
-   Werte ab, die gerade gebraucht werden
-```
-
-### Beispiel-Muster für Skill-interne Verweise
-
-Statt einer hartkodierten Tabelle wie früher:
-```
-| <Modul> | <KÜRZEL> | <Listen-ID> |
-...
-```
-
-steht jetzt im Skill nur noch:
-```
-Modul-Kürzel und Listen-IDs siehe
-Tracker-Config, Abschnitt "Listen und Routing".
-```
-
-Universelle Regel: `docs/skill-profile-v1.md` (im Skill-Repo-Root).
-
----
-
-## Vorrang / Delegation an andere Skills
-
-**tracker ist für explizite ClickUp-Task-Aktionen. Wenn die Hauptabsicht
-Code-Arbeit, Doku oder andere inhaltliche Tätigkeit ist, NICHT hier
-weiterarbeiten, sondern delegieren.**
-
-| Hauptabsicht | Zuständiger Skill |
-|--------------|-------------------|
-| Code schreiben oder ändern (auch wenn ein Task-Bezug besteht) | **code-erstellen** |
-| UI-Entwurf als HTML-Mockup | **mockup-erstellen** |
-| Commit-Befehl, Commit-Message, Version-Bump | **git-commit-helper** |
-| Doku schreiben, ADR, Konzept, Frontmatter-Pflege | **doc-pflege** |
-| Konsistenzprüfung Code ↔ Docs | **audit** |
-
-Nur wenn die Hauptabsicht **eine konkrete ClickUp-Task-Aktion** ist
-(`tracker neu`, `tracker done`, `tracker update`, `tracker status`,
-`tracker suche`, Issue anlegen, Scope-Check, Anker setzen),
-bleibt tracker zuständig.
-
-**Wichtig:** tracker wird NICHT automatisch ausgelöst durch Code-Commits
-oder Doc-Änderungen. Andere Skills (code-erstellen, doc-pflege) rufen
-tracker nur aktiv per Auswahlfrage auf ("Passt zu <Task>.
-tracker done?"). Die User-Bestätigung ist Pflicht. Details siehe
-Kapitel "Integration mit anderen Skills".
-
----
-
-## Routing: Kommando → Reference-Datei
-
-| Kommando | Reference |
-|----------|-----------|
-| `tracker neu: <Beschreibung>` | `references/create-task.md` |
-| `tracker issue <skill>: <Titel>` | `references/issue-task.md` |
-| `tracker start: <Task-ID>` | `references/start-task.md` |
-| `tracker done: <Task-ID>` | `references/complete-task.md` |
-| `tracker update: <Task-ID> → <Änderung>` | `references/update-task.md` |
-| `tracker field: <Task-ID> <Feld> <Wert>` | `references/update-task.md` |
-| `tracker status` | `references/search-and-status.md` |
-| `tracker next` | `references/search-and-status.md` |
-| `tracker suche: <Stichwort>` | `references/search-and-status.md` |
-| `tracker listen` | `references/search-and-status.md` |
-| `tracker split: <Task-ID>` | `references/split-and-relations.md` |
-| `tracker relate: <A> <Bez> <B>` | `references/split-and-relations.md` |
-| `anker setzen: <text>` | `references/anker-system.md` |
-| ≥2 Task-Operationen in einer Antwort | `references/batch-protocol.md` |
-
-`<Task-ID>` = `<PRÄFIX>-NNN` nach der Tracker-Config (BPM: `BPM-NNN`, Heidi: `DX-NNN`), eine Issue-ID (`tracker-NNN`) oder die ClickUp-Task-ID.
-
----
-
-## Querverweis: was steht in welcher Reference
-
-| Reference | Inhalt |
-|-----------|--------|
-| `clickup-fields.md` | BPM-Beispiel: 10 Custom Fields mit IDs + Option-IDs, Modul-Kürzel, Listen-IDs, BPM-Nummerierung, Titel-Format, Meilensteine, Priority, Status, Memory-Pflege. Die Werte jedes Projekts stehen in seiner Tracker-Config |
-| `anker-system.md` | Chat-Anker Master-Spec: Format, `[ANKER-LIVE]` Registry, Lifecycle, TEMP-ID-Generierung, `anker setzen`, Stale-Check |
-| `batch-protocol.md` | Pro-Task-Quittung + Batch-Ansage + Batch-Audit + Subtask/Parent-Regeln. Gilt immer wenn ≥2 Task-Operationen in einer Antwort |
-| `chat-url-handling.md` | Chat erstellt/erledigt ermitteln, Chat-Start Kontext, recent_chats/conversation_search |
-| `create-task.md` | `tracker neu` Ablauf, Description-Template, Beispiel-Workflow |
-| `issue-task.md` | `tracker issue` Ablauf, Skill-Issue-Listen-Routing, Issue-ID-Nummerierung, Skill-Issues-Scope Custom Fields |
-| `start-task.md` | `tracker start` Ablauf, Parent-Kaskade, implizite Trigger mit Task-ID |
-| `complete-task.md` | `tracker done` Ablauf, Git-Commit-Ermittlung, Commit-Disziplin (ein Task = ein Commit), Automatischer Nachlauf (Hash holen, Zwischenstand, Folgeoptionen), Status-Werte, Beispiel-Workflow |
-| `review-workflow.md` | 4-Punkte-Scope-Check vor `tracker done` / `tracker start` / Fokus-Wechsel: aktueller Task + Parent + Siblings + verweisende offene Tasks |
-| `update-task.md` | `tracker update` + `tracker field` |
-| `search-and-status.md` | `tracker status`, `next`, `suche`, `listen` |
-| `split-and-relations.md` | Unteraufgaben-Regeln, `tracker split`, `tracker relate`, Dependency-Typen |
-| `anti-patterns.md` | Automationspolitik, Integration mit anderen Skills, VERBOTEN-Liste |
-
----
-
-## ClickUp-Konfiguration (Zähler und Listen)
-
-Nächste freie Nummer `Next` und Listen-IDs kommen je Umgebung von hier:
-
-- **Cowork-Chat:** Memory-Eintrag `[CLICKUP] Space:<ID> | Listen: <Modul>:<ListID>, ... | Next:<NNN> | Letzte Sync: Teil <N>`
-- **Claude Code:** Tracker-Config des Repos (Abschnitt „Nummernschema und nächste freie Nummer“; Repos ohne Skill-Profil: Zeile „Nächste freie Nummer: <PRÄFIX>-NNN“ im Abschnitt `## Tracker-Profil` der CLAUDE.md); Listen-IDs und Status ebenfalls aus der Tracker-Config
-
-Nach jedem `tracker neu`: `Next` +1 an derselben Stelle (Claude Code: Änderung der Tracker-Config mit committen).
-Details zu Listen-IDs + Modul-Kürzeln in der Tracker-Config.
-
----
-
-## Chat-Start: Automatischer Kontext
-
-Bei `[CLICKUP]` in Memory → kompakte Zusammenfassung:
-```
-📋 ClickUp: 12 offene V1-Tasks, 4 davon high
-   Höchste Prio: BPM-001 | PM | DB-Anbindung Orchestrator [high] [v1] [M]
-```
-
-**Zusätzlich:** Proaktiv nach aktueller Chat-URL fragen (Prosa, weil offene Frage) —
-nur bei Projekten mit Chat-Feldern und in Umgebungen mit Chat-Suche (siehe
-`references/chat-url-handling.md`).
-Wenn User ignoriert: Nicht nerven, aber bei erstem tracker-Call fragen.
-
-**Stale-Check für `[ANKER-LIVE]`:** Einmal am Chat-Start prüfen ob Anker älter als 24h sind.
-Details in `references/anker-system.md`.
+hartkodiert im Skill.** Wo die Config steht und was bei fehlenden Werten
+passiert: Abschnitt „Voraussetzung: Skill-Profil“. Universelle Regel:
+`docs/skill-profile-v1.md` (im Skill-Repo-Root).
 
 ---
 
@@ -358,13 +253,13 @@ Details in `references/anker-system.md`.
 Memory-Einträge (Rubriken `[VERIFY]`, `[ARCH-OPEN]`, `[INFRA-TODO]`,
 `[REVIEW-PENDING]`) werden **nie automatisch** zu ClickUp-Tasks.
 
-Wenn Herbert einen wiederholt auftauchenden Memory-Eintrag zu einem
+Wenn der Nutzer einen wiederholt auftauchenden Memory-Eintrag zu einem
 echten Task eskalieren will:
 
 1. Memory-Eintrag als Kontext in Task-Description übernehmen
 2. Per `tracker neu` einen ClickUp-Task anlegen (normaler Ablauf)
-3. Nach User-Bestätigung: Memory-Eintrag entfernen (Cowork: `memory_user_edits remove`;
-   Claude Code: Datei im Memory-Ordner löschen und Index-Zeile entfernen) — **nie stillschweigend, nie automatisch**
+3. Nach User-Bestätigung: Memory-Eintrag entfernen (Claude Code: Datei im Memory-Ordner löschen und Index-Zeile
+   entfernen; Cowork-Chat: `references/cowork.md`) — **nie stillschweigend, nie automatisch**
 
 **Memory ≠ Tracker-Light.** Memory bleibt nur offene Merker, Fragen,
 Verifikationen. Substantielle Arbeit gehört in ClickUp.
@@ -375,9 +270,7 @@ Abgrenzung:
 - **Mit User-Anweisung:** Memory → Task via `tracker neu`, dann
   Bestätigung einholen fürs Entfernen
 
-Rubriken-Konvention: `MEMORY-RUBRIKEN.md`.
-
-Adressiert Phase 4.4.
+Rubriken-Konvention: `MEMORY-RUBRIKEN.md` im Skill-Repo.
 
 ---
 
@@ -391,19 +284,10 @@ Vollständige Tabelle in `references/anti-patterns.md`.
 
 ## ClickUp-Tools (Lade-Pattern)
 
-ClickUp-Tools sind in Claude.ai **deferred-loaded** — zu Sessionbeginn nicht im Tool-Inventar, sondern müssen über die Werkzeugsuche der Umgebung aktiviert werden (Cowork: `tool_search`; Claude Code: `ToolSearch` mit `select:<voller Tool-Name>`, dort heißen die Tools `mcp__<server>__clickup_get_task`).
+ClickUp-Werkzeuge sind oft erst nach einer Werkzeugsuche aufrufbar. Fehlt eines (`Tool '...' not found`), mit dem
+**EXAKTEN Tool-Namen** nachladen, nicht mit Umschreibung.
 
-**Regel:** Wenn ein Tool nicht aufrufbar ist (`Tool '...' not found`), die Werkzeugsuche mit dem **EXAKTEN Tool-Namen** verwenden, nicht mit Umschreibung.
-
-```
-✅ tool_search("clickup_get_task")          # lädt das Tool (Cowork)
-✅ ToolSearch("select:mcp__…__clickup_get_task")   # Claude Code
-❌ tool_search("clickup task subtasks")     # liefert Müll-Treffer
-```
-
-Vollständiges Tool-Inventar + Befehl→Tool-Mapping: `references/clickup-tools.md`.
-
-Adressiert `tracker-010`.
+Vollständiges Tool-Inventar, Lade-Pattern je Umgebung + Befehl→Tool-Mapping: `references/clickup-tools.md`.
 
 ---
 
@@ -421,7 +305,7 @@ Details in `references/anti-patterns.md`.
 
 - Tasks automatisch erstellen aus freiem Chattext
 - Tasks automatisch auf Done setzen ohne Trigger
-- Titel ohne `<PRÄFIX>-NNN | KÜRZEL` (Hauptaufgaben; Präfix aus der Projekt-Config, BPM: `BPM-`, Heidi: `DX-`)
+- Titel ohne `<PRÄFIX>-NNN | KÜRZEL` (Hauptaufgaben; Präfix aus der Tracker-Config)
 - Projekt-Nummern an Unteraufgaben vergeben
 - **Prosa-Fragen bei festen Entscheidungsoptionen** — IMMER Auswahlfrage
 - Status mit Grossbuchstaben setzen — IMMER klein (`open`/`in progress`/`done`)
@@ -433,17 +317,17 @@ Details in `references/anti-patterns.md`.
 - **Batch-Audit weglassen** (`N/N Body-Anker ✅ | N/N Custom Fields ✅`)
 - **Impliziter Start-Trigger OHNE Task-ID** im Satz — "los geht's" / "fangen wir an" ohne Projekt-Nummer triggert NICHT
 - **Inhaltliche Arbeit starten BEVOR `tracker start` ausgeführt wurde** — Task muss vorher auf `in progress`
-- **Referenz-Anker in Folge-Antworten weglassen** — wenn eine Antwort einen Task inhaltlich betrifft und keine Quittung enthält, MUSS oben `Betroffene Tasks in dieser Antwort: [<PRÄFIX>-ANCHOR-<id>] <name>.` stehen. **Gilt auch bei Tasks die nur gelesen/bearbeitet wurden, ohne `tracker neu`/`tracker done` auszulösen** (tracker-009)
+- **Referenz-Anker in Folge-Antworten weglassen** — wenn eine Antwort einen Task inhaltlich betrifft und keine Quittung enthält, MUSS oben `Betroffene Tasks in dieser Antwort: [<PRÄFIX>-ANCHOR-<id>] <name>.` stehen. **Gilt auch bei Tasks die nur gelesen/bearbeitet wurden, ohne `tracker neu`/`tracker done` auszulösen**
 - **Projekt-Daten hartkodieren** im Skill (Listen-IDs, Custom-Field-IDs, Option-IDs, Modul-Kürzel) — alles aus der Tracker-Config lesen
-- **Annehmen dass `[PROJECT]` immer "bpm" ist** — Projektkennung (Memory bzw. Skill-Profil) lesen und den tatsächlichen Wert verwenden; **Präfix nie raten**, er steht in der Tracker-Config
+- **Projektkennung oder Präfix annehmen** — Projektkennung (Skill-Profil bzw. Memory) lesen und den tatsächlichen Wert verwenden; **Präfix nie raten**, er steht in der Tracker-Config
 - **Commits sammeln statt pro Task** — jeder abgeschlossene (Sub-)Task bekommt sofort einen eigenen Commit (Details: `references/complete-task.md`)
 - **Review-Workflow-Check vor Task-Übergang weglassen** — 4-Punkte-Check (aktueller Task + Parent + Siblings + verweisende offene Tasks) ist Pflicht vor `tracker done`, `tracker start` und Fokus-Wechsel (Details: `references/review-workflow.md`)
 - **Nach `tracker done` passiv warten statt Nachlauf ausführen** — Hash in der Shell holen + Zwischenstand-Tabelle + Folgeoptionen als Auswahlfrage sind Pflicht (Details: `references/complete-task.md` Abschnitt "Automatischer Nachlauf")
-- **Issue-IDs manuell vergeben lassen bei `tracker issue`** — Auto-Nummerierung via `clickup_filter_tasks` ist Pflicht, inkl. `include_closed: true` + Unique-Check (Details: `references/issue-task.md` Schritt 4)
-- **Memory-Einträge automatisch zu Tasks eskalieren** — nur auf explizite Herbert-Anweisung `tracker neu` aus Memory ableiten, nie ungefragt. Entfernen des Memory-Eintrags erst nach Bestätigung (siehe Memory-Eskalation, Phase 4.4)
-- **Werkzeugsuche mit Umschreibung statt exaktem Tool-Namen** wenn ein ClickUp-Tool nicht geladen ist — das liefert Müll-Treffer und kostet Zeit. Bei `Tool '...' not found` IMMER mit dem exakten Tool-Namen suchen (z.B. `tool_search("clickup_get_task")`, nicht `tool_search("clickup task details")`; Claude Code: `ToolSearch("select:…clickup_get_task")`). Tool-Inventar: `references/clickup-tools.md` (tracker-010)
-- **Werkzeugnamen oder Umgebung fest annehmen** (Desktop Commander, `ask_user_input_v0`, Memory-Einträge) — der Skill beschreibt die Handlung; Claude nimmt Shell, Auswahlfrage und Projektkennung der jeweiligen Umgebung
-- **BPM-Präfix oder BPM-IDs für andere Projekte annehmen** — Präfix, Kürzel, Listen- und Feld-IDs immer aus der Tracker-Config lesen; das Schema selbst (Titel, Anker, Felder, Template) gilt in jedem Projekt gleich
-- **Code, Mockup oder Doku zu einem gestarteten Task unter tracker selbst schreiben** — nach `tracker start` (auch „mach <PRÄFIX>-NNN“, „weiter mit <PRÄFIX>-NNN“) den zuständigen Skill laden, bevor die erste Datei geändert wird: Code → code-erstellen, Mockup → mockup-erstellen, Doku → doc-pflege; tracker setzt nur den Status (Details: `references/start-task.md`) (tracker-012)
+- **Issue-IDs manuell vergeben lassen bei `tracker issue`** — Auto-Nummerierung ist Pflicht, inkl. aller erledigten Issues + Unique-Check (Details: `references/issue-task.md` Abschnitt „Issue-ID automatisch ermitteln“)
+- **Memory-Einträge automatisch zu Tasks eskalieren** — nur auf ausdrückliche Anweisung des Nutzers `tracker neu` aus Memory ableiten, nie ungefragt. Entfernen des Memory-Eintrags erst nach Bestätigung (siehe Memory-Eskalation)
+- **Werkzeugsuche mit Umschreibung statt exaktem Tool-Namen** wenn ein ClickUp-Tool nicht geladen ist — das liefert Müll-Treffer und kostet Zeit (Beispiele: `references/clickup-tools.md`)
+- **Werkzeugnamen oder Umgebung fest annehmen** — der Skill beschreibt die Handlung; Claude nimmt Shell, Auswahlfrage und Projektkennung der jeweiligen Umgebung
+- **Präfix oder IDs eines anderen Projekts annehmen** — Präfix, Kürzel, Listen- und Feld-IDs immer aus der Tracker-Config lesen; das Schema selbst (Titel, Anker, Felder, Template) gilt in jedem Projekt gleich
+- **Code, Mockup oder Doku zu einem gestarteten Task unter tracker selbst schreiben** — nach `tracker start` (auch „mach <PRÄFIX>-NNN“, „weiter mit <PRÄFIX>-NNN“) den zuständigen Skill laden, bevor die erste Datei geändert wird: Code → code-erstellen, Mockup → mockup-erstellen, Doku → doc-pflege; tracker setzt nur den Status (Details: `references/start-task.md`)
 
 **Vollständige VERBOTEN-Liste:** `references/anti-patterns.md`.

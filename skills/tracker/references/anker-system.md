@@ -1,29 +1,35 @@
 # Chat-Anker-System — Master-Spec
 
-**Zweck:** Präzise Rückverfolgung welcher Chat welchen Task ausgelöst/abgeschlossen hat — per `conversation_search` auf eindeutige Anker-Strings. Löst die Chat-URL-Problematik (URL nicht programmatisch auslesbar, Indexierungs-Verzögerung).
+**Zweck:** Präzise Rückverfolgung welcher Chat welchen Task ausgelöst/abgeschlossen hat — per Chat-Suche (`conversation_search`) auf eindeutige Anker-Strings. Löst die Chat-URL-Problematik (URL nicht programmatisch auslesbar, Indexierungs-Verzögerung).
+
+**Geltung:** Das Anker-Format im Chat-Body gilt in jeder Umgebung. Die Memory-Registry `[ANKER-LIVE]`, ihr Lifecycle, die TEMP-ID, das Kommando `anker setzen` und der Stale-Check gelten nur im Cowork-Chat (Memory-Werkzeuge und Shell dort: `cowork.md`). In Claude Code gibt es keine Anker-Registry.
 
 **Konzept-Doc:** `docs/chat-anker-konzept.md` im Skill-Repo.
 
 **Hinweis:** Diese Datei ist die Master-Spezifikation. `code-erstellen` (Auto-Anker) und `chat-wechsel` (Übergabe) haben eigene lokale Kopien der für sie relevanten Teile. Bei Änderungen der Spec müssen dort die Kopien mit-gepflegt werden.
+
+## Inhalt
+
+- Anker-Format im Chat-Body
+- Memory-Registry `[ANKER-LIVE]`
+- Lifecycle
+- TEMP-ID Generierung
+- Kommando `anker setzen: <text>`
+- Stale-Check (am Chat-Start)
+
+Beispiele: `beispiele.md`, Abschnitt „Chat-Anker“.
 
 ---
 
 ## Anker-Format im Chat-Body
 
 ```
-[BPM-ANCHOR-<id>] — <typ>: <kurzbeschreibung max 80 Zeichen>
+[<PRÄFIX>-ANCHOR-<id>] — <typ>: <kurzbeschreibung max 80 Zeichen>
 ```
 
-- `BPM` ist der Anker-Präfix des BPM-Projekts. **Der Präfix wird pro Projekt festgelegt** (Tracker-Config, z.B. Heidi `[DX-ANCHOR-…]`); alle Beispiele in dieser Datei zeigen BPM.
-- `<id>` = `TEMP-<10-char-base32>` (Phase 1, vor Task-Erstellung) **oder** ClickUp-Task-ID (Phase 2/3)
+- `<PRÄFIX>` ist der Anker-Präfix des Projekts. **Der Präfix wird pro Projekt festgelegt** (Tracker-Config, Quittungsformat).
+- `<id>` = `TEMP-<10-char-base32>` (Ausarbeitungsphase, vor Task-Erstellung, nur Cowork-Chat) **oder** ClickUp-Task-ID (Task angelegt bzw. erledigt)
 - `<typ>` = `erstellt` | `erledigt`
-
-Beispiele:
-```
-[BPM-ANCHOR-TEMP-01JS7KABCD] — Idee: Wetter-Modul Google-Sheets-Worker
-[BPM-ANCHOR-86c9eupfk] — erstellt: tracker-Skill Anker-Logik (war TEMP-01JS7KABCD)
-[BPM-ANCHOR-86c9eupfk] — erledigt: Commit abc1234 tracker Anker-Logik
-```
 
 ---
 
@@ -53,12 +59,12 @@ Live-Liste aller aktiven Anker der aktuellen Session.
 
 | Event | Aktion auf `[ANKER-LIVE]` |
 |-------|---------------------------|
-| `anker setzen: <text>` (Task 6.5) | Eintrag mit Typ `offen` hinzufügen |
+| `anker setzen: <text>` | Eintrag mit Typ `offen` hinzufügen |
 | `tracker neu` mit vorhandenem TEMP | TEMP-Eintrag **ersetzen** durch Task-ID-Eintrag mit Typ `erstellt` |
 | `tracker neu` ohne TEMP | neuer Eintrag mit Typ `erstellt` |
 | `tracker done` erfolgreich | **beide Einträge** (erstellt + erledigt wenn vorhanden) entfernen |
 | **Batch (≥2 Task-Operationen in einer Antwort)** | Obige Regeln **pro Task einzeln** anwenden — keine Sammelaktualisierung am Batch-Ende. Spec: `batch-protocol.md` |
-| `chat-wechsel` (Task 6.3) | komplette Liste in Übergabeprompt kopieren, dann leeren |
+| `chat-wechsel` | komplette Liste in Übergabeprompt kopieren, dann leeren |
 
 ---
 
@@ -66,7 +72,7 @@ Live-Liste aller aktiven Anker der aktuellen Session.
 
 **Format:** `TEMP-<10 Zeichen Crockford-Base32>`
 
-**Via DC PowerShell:**
+**In der Shell** (Beispiel PowerShell, im Cowork-Chat über die Shell nach `cowork.md`):
 ```powershell
 $ts = [DateTimeOffset]::UtcNow.ToUnixTimeMilliseconds()
 $rand = Get-Random -Maximum 1024
@@ -79,7 +85,7 @@ $rand = Get-Random -Maximum 1024
 
 ## Kommando `anker setzen: <text>`
 
-**Zweck:** Manueller TEMP-Anker in der Phase 1 des Chat-Anker-Systems. Nutze dieses Kommando wenn die Auto-Keyword-Erkennung im `code-erstellen`-Skill nicht greift aber der User eine Stelle im Chat für späteres Wiederfinden markieren will.
+**Zweck:** Manueller TEMP-Anker in der Ausarbeitungsphase des Chat-Anker-Systems (vor Task-Erstellung). Nutze dieses Kommando wenn die Auto-Keyword-Erkennung im `code-erstellen`-Skill nicht greift aber der User eine Stelle im Chat für späteres Wiederfinden markieren will.
 
 Abgrenzung:
 - **Auto-Anker** (code-erstellen): Claude setzt automatisch bei Task-Keywords
@@ -94,21 +100,16 @@ Abgrenzung:
 
 ### Ablauf
 
-1. **TEMP-ID generieren** (siehe Kapitel "TEMP-ID Generierung"):
-   - Primär via DC PowerShell
+1. **TEMP-ID generieren** (siehe Abschnitt "TEMP-ID Generierung"):
+   - Primär in der Shell
    - Fallback: Claude erzeugt `TEMP-<yyMMddHHmm><3 Zufallsbuchstaben>`
 2. **Kurzbeschreibung** aus `<text>` ableiten (max 60 Zeichen, keine Zeilenumbrüche)
 3. **Anker-Zeile im Chat schreiben**:
    ```
-   [BPM-ANCHOR-TEMP-<id>] — Idee: <kurzbeschreibung>
+   [<PRÄFIX>-ANCHOR-TEMP-<id>] — Idee: <kurzbeschreibung>
    ```
-4. **Memory aktualisieren**:
-   ```
-   memory_user_edits(
-     command: "add",
-     control: "[ANKER-LIVE] TEMP-<id>|offen|<ISO-timestamp>|<kurzbeschreibung>"
-   )
-   ```
+4. **Memory aktualisieren**: Eintrag `[ANKER-LIVE] TEMP-<id>|offen|<ISO-timestamp>|<kurzbeschreibung>` hinzufügen
+   (Memory-Werkzeug: `cowork.md`)
 5. **Bestätigung an User**:
    ```
    ✅ Anker gesetzt: TEMP-<id>
@@ -123,20 +124,6 @@ Abgrenzung:
 - Nahezu identischer Anker existiert bereits in `[ANKER-LIVE]` (Duplikat-Check)
 
 Bei Duplikat: Hinweis auf bestehenden Anker statt neuen zu setzen.
-
-### Beispiel
-
-```
-User: anker setzen: Wetter-Modul Google-Sheets Polling-Intervall diskutiert
-
-Claude:
-  1. TEMP-ID: TEMP-01JS9ABCDE
-  2. [BPM-ANCHOR-TEMP-01JS9ABCDE] — Idee: Wetter-Modul GS Polling-Intervall
-  3. memory_user_edits(add, "[ANKER-LIVE] TEMP-01JS9ABCDE|offen|2026-04-21T23:15|Wetter-Modul GS Polling-Intervall")
-  4. ✅ Anker gesetzt: TEMP-01JS9ABCDE
-     Thema: Wetter-Modul GS Polling-Intervall
-     Wird bei `tracker neu` mit Task-ID verknüpft oder bei `chat-wechsel` in Übergabeprompt übernommen.
-```
 
 ---
 
@@ -163,7 +150,7 @@ Am Chat-Start (nach dem Laden des Memory) prüfen ob es veraltete Anker gibt.
    | 86c9eupfk | 26 Std | tracker-Skill Anker-Logik |
    ```
 
-5. **Per `ask_user_input_v0`** fragen was damit passieren soll:
+5. **Per Auswahlfrage** fragen was damit passieren soll:
    ```
    Frage: "Was mit den veralteten Ankern tun?"
    Optionen:
@@ -171,8 +158,8 @@ Am Chat-Start (nach dem Laden des Memory) prüfen ob es veraltete Anker gibt.
    - "Einzeln entscheiden"
    - "Behalten (nur Hinweis)"
    ```
-6. **Bei "Alle verwerfen":** Alle stale Einträge via `memory_user_edits(remove, <line>)` entfernen
-7. **Bei "Einzeln entscheiden":** Pro stale Eintrag `ask_user_input_v0` mit Optionen:
+6. **Bei "Alle verwerfen":** Alle stale Einträge aus dem Memory entfernen (`cowork.md`)
+7. **Bei "Einzeln entscheiden":** Pro stale Eintrag eine Auswahlfrage mit Optionen:
    - "Verwerfen"
    - "`tracker neu` — Task daraus machen"
    - "Behalten"

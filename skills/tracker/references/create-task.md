@@ -3,11 +3,21 @@
 Vollständiger Ablauf, Description-Template und Beispiel-Workflow für `tracker neu`.
 
 **Abgrenzung:** Diese Datei behandelt den Standard-Fall `tracker neu` für
-Haupttasks im Projekt-Scope (z.B. BPM-Listen, ClaudeSkills-Liste).
+Haupttasks im Projekt-Scope (die Listen des Projekts laut Tracker-Config).
 Für **Skill-Issues** (`tracker-NNN`, `cc-steuerung-NNN`, etc.) gilt das
 Kommando `tracker issue <skill>: <titel>` und die separate Spec in
 `references/issue-task.md` — mit eigenem Field-Scope und eigener
 Nummerierungslogik.
+
+Beispiele aus zwei Projekten: `beispiele.md`, Abschnitt „tracker neu“.
+
+## Inhalt
+
+- Kommando (Schnellmodus, Fragemodus)
+- Ablauf
+- Ablauf für Projekte ohne Zähler, Felder oder Anker (Ausnahme)
+- Description-Template (Default bei tracker neu)
+- Bei Unteraufgaben
 
 ---
 
@@ -16,7 +26,7 @@ Nummerierungslogik.
 `tracker neu: <Beschreibung>`
 
 ### Schnellmodus
-"neue aufgabe: PM — Index-Erkennung spinnt, v1, high, Fix, M"
+Stehen Modul, Meilenstein, Priorität, Typ und Aufwand schon im Satz (Beispiel in `beispiele.md`)
 → Direkt anlegen.
 
 ### Fragemodus (Infos fehlen)
@@ -24,30 +34,30 @@ Nummerierungslogik.
 Per Auswahlfrage (nicht Prosa!). Gültige Werte für Modul-Auswahl
 und Meilensteine stehen in der Tracker-Config
 (Modul-Kürzel-Tabelle + Meilenstein-Tags). Konkrete Zielversion-Optionen
-ergeben sich aus Memory `[CLICKUP]` und dem aktuellen Release-Stand.
+ergeben sich aus der Tracker-Config und dem aktuellen Release-Stand (Cowork-Chat: `cowork.md`).
 
-Beispiel (BPM-Projekt):
+Muster:
 ```
-Frage 1 — Modul: PlanManager, Settings, Infrastructure, Docs, Anderes
-Frage 2 — Meilenstein: v1, v1-nice, post-v1, backlog
+Frage 1 — Modul: <Module laut Tracker-Config>, Anderes
+Frage 2 — Meilenstein: <Meilenstein-Tags laut Tracker-Config>
 Frage 3 — Priorität: urgent, high, normal, low
 ```
 
 Nach Basics fragen per Auswahlfrage:
 ```
-Frage 1 — Typ: Feature, Fix, Refactor, Perf, Docs, Konzept, Meta
-Frage 2 — Aufwand: S (<1h), M (1-4h), L (halber Tag), XL (>1 Tag), Später
+Frage 1 — Typ: <Typ-Optionen laut Tracker-Config>
+Frage 2 — Aufwand: <Aufwand-Optionen laut Tracker-Config>
 Frage 3 — Zielversion: Aktuelle, Nächste Minor, später
 ```
 
 Die konkreten Typ/Aufwand-Options sind projekt-spezifisch — siehe
-Tracker-Config.
+Tracker-Config; ausgefüllte Fragen eines Projekts: `beispiele.md`.
 
 Offensichtliches aus Kontext überspringen. Max 3 Fragen pro Aufruf.
 
 **Projekte ohne Custom Fields** (die Tracker-Config sagt
 „Keine“): Fragen nach Modul, Meilenstein, Typ, Aufwand und Zielversion entfallen.
-Gefragt wird nur, was in Titel oder Beschreibung landet (Bauplan-Nummer, Ziel,
+Gefragt wird nur, was in Titel oder Beschreibung landet (Nummer eines Plan-Schritts, Ziel,
 Akzeptanz). Priorität nur, wenn nicht `normal`.
 
 **Prosa-Fragen für Freitext:**
@@ -58,14 +68,13 @@ Akzeptanz). Priorität nur, wenn nicht `normal`.
 
 ## Ablauf
 
-1. Nächste freie Haupt-Nummer `<PRÄFIX>-<Next>` — Präfix aus der Tracker-Config; `Next` im Cowork-Chat aus Memory `[CLICKUP]`, in Claude Code aus der Tracker-Config
+1. Nächste freie Haupt-Nummer `<PRÄFIX>-<Next>` — Präfix und `Next` aus der Tracker-Config (Cowork-Chat: `cowork.md`)
 2. Kürzel + Liste-ID aus der Tracker-Config (Abschnitt „Listen und Routing“)
 3. Dedup: `clickup_search` → wenn Treffer, per Auswahlfrage fragen: Trotzdem neu, Bestehenden nutzen, Abbrechen. Bei ähnlichen Treffern zusätzlich Review-Workflow-Check gemäß `references/review-workflow.md` — besprochene Änderungen könnten bestehende Tasks im Scope verschieben.
 4. **Description**: Template aus Abschnitt "Description-Template" unten generieren
-5. **TEMP-Anker aus `[ANKER-LIVE]` prüfen** (siehe `anker-system.md`):
-   - `[ANKER-LIVE]` aus Memory lesen
-   - Gibt es einen Eintrag mit Typ `offen` zum Thema dieses Tasks? → TEMP-ID merken
-   - Sonst: kein TEMP (Phase 2 ohne vorherige Phase 1)
+5. **TEMP-Anker prüfen** (nur Cowork-Chat, `cowork.md` Abschnitt „[ANKER-LIVE] im Ablauf“):
+   gibt es einen offenen TEMP-Anker zum Thema dieses Tasks? → TEMP-ID merken; sonst kein TEMP
+   (Task ohne vorherige Ausarbeitungsphase)
 6. `clickup_create_task(list_id, name, priority, tags, markdown_description)` → Task-ID erhalten
 7. **Pro-Task-Quittung im Chat schreiben** (direkt nach `clickup_create_task`):
    ```
@@ -88,27 +97,25 @@ Akzeptanz). Priorität nur, wenn nicht `normal`.
    ]
    ```
    Konkrete Field-IDs und Option-IDs: Tracker-Config.
-9. **Memory `[ANKER-LIVE]` aktualisieren**:
-   - Falls TEMP existierte: Eintrag **ersetzen** (TEMP-... → Task-ID-Eintrag mit Typ `erstellt`)
-   - Sonst: neuen Eintrag hinzufügen mit Typ `erstellt`
-10. `Next` +1 (Cowork: Memory `[CLICKUP]`; Claude Code: Tracker-Config, mit committen)
+9. **`[ANKER-LIVE]` aktualisieren** (nur Cowork-Chat, `cowork.md` Abschnitt „[ANKER-LIVE] im Ablauf“)
+10. `Next` +1 in der Tracker-Config, Änderung mit committen (Cowork-Chat: `cowork.md`)
 11. Bestätigung an User inkl. Task-ID als Anker-Referenz
 
 ### Ablauf für Projekte ohne Zähler, Felder oder Anker (Ausnahme)
 
 Gilt nur, wenn die Tracker-Config ausdrücklich „kein Zähler“
 oder „Chat-Anker: nicht verwendet“ sagt bzw. bei den Feldern „Keine“. Standard
-ist das volle Schema (Präfix, Felder, Anker) — BPM und Heidi nutzen es.
+ist das volle Schema (Präfix, Felder, Anker).
 
-1. Nummer = Nummer aus dem Kontext (z.B. Nummer eines Bauplan-Schritts) — nichts
-   hochzählen, kein `[CLICKUP]`-Eintrag
+1. Nummer = Nummer aus dem Kontext (z.B. Nummer eines Plan-Schritts) — nichts
+   hochzählen, kein Zähler-Eintrag
 2. Liste = die eine Liste aus der Tracker-Config
-3. Dedup wie oben (Schritt 3)
-4. Beschreibung nach dem Muster in `clickup-fields.md` Abschnitt „Was stattdessen
-   in die Beschreibung gehört“ (statt Description-Template unten)
+3. Dedup wie oben im Ablauf
+4. Beschreibung nach `clickup-fields.md` Abschnitt „Beschreibung ohne Felder“
+   (statt Description-Template unten)
 5. `clickup_create_task(list_id, name, priority, status, markdown_description)`
 6. Quittung: `✅ <Titel> — erstellt — <ClickUp-Link>` (kein Anker)
-7. Schritte 5, 8, 9, 10 oben entfallen (kein TEMP, keine Felder, kein Memory)
+7. Aus dem Ablauf oben entfallen TEMP-Anker, Custom Fields, `[ANKER-LIVE]` und `Next` +1
 
 ---
 
@@ -135,7 +142,7 @@ Neue Tasks bekommen automatisch dieses Markdown-Template als Description:
 
 ## Abhängigkeiten / Related
 <Falls ClickUp-Dependencies gesetzt: hier noch mal Freitext-Notizen>
-<Oder Verweise auf Docs: Docs/Kern/DB-SCHEMA.md>
+<Oder Verweise auf Docs: <Doc-Pfad>>
 
 ## Technische Notizen
 <Beliebige weitere Infos, Code-Snippets, Links, Hintergrund>
@@ -145,7 +152,7 @@ Neue Tasks bekommen automatisch dieses Markdown-Template als Description:
 - Für **Meta-Tasks** (ClickUp-Pflege, Skill-Updates) das Template **verkürzen**:
   nur Problem + Lösungsansatz
 - Für **Mockup-Tasks**: AC ersetzen durch konkrete Screen-Bereiche
-- Für **Konzept-Tasks**: DoD nur "Konzept-Doc geschrieben + in INDEX verlinkt"
+- Für **Konzept-Tasks**: DoD nur "Konzept-Doc geschrieben + im Router des Projekts (`Doku.Router`) verlinkt"
 - Template auch bei `tracker done` prüfen: DoD-Checkliste abhaken
 
 ### Bei Unteraufgaben
@@ -161,36 +168,3 @@ Unteraufgaben bekommen ein **verkürztes Template**:
 ```
 
 Kein Problem/Lösungsansatz (das steht im Parent).
-
----
-
-## Beispiel-Workflow (BPM-Projekt, `tracker neu` mit allen Feldern)
-
-Dieser Beispiel-Ablauf zeigt einen konkreten `tracker neu`-Durchlauf für BPM.
-Feld-IDs und Option-IDs stehen in der Tracker-Config des BPM-Repos.
-
-```
-User: tracker neu: PM — neue Regex-Erkennung in DocumentTypeRecognizer, v1, high
-
-Claude intern:
-  1. BPM-<Next> aus Memory: BPM-082
-  2. Kürzel PM → Liste-ID aus der Tracker-Config (PlanManager-Zeile)
-  3. Dedup: clickup_search "Regex DocumentTypeRecognizer" → kein Treffer
-  4. Auswahlfrage:
-     Frage 1 — Typ: Feature, Fix, Refactor, Perf, Docs, Konzept, Meta
-     Frage 2 — Aufwand: S, M, L, XL, Später
-     User antwortet: Feature, M
-  5. Prosa-Frage: "Welche Komponente?"
-     User: "DocumentTypeRecognizer.cs"
-  6. Prosa-Frage: "Zielversion?"
-     User: "v0.26.0"
-  7. Description-Template generieren
-  8. Chat erstellt = aktueller Chat (URL aus Session-Memory)
-  9. custom_fields = [Typ=Feature, Aufwand=M, Zielversion=v0.26.0, 
-                      Komponente=DocumentTypeRecognizer.cs, Chat erstellt=<url>]
-  10. clickup_create_task(...) → Task-ID 86c9xyz12 erhalten
-  11. Pro-Task-Quittung im Chat:
-      ✅ BPM-082 — [BPM-ANCHOR-86c9xyz12] — erstellt: Neue Regex-Erkennung DocumentTypeRecognizer
-  12. clickup_update_task(task_id="86c9xyz12", custom_fields=[{Chat-Anker erstellt: "[BPM-ANCHOR-86c9xyz12] - erstellt: Neue Regex-Erkennung"}])
-  13. Memory: Next 082 → 083
-```

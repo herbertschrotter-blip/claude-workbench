@@ -2,13 +2,19 @@
 
 Universelle Referenz für `tracker neu`, `tracker done`, `tracker field`, `tracker split`.
 
-**Konkrete BPM-Werte** (Listen-IDs, Custom-Field-IDs, Option-IDs, Modul-Kürzel, Meilenstein-Tags, Status-Werte-Matrix) liegen in der Tracker-Config des Projekts (Skill-Profil → Tracker → Config). Diese Datei enthält nur universelle Regeln und Muster.
+**Konkrete Projektwerte** (Listen-IDs, Custom-Field-IDs, Option-IDs, Modul-Kürzel, Meilenstein-Tags, Status-Werte-Matrix) liegen in der Tracker-Config des Projekts (Skill-Profil → Tracker → Config). Diese Datei enthält nur universelle Regeln und Muster. Im Cowork-Chat kommen Projektkennung, Zähler und Listen aus dem Memory: `cowork.md`.
 
----
+## Inhalt
 
-## ClickUp-Konfiguration
-
-Aus Memory lesen: `[PROJECT]`- und `[CLICKUP]`-Einträge. Format: `[PROJECT] <n> | Repo: <pfad> | ...` und `[CLICKUP] Space:<ID> | Listen: <Modul>:<ListID>, ... | Next:<NNN> | Letzte Sync: Teil <N>`.
+- Custom Fields (Dropdown-Regel, Default bei `tracker neu`, Default bei `tracker done`)
+- Beschreibung ohne Felder
+- Kommentar statt Felder
+- Modul-Kürzel (Auto-Create für neue Module)
+- Globale Nummerierung (Unteraufgaben-Nummerierung)
+- Titel-Format
+- Meilenstein-Tags
+- Priority-Regeln
+- Status-Modell (Status-Werte pro Listen-Typ, Fallback-Reihenfolge)
 
 ---
 
@@ -17,35 +23,28 @@ Aus Memory lesen: `[PROJECT]`- und `[CLICKUP]`-Einträge. Format: `[PROJECT] <n>
 Custom-Field-IDs, -Typen und deren Semantik sind **projekt-spezifisch**.
 Siehe Tracker-Config, Abschnitt „Felder und Option-IDs“:
 
-- **Abschnitt 1 — BPM-Scope / Haupt-Scope:** Fields die bei `tracker neu`
+- **Haupt-Scope:** Fields die bei `tracker neu`
   (Neue Tasks) und `tracker done` (Abschluss) gesetzt werden — typischerweise
   Typ, Aufwand, Zielversion, Komponente, Zugehörige Docs, Commit ID, Commit Text, Erledigt, Chat-Anker erstellt/erledigt.
-- **Abschnitt 2 — Issue-Scope** (falls vorhanden): Fields für Skill-Issues
+- **Issue-Scope** (falls vorhanden): Fields für Skill-Issues
   oder ähnliche Sekundär-Listen.
 
 ### Dropdown-Regel (universell)
 
 Wenn ein Field `drop_down`-Typ hat: **Option-ID** (nicht Display-Label) als
-Value setzen. Option-IDs stehen in der Tracker-Config.
-Bei unbekannter Option-ID: `ask_user_input_v0` mit den bekannten Options —
+Value setzen. Option-IDs für alle Dropdowns des Projekts stehen in der Tracker-Config.
+Bei unbekannter Option-ID: Auswahlfrage mit den bekannten Options —
 **nie raten**.
-
----
-
-### Option-IDs pro Dropdown
-
-Liste der Option-IDs für alle Dropdowns des Projekts:
-Tracker-Config.
 
 ---
 
 ## Default bei `tracker neu`
 
 **Pflicht ausfüllen** (wenn ermittelbar):
-- Typ-Field (aus Kontext oder `ask_user_input_v0`)
-- Chat-Anker-erstellt-Field (ClickUp-Task-ID, wird nach `clickup_create_task` direkt gesetzt)
+- Typ-Field (aus Kontext oder Auswahlfrage)
+- Chat-Anker-erstellt-Field (ClickUp-Task-ID, wird nach dem Anlegen direkt gesetzt)
 
-**Wenn vorhanden** (aus `[ANKER-LIVE]` Memory):
+**Wenn vorhanden** (nur Cowork-Chat, aus `[ANKER-LIVE]` im Memory):
 - Chat-Anker-temp-Field (TEMP-ID aus Ausarbeitungsphase)
 
 **Wenn bekannt** (sonst leer lassen):
@@ -57,7 +56,7 @@ Tracker-Config.
 ## Default bei `tracker done`
 
 **Pflicht ausfüllen**:
-- Commit-ID-Field + Commit-Text-Field (aus DC `git log`)
+- Commit-ID-Field + Commit-Text-Field (aus `git log` in der Shell)
 - Erledigt-Field (Commit-Datum)
 - Chat-Anker-erledigt-Field (ClickUp-Task-ID)
 
@@ -66,22 +65,37 @@ Tracker-Config.
 
 ---
 
+## Beschreibung ohne Felder
+
+Gilt für Projekte, deren Tracker-Config bei den Feldern „Keine“ sagt. Was sonst in Feldern stünde, kommt in die
+Beschreibung, nach dem Abschnitt „Titel- und Beschreibungsformat“ der Tracker-Config:
+
+- **Ziel:** was die Aufgabe erreichen soll, mit der Nummer aus dem Kontext (z. B. Schritt eines Plans)
+- **Akzeptanz:** woran der Nutzer erkennt, dass sie erledigt ist
+- **Bezug:** zugehörige Docs, Dateien und Aufgaben
+
+## Kommentar statt Felder
+
+Bei `tracker done` ohne Felder bekommt die Aufgabe einen Kommentar statt der Commit-Felder:
+
+- Version und Commit-Hash (bei Zero-Change: `(Zero-Change)`)
+- was der Nutzer prüfen soll, bevor er die Abnahme gibt
+
+---
+
 ## Modul-Kürzel
 
 Die Zuordnung Modul-Name → Kürzel → Listen-ID ist **projekt-spezifisch**.
 Siehe Tracker-Config, Abschnitt „Listen und Routing“.
 
-Bei Abweichung: Memory `[CLICKUP]`-Eintrag ist Quelle, danach die Tracker-Config.
-
 ### Auto-Create für neue Module
 
 Wenn ein neues Modul auftaucht das noch keine Liste hat:
 
-1. `ask_user_input_v0` zur Bestätigung: "Liste '<Modul>' neu anlegen?"
-2. Bei Bestätigung: `clickup_create_list(name: "<Modul>", space_id: "<Space-ID-aus-Memory>")`
-3. Memory-Eintrag `[CLICKUP]` aktualisieren mit neuer Listen-ID
-4. Kürzel-Eintrag in der Tracker-Config ergänzen
-5. User informieren über neue Liste + Kürzel
+1. Auswahlfrage zur Bestätigung: "Liste '<Modul>' neu anlegen?"
+2. Bei Bestätigung: Liste im Space aus der Tracker-Config anlegen (`clickup_create_list(name: "<Modul>", space_id: "<Space-ID>")`)
+3. Listen-ID und Kürzel-Eintrag in der Tracker-Config ergänzen (Cowork-Chat zusätzlich: `cowork.md`)
+4. User informieren über neue Liste + Kürzel
 
 ---
 
@@ -90,8 +104,8 @@ Wenn ein neues Modul auftaucht das noch keine Liste hat:
 **Pattern:** `<PROJEKT-PREFIX>-<NNN>` — dreistellig mit führenden Nullen,
 global über alle Listen des Projekts, **nie wiederverwendet**.
 
-- Projekt-Prefix (z.B. `BPM-`) aus der Tracker-Config
-- Nächste freie Nummer im Memory: `<Prefix>Next:<NNN>`
+- Projekt-Prefix aus der Tracker-Config
+- Nächste freie Nummer aus der Tracker-Config (Abschnitt „Nummernschema und nächste freie Nummer“)
 - Nach jedem `tracker neu`: Next +1
 
 ### Unteraufgaben-Nummerierung
@@ -123,7 +137,7 @@ Beispiele:
 <PROJEKT-PREFIX>-<NNN> | <KÜRZEL> | <Kurzbeschreibung>
 ```
 
-Beispiel (BPM): `BPM-016 | PM | Recovery nach Crash`
+Beispiel: `beispiele.md`, Abschnitt „Präfixe, Anker und Spaces“.
 
 ### Unteraufgaben
 
@@ -150,13 +164,12 @@ Tracker-Config.
 
 ## Meilenstein-Tags
 
-Tag-Namen + Bedeutung sind **projekt-spezifisch**:
-Tracker-Config, Abschnitt „Sonderfälle“.
+Tag-Namen + Bedeutung sind **projekt-spezifisch**: laut Tracker-Config.
 
 Universelle Regeln:
 - Tags **kleingeschrieben** in ClickUp
 - Nur an **Hauptaufgaben**, nicht an Unteraufgaben
-- Bei unbekanntem Tag: `ask_user_input_v0` mit den definierten Tags
+- Bei unbekanntem Tag: Auswahlfrage mit den definierten Tags
 
 ---
 
@@ -188,25 +201,13 @@ Grossgeschrieben wirft `"Status does not exist"`-Fehler.
 
 Nicht alle ClickUp-Listen nutzen die gleichen Status-Werte. Die
 **konkrete Matrix** pro Listen-Typ steht in
-Tracker-Config, Abschnitt „Statusmodell“.
+Tracker-Config, Abschnitt „Statusmodell“. Bei `tracker start` ist nur der Wert für „gestartet“ relevant, meist
+`in progress` und listen-übergreifend gleich; ein Projekt kann im Statusmodell einen eigenen haben.
 
 ### Fallback-Reihenfolge bei Status-Änderung
 
 1. Zuerst den listen-typischen Wert versuchen (aus der Tracker-Config)
 2. Bei Fehler `"Status does not exist"`: Alternative aus derselben Zeile probieren
-3. Wenn beide scheitern: `ask_user_input_v0` mit den bekannten Werten
+3. Wenn beide scheitern: Auswahlfrage mit den bekannten Werten
 
 Für `in progress` ist der Wert listen-übergreifend gleich.
-
----
-
-## Memory-Pflege
-
-Nach jeder relevanten Änderung den entsprechenden Memory-Eintrag
-aktualisieren:
-
-- Neue Liste-ID → `[CLICKUP]`-Eintrag erweitern
-- Next-Nummer → `<Prefix>Next:` erhöhen
-- Letzte Sync-Markierung (z.B. `Letzte Sync: Teil <N>`) setzen
-
-Eintragsformate: Abschnitt „ClickUp-Konfiguration“ oben.

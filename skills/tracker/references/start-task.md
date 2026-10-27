@@ -1,9 +1,15 @@
 # tracker start — Task + Parent auf "in progress" setzen
 
 Setzt einen Subtask auf `in progress` und aktualisiert den Parent-Task
-ebenfalls (nur wenn Parent aktuell `open`/`to do`).
+ebenfalls (nur wenn Parent aktuell `open`/`to do`). Beispiele: `beispiele.md`, Abschnitt „tracker start“.
 
-Fixt `tracker-002` (Start-Kommando setzte Status nicht).
+## Inhalt
+
+- Kommando (implizite Trigger, Fokus-Entscheidung im Dialog)
+- Ablauf
+- Projekte mit eigenem Status-Wert (oder ohne Anker)
+- Status-Werte pro Listen-Typ
+- VERBOTEN
 
 ---
 
@@ -44,7 +50,7 @@ ausführen bevor mit inhaltlicher Arbeit begonnen wird.
 **Auslöser:**
 
 - Claude hat einen konkreten Task-Fix vorgeschlagen (`"als nächstes tracker-002"`
-  / `"wir machen jetzt BPM-082"`)
+  / `"wir machen jetzt <PRÄFIX>-NNN"`)
 - User bestätigt mit `"ja"`, `"ok"`, `"weiter"`, `"mach"`, `"passt"`, `"genau"`,
   `"los"`, `"gemacht"` — oder irgendeiner anderen Zustimmung
 - → **In der darauffolgenden Antwort ZUERST `tracker start`**, dann Analyse/Code im zuständigen Skill (Code → code-erstellen)
@@ -53,28 +59,14 @@ ausführen bevor mit inhaltlicher Arbeit begonnen wird.
 Turn hervorgehen**. Wenn mehrere Tasks im Raum stehen: Auswahlfrage
 welcher gestartet werden soll.
 
-**Beispiel:**
-
-```
-Claude: "Vorschlag: Als nächstes tracker-002 Fix — drei Optionen..."
-User:   "Vorschlag OK — Option A + restriktives B"
-
-→ In der Antwort die mit "Plan fix:" beginnt:
-   1. tracker_update_task(tracker-002, status: "in progress")  ← ZUERST
-   2. Pro-Task-Quittung
-   3. Erst DANN "Plan fix: ..."
-```
-
-Diese Regel korrigiert einen beobachteten Bug: In Session Teil 28 wurde
-zwischen User-Freigabe und Beginn der Implementierung der Status nicht
-gesetzt — obwohl der Fokus eindeutig war.
+Beispiel: `beispiele.md`, Abschnitt „tracker start“.
 
 ---
 
 ## Ablauf
 
 1. **Task-ID auflösen:**
-   - Explizite ID (`<PRÄFIX>-NNN` wie `BPM-082` oder `DX-031`, Issue `tracker-003`) → direkt nutzen
+   - Explizite ID (`<PRÄFIX>-NNN`, Issue `tracker-003`) → direkt nutzen
    - Kurzform (`4.1`, `3.5`): via `clickup_search` den passenden Task finden
    - Bei mehreren Treffern: Auswahlfrage
 
@@ -96,7 +88,7 @@ gesetzt — obwohl der Fokus eindeutig war.
    ```
 
 5. **Parent ermitteln:** `clickup_get_task` liefert `parent`-Feld
-   - Wenn `parent` null: kein Parent vorhanden → zu Schritt 7
+   - Wenn `parent` null: kein Parent vorhanden → weiter mit der Quittung
    - Wenn `parent` vorhanden: weiter
 
 6. **Parent-Status prüfen und ggf. setzen:**
@@ -122,8 +114,8 @@ gesetzt — obwohl der Fokus eindeutig war.
 ### Projekte mit eigenem Status-Wert (oder ohne Anker)
 
 - Status-Wert für „gestartet“ aus der Tracker-Config
-  Abschnitt „Übergänge“ nehmen (z.B. `in development` statt `in progress`).
-- Parent-Regel (Schritte 5–6) gilt unverändert.
+  Abschnitt „Statusmodell“ nehmen (z.B. `in development` statt `in progress`).
+- Parent-Regel (Parent ermitteln, Parent-Status prüfen) gilt unverändert.
 - Nur falls das Projekt keine Anker führt: Quittung `✅ <PRÄFIX>-NNN — start: <Status> — <ClickUp-Link>`,
   Batch-Audit ohne den Teil „Custom Fields“.
 
@@ -131,16 +123,7 @@ gesetzt — obwohl der Fokus eindeutig war.
 
 ## Status-Werte pro Listen-Typ
 
-Nicht alle Listen nutzen die gleichen Status-Werte. Die konkrete Matrix
-(z.B. BPM-Listen mit `done`, Skill-Issues-Listen mit `complete`) steht in
-Tracker-Config, Abschnitt „Statusmodell“.
-
-Bei `tracker start` ist nur `in progress` relevant — der Wert ist
-listen-übergreifend gleich. Ausnahme: Projekte mit eigenem Übergang in
-der Tracker-Config (z.B. `in development`).
-
-Bei `tracker done`: Fallback-Reihenfolge gemäß Projekt-Matrix. Bei Fehler
-Auswahlfrage mit Alternativen.
+Matrix, Wert für „gestartet“ und Fallback-Reihenfolge: `clickup-fields.md`, Abschnitt „Status-Modell“.
 
 ---
 
@@ -154,56 +137,5 @@ Auswahlfrage mit Alternativen.
 - Inhaltliche Arbeit beginnen BEVOR `tracker start` ausgeführt wurde
 - Raten welche Task-ID gemeint ist wenn unklar — Auswahlfrage
 - Code, Mockup oder Doku zu einem gestarteten Task unter tracker selbst schreiben, statt den zuständigen Skill zu laden
-
----
-
-## Beispiel-Workflow
-
-### Explizites Kommando
-
-```
-User: tracker start: tracker-002
-
-Claude intern:
-  1. Task-ID: tracker-002 → 86c9f7cm4 (aus Issue-ID-Lookup)
-  2. clickup_get_task(86c9f7cm4) → status = "to do", parent = null
-  3. clickup_update_task(86c9f7cm4, status: "in progress")
-  4. Kein Parent → Schritt 6
-  6. Pro-Task-Quittung im Chat:
-     ✅ tracker-002 — [BPM-ANCHOR-86c9f7cm4] — start: in progress
-  8. Inhaltliche Arbeit beginnt im zuständigen Skill (bei Code: code-erstellen laden).
-```
-
-### Impliziter Trigger mit Task-ID
-
-```
-User: fangen wir mit tracker-002 an
-
-Claude:
-  [Auswahlfrage]
-  Frage: "tracker-002 auf 'in progress' setzen? (Kein Parent vorhanden.)"
-  Optionen: Ja / Nein
-
-  User: Ja
-  → Ablauf wie oben
-```
-
-### Impliziter Trigger mit Parent
-
-```
-User: starte 4.1
-
-Claude intern:
-  1. clickup_search "4.1" → Task 86c9xyz (Parent: 86c9parent)
-  2. Auswahlfrage:
-     "4.1 + Parent (Phase 4) auf 'in progress' setzen?"
-     Optionen: Ja - beide / Nur Subtask / Nein
-  3. User: Ja - beide
-  4. clickup_update_task(86c9xyz, "in progress")
-  5. clickup_get_task(86c9parent) → status = "to do"
-  6. clickup_update_task(86c9parent, "in progress")
-  7. Quittungen:
-     ✅ 4.1 — [BPM-ANCHOR-86c9xyz] — start: in progress
-     ✅ Phase-4 — [BPM-ANCHOR-86c9parent] — start: in progress (als Parent)
-     Batch-Audit: 2/2 Body-Anker ✅ | 2/2 Custom Fields ✅
-```
+- User-Zustimmung zu einem vorgeschlagenen Task-Fokus ignorieren — nach "ok" / "mach" / "weiter" MUSS `tracker start` vor der Arbeit
+- Status-Wert raten bei Listen-Typen — Fallback-Reihenfolge einhalten (`clickup-fields.md`), bei Scheitern Auswahlfrage

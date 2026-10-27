@@ -1,6 +1,18 @@
 # tracker done — Task abschließen
 
-Vollständiger Ablauf, Commit-Ermittlung und Beispiel-Workflow für `tracker done`.
+Vollständiger Ablauf, Commit-Ermittlung und Nachlauf für `tracker done`. Beispiele: `beispiele.md`, Abschnitt
+„tracker done“.
+
+## Inhalt
+
+- Kommando
+- Ablauf
+- Ablauf für Projekte ohne Custom Fields oder Anker (Ausnahme)
+- Automatischer Nachlauf nach tracker done (4-Schritt-Nachlauf, Lieferung nach einem Skill-Issue, Ausnahmen, VERBOTEN)
+- Commit-Disziplin: ein Task = ein Commit (Workflow pro Task, Ausnahmen, Version, Abgrenzung zu `git-commit-helper`)
+- Keine Shell verfügbar?
+- Keine Commit-Info ermittelbar?
+- Git-Commit-Ermittlung (Detailhilfe)
 
 ---
 
@@ -22,11 +34,11 @@ Vollständiger Ablauf, Commit-Ermittlung und Beispiel-Workflow für `tracker don
 4. **Commit-Infos ermitteln** (Pflicht):
    - Wenn Task Code-Bezug hat (Modul mit Code-Scope — siehe Tracker-Config, Modul-Kürzel):
      - Claude fragt User: "Welche Datei(en) sind betroffen?" (Prosa, offene Frage!)
-     - In der Shell (Cowork: DC, Claude Code: Bash): `git log -1 --format="%h|%ad|%s" --date=short -- <Datei>`
+     - In der Shell: `git log -1 --format="%h|%ad|%s" --date=short -- <Datei>`
      - Oder: `git log --all --diff-filter=A --format="%h %ad %s" --date=short -- <Datei>` (erste Erwähnung)
      - Oder: `git log --grep="vX.Y.Z" --format="%h %ad %s" --date=short` (Version bekannt)
    - Wenn Task reiner Doc-Bezug:
-     - Gleicher Weg, aber auf Docs/ Pfade
+     - Gleicher Weg, aber auf die Doku-Pfade
    - Wenn Task keinen Code-Bezug hat (z.B. Meta-Task):
      - Commit ID + Commit Text leer lassen
      - Erledigt-Datum = heute (YYYY-MM-DD)
@@ -54,14 +66,11 @@ Vollständiger Ablauf, Commit-Ermittlung und Beispiel-Workflow für `tracker don
    ```
    clickup_update_task(
      task_id: "<TaskID>",
-     status: "<Status laut Übergängen der Projekt-Config>",   ← KLEINGESCHRIEBEN; BPM done/complete, Heidi testing (Abnahme → shipped macht der User); Quelle: Statusmodell der Tracker-Config
+     status: "<Status laut Statusmodell der Tracker-Config>",   ← KLEINGESCHRIEBEN; Werte je Projekt: beispiele.md
      custom_fields: custom_fields
    )
    ```
-10. **Memory `[ANKER-LIVE]` aufräumen**:
-    - Eintrag mit Task-ID und Typ `erstellt` entfernen
-    - Falls temporär ein Typ `erledigt` gesetzt wurde: auch entfernen
-    - Nach diesem Schritt existiert im Memory nichts mehr zu diesem Task
+10. **`[ANKER-LIVE]` aufräumen** (nur Cowork-Chat, `cowork.md` Abschnitt „[ANKER-LIVE] im Ablauf“)
 11. **Bestätigung** an User:
     ```
     ✅ <PRÄFIX>-NNN auf <Status> gesetzt
@@ -73,20 +82,19 @@ Vollständiger Ablauf, Commit-Ermittlung und Beispiel-Workflow für `tracker don
 ### Ablauf für Projekte ohne Custom Fields oder Anker (Ausnahme)
 
 Gilt nur, wenn die Tracker-Config ausdrücklich „Keine“ sagt.
-Standard ist das volle Schema (BPM und Heidi haben alle Felder):
+Standard ist das volle Schema:
 
-1. Task finden, Review-Check, Commit-Hash ermitteln wie in Schritten 1–5
+1. Task finden, Review-Check, Commit-Hash ermitteln wie im Ablauf oben
    (Hash in der Shell der Umgebung: `git log -1 --format='%h %s'`)
-2. Schritte 7, 8, 10 entfallen (keine Nachpflege-Felder, keine Feld-Liste,
-   kein `[ANKER-LIVE]`)
-3. Status-Wert aus der Tracker-Config, Abschnitt „Statusmodell“ (z.B. `testing`
+2. Nachpflege-Felder, Feld-Liste und `[ANKER-LIVE]` entfallen
+3. Status-Wert aus der Tracker-Config, Abschnitt „Statusmodell“ (z.B. ein Abnahme-Status
    statt `done`, wenn die Abnahme der User macht)
-4. `clickup_update_task(task_id, status)` + `clickup_create_task_comment` mit
-   dem Kommentar-Muster aus `clickup-fields.md` (Version, Commit-Hash, was
+4. `clickup_update_task(task_id, status)` + `clickup_create_task_comment` nach
+   `clickup-fields.md` Abschnitt „Kommentar statt Felder“ (Version, Commit-Hash, was
    der User prüfen soll)
 5. Quittung: `✅ <PRÄFIX>-NNN — erledigt: Commit <hash> — <ClickUp-Link>` (kein Anker)
 6. Nachlauf unten gilt unverändert (Zwischenstand-Tabelle, Folgeoptionen
-   als Auswahlfrage); Schritt 2 des Nachlaufs entfällt
+   als Auswahlfrage); nur das Setzen der Custom Fields entfällt
 ---
 
 ## Automatischer Nachlauf nach tracker done
@@ -97,54 +105,22 @@ User-Input warten nach `tracker done`.**
 
 ### 4-Schritt-Nachlauf
 
-1. **Commit-Hash selbst in der Shell der Umgebung holen** (Cowork: DC,
-   Claude Code: Bash/PowerShell; falls nicht schon aus vorhergehendem
-   `git commit`-Call bekannt):
+1. **Commit-Hash selbst in der Shell der Umgebung holen** (falls nicht schon aus vorhergehendem
+   `git commit`-Call bekannt; Shell im Cowork-Chat: `cowork.md`):
    ```
    cd "<Repo-Pfad>"
    git log -1 --format='%h %s'
    ```
-   Im Cowork-Chat baut das auf cc-steuerung-003 auf (DC ist dort
-   Default-Ausführungsmodus). Den Hash nicht vom User anfordern wenn eine
+   Den Hash nicht vom User anfordern wenn eine
    Shell verfügbar ist.
 
 2. **Custom Fields in ClickUp setzen** — passiert typischerweise schon im
-   Haupt-Ablauf-Schritt 9 (Commit ID, Commit Text, Erledigt-Datum,
-   Chat-Anker erledigt). Falls Hash erst nachträglich via Schritt 1
+   einzigen API-Call des Ablaufs (Commit ID, Commit Text, Erledigt-Datum,
+   Chat-Anker erledigt). Falls der Hash erst jetzt im Nachlauf
    ermittelt wurde: zweiter `clickup_update_task` mit den Feld-Updates.
 
-2a. **Wenn abgeschlossener Task ein Skill-Issue war: Artifact liefern**
-
-   Gilt wenn der Task aus einer Skill-Issues-Liste stammt (z.B.
-   skill-pflege-NNN, tracker-NNN, cc-steuerung-NNN) UND der zugehörige
-   Commit eine `skills/*/SKILL.md` geändert hat.
-
-   In separatem Antwort-Block (nicht mit Schritt 3/4 vermischen):
-
-   ```
-   Schritt A: create_file
-     path: /home/claude/SKILL.md
-     file_text: <komplette neue Skill-Datei aus dem Repo>
-
-   Schritt B: present_files
-     filepaths: ["/home/claude/SKILL.md"]
-   ```
-
-   Regelwerk: siehe skill-pflege SKILL.md Regel 14b (Artifact-Pflicht) und
-   Regel 14 (Tool-Call-Paar, skill-pflege-006).
-
-   **Claude Code:** kein `create_file`/`present_files` – die neue SKILL.md (bei
-   geänderten references eine Zip mit SKILL.md + references/) per `SendUserFile`
-   an den Nutzer schicken; er speichert sie bei claude.ai.
-
-   **Ausnahmen (kein Artifact):**
-   - Zero-Change-Tasks
-   - Commits die ausschliesslich `references/`-Dateien ändern
-   - Task betrifft nicht die SKILL.md selbst
-
-   **Reihenfolge bei mehreren Skill-Issues in einer Batch-Session:**
-   Pro geändertem Skill EIN Artifact in SEPARATEM Antwort-Block. User
-   bestätigt "gespeichert" zwischen den Skills (skill-pflege Regel 15 + 16).
+2a. **Wenn abgeschlossener Task ein Skill-Issue war: Skill liefern** (Abschnitt „Lieferung nach einem
+   Skill-Issue“ unten), in separatem Antwort-Block (nicht mit Schritt 3/4 vermischen).
 
 3. **Zwischenstand-Tabelle im Chat** zeigen — Kompakt-Überblick was erledigt
    wurde und was noch offen ist:
@@ -158,8 +134,7 @@ User-Input warten nach `tracker done`.**
    Bei mehreren parallelen Items (z.B. Skill-Issues-Session): vollständige
    Session-Tabelle mit allen abgeschlossenen und offenen Punkten.
 
-4. **Folgeoptionen als Auswahlfrage** (Cowork Auswahlfrage, Claude
-   Code `AskUserQuestion`) — 2-4 Optionen mit konkreten nächsten Schritten:
+4. **Folgeoptionen als Auswahlfrage** — 2-4 Optionen mit konkreten nächsten Schritten:
    ```
    Auswahlfrage:
      question: "Was als nächstes?"
@@ -171,67 +146,45 @@ User-Input warten nach `tracker done`.**
    ```
    Niemals als Prosa-Frage. Niemals still warten.
 
+### Lieferung nach einem Skill-Issue
+
+Gilt wenn der Task aus einer Skill-Issues-Liste stammt UND der zugehörige Commit einen Skill unter `skills/<skill>/`
+geändert hat – `SKILL.md` oder eine Reference.
+
+- Lieferung nach `skills/skill-pflege/references/delivery.md`: Reihenfolge (zuerst das Repo, dann die Lieferung) im
+  Abschnitt „Reihenfolge“; immer die vollständige Datei, bei einem Skill mit references die Zip mit `SKILL.md` und
+  `references/` – auch wenn nur eine Reference geändert wurde – im Abschnitt „Was geliefert wird“.
+- In Claude Code die Datei an den Nutzer schicken (`delivery.md`, Abschnitt „Claude Code“); er speichert sie bei
+  claude.ai. Im Cowork-Chat als Artifact (`delivery.md`, Abschnitt „Cowork“; `cowork.md` Abschnitt „Lieferung nach
+  einem Skill-Issue“).
+- **Ausnahmen (keine Lieferung):** Zero-Change-Tasks; Commits, die keinen Skill-Inhalt ändern.
+- **Mehrere Skill-Issues in einer Batch-Session:** pro geändertem Skill EINE Lieferung in SEPARATEM Antwort-Block;
+  der User bestätigt „gespeichert“ zwischen den Skills (`delivery.md`, Abschnitt „Ein Skill je Antwort“).
+
 ### Ausnahmen
 
 - **Zero-Change-Tasks:** Schritt 1 entfällt (kein Commit, kein Hash). Schritte
-  2-4 bleiben. Im Quittungstext `(Zero-Change)` vermerkt (gemäß `tracker-007`).
+  2-4 bleiben. Im Quittungstext `(Zero-Change)` vermerkt (Abschnitt „Commit-Disziplin“).
 
 - **Batch-Abschluss (mehrere Tasks hintereinander done):** Schritte 1-2 pro
   Task durchlaufen, Schritt 3 einmal am Batch-Ende mit Gesamt-Übersicht,
   Schritt 4 **nur einmal** nach dem letzten Task.
 
-- **Keine Shell verfügbar (weder DC noch Bash):** Schritt 1 entfällt automatisch. Dann Prosa-Frage
+- **Keine Shell verfügbar:** Schritt 1 entfällt automatisch. Dann Prosa-Frage
   an den User: "Commit-Hash?" (offene Frage, nicht Auswahlfrage).
 
 ### VERBOTEN
 
 - Nach `tracker done` passiv auf User-Input warten ohne Auswahlfrage
-- Commit-Hash vom User anfordern wenn eine Shell (DC oder Bash) verfügbar ist
+- Commit-Hash vom User anfordern wenn eine Shell verfügbar ist
 - Zwischenstand-Tabelle nach Task-Abschluss weglassen
 - Folgeoptionen als Prosa-Frage statt Auswahlfrage
 - Folgeoptionen bereits nach dem ersten Task eines Batches zeigen — erst am Batch-Ende
-- Skill-Issue auf done setzen ohne Artifact-Lieferung im nachfolgenden Antwort-Block (skill-pflege-005)
-
-### Beispiel-Ablauf
-
-```
-tracker done auf BPM-082 (Code-Task)
-  [Haupt-Ablauf Schritte 1-11 durchlaufen]
-  ✓ Status auf done gesetzt, Custom Fields gefüllt
-
-Automatischer Nachlauf:
-  1. Shell (hier DC): git log -1 --format='%h %s' → hash bereits bekannt aus Commit-Session
-  2. Custom Fields schon in Schritt 9 mit drin → übersprungen
-  3. Zwischenstand-Tabelle:
-     | Item | Status |
-     |------|--------|
-     | BPM-082 done (ee4476d, v0.26.0) | ✅ |
-     | Push nach origin/main | ⏳ User |
-  4. Auswahlfrage:
-     "Was als nächstes?"
-     - "BPM-083 (Folgefeature laut Prio)"
-     - "BPM-084 (Bugfix, geplant)"
-     - "Anderer Task"
-     - "Pause"
-```
-
-### Beispiel-Ablauf (Skill-Issue)
-
-```
-tracker done auf skill-pflege-005 (Skill-Issue)
-  [Haupt-Ablauf Schritte 1-11 durchlaufen]
-  ✓ Status auf complete gesetzt, Commit-Hash 09c120b in Custom Field
-
-Automatischer Nachlauf:
-  1. Shell (hier DC): git log -1 → 09c120b bereits bekannt
-  2. Custom Fields schon gesetzt
-  2a. SKILL.md-Änderung erkannt → Artifact-Block folgt:
-      - create_file path=/home/claude/SKILL.md file_text=<v0.15.5 Inhalt>
-      - present_files filepaths=["/home/claude/SKILL.md"]
-      - User klickt "Skill speichern"
-  3. Zwischenstand-Tabelle (nach "gespeichert"-Bestätigung)
-  4. Auswahlfrage für Folgeoptionen
-```
+- Skill-Issue auf done setzen ohne Lieferung des Skills im nachfolgenden Antwort-Block
+- Nachlauf komplett überspringen, weil „der User weiß ja eh was er will“ — die Regel ist verbindlich, auch wenn der
+  User aktiv ist
+- Zero-Change-Tasks als Grund für komplettes Überspringen nehmen — nur Schritt 1 (Hash holen) entfällt, Schritte 2-4
+  bleiben
 
 ---
 
@@ -243,7 +196,7 @@ Commit. Kein Sammeln am Session-Ende.
 ### Workflow pro Task
 
 1. Task umsetzen (Code/Doc-Änderung)
-2. Review-Workflow-Check (siehe `tracker-006` Regel): Parent / Siblings / verweisende offene Tasks betroffen?
+2. Review-Workflow-Check (`review-workflow.md`): Parent / Siblings / verweisende offene Tasks betroffen?
 3. Commit-Befehl vorbereiten (Versionierung siehe unten)
 4. Commit **sofort** nach Abschluss — nicht sammeln
 5. Hash aus Commit-Output übernehmen (oder via `git log -1 --format="%h"` ermitteln)
@@ -251,23 +204,16 @@ Commit. Kein Sammeln am Session-Ende.
 
 ### Ausnahmen
 
-- **Nachhol-Commits bei Skill-Regel-Wechsel mitten in einer Session:**
-  Wenn die Commit-Disziplin-Regel selbst erst mitten in einer laufenden Phase
-  eingeführt/geändert wird, ist ein einmaliger Sammel-Commit für alle
-  bereits erledigten Subtasks erlaubt. Diese Ausnahme MUSS im
-  Session-Protokoll (Übergabeprompt) dokumentiert sein.
-
 - **Zero-Change-Tasks:** Tasks ohne Git-Änderung (Task-Description-Updates,
   Memory-Edits, reine ClickUp-Pflege) brauchen keinen Commit. Custom Field
   `Commit ID` und `Commit Text` bleiben leer (bzw. Kommentar ohne Hash, wenn
   das Projekt keine Felder hat). Im Quittungstext mit
   `(Zero-Change)` markieren, damit das leere Feld nachvollziehbar ist.
 
-### Versionierung
+### Version
 
-- **PATCH** (`vX.Y.Z+1`): kleine Refactors, Doku-Ergänzungen, Bugfixes innerhalb einer Phase
-- **MINOR** (`vX.Y+1.0`): neue Features, abgeschlossene Phasen, neue Reference-Dateien
-- **MAJOR** (`vX+1.0.0`): Breaking Changes (Skill-Struktur-Umbau, Routing-Bruch)
+Die Versionsnummer des Commits richtet sich nach `Commit.Versionsregel` im Skill-Profil; Format und Nummer setzt
+git-commit-helper.
 
 ### Abgrenzung zu `git-commit-helper`
 
@@ -280,22 +226,12 @@ Commit-Disziplin gehört in `tracker`, Commit-Formatierung in `git-commit-helper
 
 ---
 
-## Status-Werte IMMER kleingeschrieben
-
-- `open` (nicht Open)
-- `in progress` (nicht In Progress)
-- `done` (nicht Done)
-
-API ist case-sensitive. Grossgeschrieben kann Fehler werfen.
-
----
-
-## Keine Shell verfügbar? (weder DC noch Bash)
+## Keine Shell verfügbar?
 
 1. User nach Commit-Hash fragen (Prosa, offene Frage)
 2. User nach Commit-Message fragen (Prosa)
 3. Erledigt-Datum = heute
-4. Chat-URLs: aktueller Chat als Fallback für beide Felder
+4. Chat-URLs (nur mit Chat-Feldern, `chat-url-handling.md`): aktueller Chat als Fallback für beide Felder
 
 ---
 
@@ -313,8 +249,8 @@ Chat erledigt = aktueller Chat.
 
 ### Szenario B: Task ist früher erledigt worden (Nachtrag)
 
-In der Shell (Cowork: DC, Claude Code: Bash/PowerShell):
-```powershell
+In der Shell:
+```sh
 cd "<Repo-Pfad>"
 # Suche nach erster Datei-Erstellung
 git log --all --diff-filter=A --format="%h|%ad|%s" --date=short -- "<Pfad/zur/Datei.cs>"
@@ -340,44 +276,3 @@ In der Regel: Erster Commit der die Funktionalität eingeführt hat (diff-filter
 - git liefert: `YYYY-MM-DD` (mit `--date=short`) oder ISO (`%aI`)
 - ClickUp erwartet: `YYYY-MM-DD` (direkt)
 - Für Chat-Suche (nur Cowork): ISO-Zeitstempel mit Stunde/Minute (für recent_chats Zeitfilter)
----
-
-## Beispiel-Workflow (BPM-Projekt, `tracker done` mit Commit-Ermittlung)
-
-Dieser Beispiel-Ablauf zeigt einen konkreten `tracker done`-Durchlauf für BPM.
-Feld-IDs und Status-Werte stehen in der Tracker-Config des BPM-Repos.
-
-```
-User: tracker done BPM-007
-
-Claude intern:
-  1. clickup_get_task("86c9cg8u5") → BPM-007 PlanTyp-Erkennung
-  2. Prosa-Frage: "Welche Datei(en) sind betroffen?"
-     User: "DocumentTypeRecognizer.cs"
-  3. Shell (hier DC): git log --all --diff-filter=A --format="%h|%aI|%s" -- "src/.../DocumentTypeRecognizer.cs"
-     → "cb46a48|2026-04-15T11:34:52+02:00|[v0.25.5] PlanManager, Feature: PatternTemplates..."
-  4. Nur 1 Kandidat → direkt verwenden
-  5. Chat erledigt:
-     → recent_chats(after: "2026-04-15T07:34", before: "2026-04-15T15:34", n: 5, sort_order: "asc")
-     → Treffer: Teil 17 (015353fe-...)
-  6. Chat erstellt (nicht gesetzt):
-     → conversation_search("Plantyp-Erkennung DocumentTypeRecognizer prefix contains")
-     → Teil 10 (d546b50b-...) als ältester konkreter Treffer
-  7. Nachpflege: Typ fehlt noch
-     → Auswahlfrage: Typ → Feature
-  8. Pro-Task-Quittung im Chat:
-     ✅ BPM-007 — [BPM-ANCHOR-<task-id>] — erledigt: Commit cb46a48 PlanTyp-Erkennung
-  9. clickup_update_task(
-       status: "done",
-       custom_fields: [
-         {id: "<Typ-ID>", value: "<Feature-Option-ID>"},
-         {id: "<Commit ID-ID>", value: "cb46a48"},
-         {id: "<Commit Text-ID>", value: "[v0.25.5] PlanManager, Feature: ..."},
-         {id: "<Erledigt-ID>", value: "2026-04-15"},
-         {id: "<Chat erstellt-ID>", value: "https://claude.ai/chat/d546b50b-..."},
-         {id: "<Chat erledigt-ID>", value: "https://claude.ai/chat/015353fe-..."},
-         {id: "<Chat-Anker-erledigt-ID>", value: "[BPM-ANCHOR-<task-id>] - erledigt: Commit cb46a48"}
-       ]
-     )
-  10. Memory `[ANKER-LIVE]`: Einträge zu BPM-007 entfernen
-```

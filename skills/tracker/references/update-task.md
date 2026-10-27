@@ -7,7 +7,7 @@ Ablauf für gezielte Task-Änderungen.
 ## Kommando `tracker update: <Task-ID> → <Änderung>`
 
 Task aktualisieren (Priority, Meilenstein, Description, Status, Custom Fields).
-Task-ID im Format `<PRÄFIX>-NNN` des Projekts (z.B. `BPM-NNN`, `DX-NNN`) oder Issue-ID (`tracker-NNN`).
+Task-ID im Format `<PRÄFIX>-NNN` des Projekts (Präfix aus der Tracker-Config) oder Issue-ID (`tracker-NNN`).
 
 Bei ambiger Änderung: Auswahlfrage mit Optionen.
 
@@ -17,10 +17,8 @@ Bei ambiger Änderung: Auswahlfrage mit Optionen.
 
 Einzelnes Custom Field gezielt updaten ohne Task sonst anzupacken.
 
-Beispiele (BPM-Projekt):
-- `tracker field: BPM-007 Zielversion v0.26.0`
-- `tracker field: BPM-016 Aufwand L`
-- `tracker field: BPM-079 Komponente SettingsView.xaml`
+Muster: `tracker field: <PRÄFIX>-NNN <Feld> <Wert>`; Beispiele: `beispiele.md`, Abschnitt „tracker update / field /
+status“.
 
 Bei Dropdown-Feldern (Typ, Aufwand, etc.): Option-ID aus
 der Tracker-Config nehmen — nie raten.

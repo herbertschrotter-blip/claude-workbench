@@ -1,26 +1,34 @@
 # ClickUp-Tools — Inventar und Lade-Pattern
 
-**Zweck:** Welche ClickUp-Tools tracker-Befehle aufrufen, in welcher Reihenfolge sie geladen werden, und wie man fehlende Tools nachlädt.
+**Zweck:** Welche ClickUp-Tools tracker-Befehle aufrufen, in welcher Reihenfolge sie geladen werden, und wie man fehlende Tools nachlädt. Ohne explizites Inventar wird mit Suchbegriffen geraten.
 
-Diese Datei adressiert Issue **tracker-010**: ClickUp-Tools sind in Claude.ai deferred-loaded und ohne explizites Inventar wird mit Suchbegriffen geraten.
+## Inhalt
+
+- Lade-Pattern (PFLICHT vor erstem Tool-Call)
+- Tool-Inventar (relevant für tracker)
+- Befehl → Tool-Mapping
+- Workspace-, Space- und Listen-IDs
+- Custom-Field-Schema
+- Anti-Patterns
+- Recovery bei "Tool not found"
 
 ---
 
 ## Lade-Pattern (PFLICHT vor erstem Tool-Call)
 
-ClickUp-Tools sind **deferred** — sie sind zu Sessionbeginn NICHT im Tool-Inventar, sondern müssen über `tool_search` aktiviert werden.
+ClickUp-Tools sind **deferred** — sie sind zu Sessionbeginn NICHT im Tool-Inventar, sondern müssen über die Werkzeugsuche der Umgebung aktiviert werden.
 
-**Regel:** Wenn ein Tool nicht aufrufbar ist (`Tool '...' not found`), `tool_search` mit dem **EXAKTEN Tool-Namen** aufrufen, nicht mit Umschreibung.
+**Regel:** Wenn ein Tool nicht aufrufbar ist (`Tool '...' not found`), die Werkzeugsuche mit dem **EXAKTEN Tool-Namen** aufrufen, nicht mit Umschreibung.
+
+In Claude Code heißen die Tools `mcp__<server>__clickup_…`; der Servername steht in der Liste der deferred tools:
 
 ```
-✅ tool_search("clickup_get_task")          # lädt das Tool
-❌ tool_search("clickup task subtasks")     # liefert Müll-Treffer
-❌ tool_search("clickup retrieve task")     # liefert Müll-Treffer
+✅ ToolSearch("select:mcp__<server>__clickup_get_task")   # lädt das Tool
+❌ ToolSearch("clickup task subtasks")                     # liefert Müll-Treffer
+❌ ToolSearch("clickup retrieve task")                     # liefert Müll-Treffer
 ```
 
-Nach erfolgreichem `tool_search` ist das Tool für den Rest der Session aufrufbar.
-
-**Claude Code:** dieselbe Regel mit `ToolSearch("select:mcp__<server>__clickup_get_task")` – der Servername steht in der Liste der deferred tools.
+Nach erfolgreicher Suche ist das Tool für den Rest der Session aufrufbar. Werkzeugsuche im Cowork-Chat: `cowork.md`.
 
 ---
 
@@ -41,6 +49,7 @@ Nach erfolgreichem `tool_search` ist das Tool für den Rest der Session aufrufba
 | Tool | Zweck |
 |------|-------|
 | `clickup_get_task` | Einzeltask abrufen, mit `subtasks=true` für Subtask-Details |
+| `clickup_filter_tasks` | Tasks nach Space/Liste/Status filtern, mit `include_closed` auch erledigte |
 | `clickup_search` | Universalsuche (Tasks, Docs, Chat, etc.) mit Filtern (Listen, Status, Datum) |
 | `clickup_get_list` | List-Details und List-ID per List-Name auflösen |
 | `clickup_get_workspace_hierarchy` | Spaces/Folders/Lists-Übersicht |
@@ -104,45 +113,46 @@ Nach erfolgreichem `tool_search` ist das Tool für den Rest der Session aufrufba
 
 | tracker-Befehl | Primäre Tools | Hinweis |
 |---|---|---|
-| `tracker neu` | `clickup_create_task` + `clickup_update_task` (für Anker-Felder) | Custom-Field-IDs aus `clickup-fields.md` |
+| `tracker neu` | `clickup_create_task` + `clickup_update_task` (für Anker-Felder) | Custom-Field-IDs aus der Tracker-Config |
+| `tracker issue` | `clickup_filter_tasks` (mit `include_closed: true`) + `clickup_create_task` + `clickup_update_task` | Issue-ID nach `issue-task.md`, Abschnitt „Issue-ID automatisch ermitteln“ |
 | `tracker update` | `clickup_update_task` | Pro Task-Quittung im Chat (Anker-System) |
-| `tracker done` | `clickup_update_task` (Status `done` + Erledigt + Commit ID + Commit Text + Anker erledigt) | Shell (Cowork: DC, Claude Code: Bash) liest Commit-Hash, dann Update |
-| `tracker status` | `clickup_get_task` mit `subtasks=true` | Für Roadmap-Abgleich Repo↔ClickUp |
+| `tracker done` | `clickup_update_task` (Status laut Statusmodell + Erledigt + Commit ID + Commit Text + Anker erledigt) | Shell liest Commit-Hash, dann Update |
+| `tracker status` | `clickup_filter_tasks` (offene Status laut Statusmodell); `clickup_get_task` mit `subtasks=true` für Details | Für Roadmap-Abgleich Repo↔ClickUp |
 | `tracker suche` | `clickup_search` mit Filtern | `location.subcategories` = List-IDs, `task_statuses` = `["unstarted"\|"active"\|"done"\|"closed"\|"archived"]` |
-| `tracker next` | `clickup_search` mit Sort `created_at desc`, count=1 | Letzten erstellten Task in Liste finden für Auto-Nummerierung |
+| `tracker next` | `clickup_filter_tasks` (offene Tasks) | Vorschlag der nächsten Aufgabe nach `search-and-status.md` |
 | `tracker split` | `clickup_create_task` (Subtasks mit Parent) + ggf. `clickup_update_task` | Pro Subtask Anker setzen |
-| `tracker relate` | `clickup_add_task_link` | Beidseitige Verknüpfung |
+| `tracker relate` | `clickup_add_task_dependency` (blocks, is blocked by); `clickup_add_task_link` (relates to, duplicates) | Richtung nach `split-and-relations.md` |
 | `tracker field` | `clickup_get_custom_fields` (Schema lesen) + `clickup_update_task` (Wert setzen) | Bei unbekannten Field-IDs zuerst Schema holen |
 
 ---
 
 ## Workspace-, Space- und Listen-IDs
 
-Stehen **nur** in der Tracker-Config des Projekts (BPM: Spaces „BPM Entwicklung“ und
-„Claude Skills Entwicklung“ mit dem Ordner „Skill Issues“; Heidi: Space „Smart Home“). Nichts davon
-im Skill führen.
+Stehen **nur** in der Tracker-Config des Projekts (Beispiele: `beispiele.md`, Abschnitt „Präfixe, Anker und
+Spaces“). Nichts davon im Skill führen.
 
 ---
 
 ## Custom-Field-Schema
 
-Siehe **`clickup-fields.md`** (separat) für die UUIDs der Custom Fields:
+Regeln in **`clickup-fields.md`**; die UUIDs der Custom Fields stehen in der Tracker-Config, Abschnitt „Felder und
+Option-IDs“:
 
 - Typ, Aufwand, Zielversion, Komponente
 - Commit ID, Commit Text, Erledigt
 - Chat-Anker erstellt, Chat-Anker erledigt, Chat-Anker temp
 - Issue-ID (Skill-Issue-Listen)
 
-Bei Dropdown-Feldern (Typ, Aufwand) werden NICHT die Display-Namen ("Feature", "S (<1h)") gesetzt, sondern die Option-UUIDs. Diese stehen in `clickup-fields.md`.
+Bei Dropdown-Feldern (Typ, Aufwand) werden NICHT die Display-Namen ("Feature", "S (<1h)") gesetzt, sondern die Option-UUIDs. Diese stehen in der Tracker-Config.
 
 ---
 
 ## Anti-Patterns
 
-- ❌ `tool_search` mit Umschreibung wenn der Tool-Name bekannt ist — bringt Müll-Treffer
+- ❌ Werkzeugsuche mit Umschreibung wenn der Tool-Name bekannt ist — bringt Müll-Treffer
 - ❌ Custom-Field-Wert als Display-Name setzen ("Feature" statt UUID) — wird abgelehnt
-- ❌ Tasks anlegen ohne `tracker next` zu prüfen — führt zu Doppel-Nummerierung in Skill-Issue-Listen
-- ❌ Massen-Updates ohne Pro-Task-Quittung im Chat (siehe `anker-system.md`)
+- ❌ Skill-Issues anlegen ohne die Issue-ID nach `issue-task.md` („Issue-ID automatisch ermitteln“) zu ermitteln — führt zu Doppel-Nummerierung in Skill-Issue-Listen
+- ❌ Massen-Updates ohne Pro-Task-Quittung im Chat (siehe `batch-protocol.md`)
 - ❌ `clickup_delete_task` ohne explizite User-Bestätigung — Daten verloren
 
 ---
@@ -151,7 +161,7 @@ Bei Dropdown-Feldern (Typ, Aufwand) werden NICHT die Display-Namen ("Feature", "
 
 ```
 1. Tool-Name notieren (z.B. "clickup_get_task")
-2. tool_search("clickup_get_task")  # exakter Name!
+2. Werkzeugsuche mit dem exakten Namen (Claude Code: ToolSearch("select:mcp__<server>__clickup_get_task"))
 3. Tool-Aufruf wiederholen
 4. Falls weiter "not found": MCP-Verbindung im Connector prüfen (User informieren)
 ```

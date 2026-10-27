@@ -5,8 +5,19 @@ Issue-Tasks leben in Skill-Issues-Listen (projekt-spezifisch, siehe
 Tracker-Config, Abschnitt „Listen und Routing“).
 
 Abgrenzung zu `create-task.md`: Dort geht es um Haupttasks im Projekt-Scope
-(BPM-Listen, ClaudeSkills-Liste). Hier geht es um Skill-Issues-Scope
-(6 Custom Fields, eigenes Typ-Dropdown, `<skill>-NNN` Nummerierung).
+(die Projekt-Listen laut Tracker-Config). Hier geht es um Skill-Issues-Scope
+(eigene Custom Fields laut Tracker-Config, eigenes Typ-Dropdown, `<skill>-NNN` Nummerierung).
+Beispiel-Durchlauf: `beispiele.md`, Abschnitt „tracker issue“.
+
+## Inhalt
+
+- Kommando (Beispiele, gültige Skill-Namen)
+- Ablauf (Skill-Name validieren, Ziel-Listen-ID, Dedup, Issue-ID automatisch ermitteln, Description-Template, Task
+  anlegen, Pro-Task-Quittung, Chat-Anker nachtragen, `[ANKER-LIVE]`)
+- Typ-Dropdown (Skill-Issues-Scope)
+- Status-Werte
+- VERBOTEN
+- Abhängigkeiten
 
 ---
 
@@ -32,18 +43,18 @@ als Optionen. **Nie raten.**
 
 ## Ablauf
 
-### 1. Skill-Name validieren
+### Skill-Name validieren
 
 - Aus Kommando-Text extrahieren (zwischen `tracker issue ` und `:`)
 - Gegen Liste aus der Tracker-Config abgleichen
 - Bei Unstimmigkeit: Auswahlfrage mit gültigen Werten
 
-### 2. Ziel-Listen-ID ermitteln
+### Ziel-Listen-ID ermitteln
 
 - Lookup in der Tracker-Config, Abschnitt „Listen und Routing“
 - Listen-ID merken für alle nachfolgenden Schritte
 
-### 3. Dedup-Suche
+### Dedup-Suche
 
 - `clickup_filter_tasks(list_ids: ["<ziel-listen-id>"])`
 - In Ergebnissen Titel und Description auf Ähnlichkeit zum Kurztitel prüfen
@@ -52,9 +63,9 @@ als Optionen. **Nie raten.**
   - "Bestehenden nutzen" (liefert Task-ID zurück, kein Create)
   - "Abbrechen"
 
-### 4. Issue-ID automatisch ermitteln
+### Issue-ID automatisch ermitteln
 
-**Ziel-Lösung (tracker-003):** Issue-ID wird automatisch vom Skill ermittelt,
+Die Issue-ID wird automatisch vom Skill ermittelt,
 ohne User-Bestätigung der Nummer. Der User wird nur gefragt wenn der
 Unique-Check nach der Anlage eine Race Condition zeigt.
 
@@ -64,7 +75,7 @@ Unique-Check nach der Anlage eine Race Condition zeigt.
    — alle Issues laden, auch `done`/`complete`-Status. Ohne `include_closed: true`
    würden hohe erledigte Nummern übersprungen werden.
 
-2. Für jeden Task: Custom Field `Issue-ID` (`e286a04a-...`) aus
+2. Für jeden Task: Custom Field `Issue-ID` (ID aus der Tracker-Config) aus
    `custom_fields`-Array lesen.
 
 3. Pattern-Match `^<skill>-(\d{3})$` (z.B. `^tracker-(\d{3})$`). Tasks mit
@@ -94,7 +105,7 @@ Ermittelt: <skill>-NNN (höchste vorhandene: <skill>-<N_max>)
 Keine Prosa-Frage zur Nummer. Bei Race-Condition-Korrektur: zusätzlicher
 Hinweis im Chat.
 
-### 5. Description-Template generieren
+### Description-Template generieren
 
 Verkürztes Template für Skill-Issues:
 
@@ -108,7 +119,7 @@ Verkürztes Template für Skill-Issues:
 ## Definition of Done
 - [ ] Skill-Datei(en) angepasst
 - [ ] Commit mit Hash im Custom Field
-- [ ] Chat-Skill-Sync durchgeführt (SKILL.md als Artifact)
+- [ ] Skill geliefert (nach skill-pflege, `references/delivery.md`)
 
 ## Abhängigkeiten
 <Bezug zu anderen Issues / Tasks>
@@ -123,14 +134,14 @@ Anpassungen nach Typ:
 - **Doku-Fehler** → "Fehlerhafte Stelle" (mit Datei+Zeile) + "Korrekte Beschreibung"
 - **Verbesserung** / **Refactor-Idee** → Template wie oben
 
-### 6. Task anlegen
+### Task anlegen
 
 ```
 clickup_create_task(
   list_id: "<ziel-listen-id>",
   name: "<skill>-NNN: <kurztitel>",
   priority: "<ggf. aus Kontext, sonst normal>",
-  markdown_description: "<Template aus Schritt 5>",
+  markdown_description: "<Description-Template oben>",
   custom_fields: [
     {"id": "<Issue-ID-Field>",          "value": "<skill>-NNN"},
     {"id": "<Typ-Field>",               "value": "<Typ-Option-ID>"},
@@ -141,17 +152,15 @@ clickup_create_task(
 
 Field-IDs und Option-IDs: Tracker-Config, Abschnitt „Felder und Option-IDs“.
 
-### 7. Pro-Task-Quittung im Chat
+### Pro-Task-Quittung im Chat
 
 Direkt nach `clickup_create_task`:
 ```
 ✅ <skill>-NNN — [<PRÄFIX>-ANCHOR-<task-id>] — erstellt: <kurztitel>
 ```
-Präfix = der des Projekts, in dem die Skill-Issues-Listen liegen (heute BPM → `[BPM-ANCHOR-…]`).
-```
-```
+Präfix = der des Projekts, in dem die Skill-Issues-Listen liegen (Quittungsformat der Tracker-Config).
 
-### 8. Chat-Anker mit echter Task-ID nachtragen
+### Chat-Anker mit echter Task-ID nachtragen
 
 ```
 clickup_update_task(
@@ -163,10 +172,10 @@ clickup_update_task(
 )
 ```
 
-### 9. Memory `[ANKER-LIVE]` eintragen
+### `[ANKER-LIVE]` eintragen (nur Cowork-Chat)
 
 Siehe universelle Spec in `anker-system.md` — Typ `erstellt`, Format:
-`[ANKER-LIVE] <task-id>|<typ>|<timestamp>|<kurzbeschreibung>`
+`[ANKER-LIVE] <task-id>|<typ>|<timestamp>|<kurzbeschreibung>`; Ablauf: `cowork.md`.
 
 ---
 
@@ -182,77 +191,41 @@ Wenn User keinen Typ angibt: Auswahlfrage mit:
 Option-IDs stehen in der Tracker-Config, Abschnitt „Felder und Option-IDs“
 (Skill-Issues-Typ-Dropdown).
 
-**Unterschied zu BPM-Scope:** Skill-Issues-Typ hat 5 Optionen (Bug /
-Trigger-Fehler / Doku-Fehler / Verbesserung / Refactor-Idee). BPM-Scope hat
-7 Optionen (Feature / Fix / Refactor / Perf / Docs / Konzept / Meta).
+**Unterschied zum Haupt-Scope:** Skill-Issues-Typ hat 5 Optionen (Bug /
+Trigger-Fehler / Doku-Fehler / Verbesserung / Refactor-Idee). Der Haupt-Scope hat
+eigene Optionen laut Tracker-Config.
 Nie verwechseln — Option-IDs sind pro Scope unterschiedlich.
 
 ---
 
 ## Status-Werte
 
-Skill-Issues-Listen nutzen `to do` / `in progress` / `complete`
-(siehe Tracker-Config, Abschnitt „Sonderfälle“).
+Skill-Issues-Listen nutzen eigene Status, meist `to do` / `in progress` / `complete`
+(siehe Tracker-Config, Abschnitt „Statusmodell“).
 Beim Anlegen greift der Default-Status der Liste (meist `to do`).
 
-**NICHT** `done` verwenden — das ist BPM-Scope.
-
----
-
-## Beispiel-Workflow (BPM-Projekt)
-
-```
-User: tracker issue tracker: Em-Dash-Problem in Custom-Field-Values
-
-Claude intern:
-  1. Skill-Name: "tracker" → gültig (aus der Tracker-Config)
-  2. Listen-ID Lookup: <Listen-ID tracker>
-  3. Dedup: clickup_filter_tasks → kein Treffer
-  4. Issue-ID automatisch:
-     - clickup_filter_tasks(list_ids: ["<Listen-ID tracker>"], include_closed: true)
-     - Custom Field Issue-ID jedes Tasks lesen
-     - Pattern ^tracker-(\d{3})$ parsen
-     - Höchste Nummer: 008 (aus tracker-008)
-     - Neue Issue-ID: tracker-009
-     - Chat-Output: "Ermittelt: tracker-009 (höchste vorhandene: tracker-008)"
-  5. Typ-Frage: Auswahlfrage → User: "Bug"
-  6. Beobachtungs-Chat: "Bauprojektmanager Teil 28"
-  7. Description-Template mit Bug-Anpassung generieren
-  8. clickup_create_task(
-       list_id: "<Listen-ID tracker>",
-       name: "tracker-009: Em-Dash-Problem in Custom-Field-Values",
-       custom_fields: [
-         {id: "<Issue-ID-Field>",          value: "tracker-009"},
-         {id: "<Typ-Field>",               value: "<Bug-Option-ID>"},
-         {id: "<Beobachtungs-Chat-Field>", value: "Bauprojektmanager Teil 28"}
-       ]
-     )
-     → Task-ID 86c9xyz
-  9. Unique-Check: clickup_filter_tasks → genau 1 Treffer mit tracker-009 ✓
-  10. Pro-Task-Quittung:
-      ✅ tracker-009 — [BPM-ANCHOR-86c9xyz] — erstellt: Em-Dash-Problem in Custom-Field-Values
-  11. Chat-Anker nachtragen mit Task-ID 86c9xyz
-  12. Memory [ANKER-LIVE] Eintrag
-```
+**NICHT** den Erledigt-Status des Haupt-Scopes (z. B. `done`) verwenden.
 
 ---
 
 ## VERBOTEN
 
 - Skill-Name raten wenn unklar → Auswahlfrage
-- Issue-ID manuell vom User bestätigen lassen — Auto-Nummerierung ist Pflicht gemäß tracker-003
+- Issue-ID manuell vom User bestätigen lassen — Auto-Nummerierung ist Pflicht
 - `clickup_filter_tasks` ohne `include_closed: true` für Nummerierungs-Scan — höchste Nummer könnte done/complete sein und würde übersprungen
 - Höchste Nummer aus Memory rekonstruieren statt live abzufragen — Memory kann veraltet sein
 - Lücken in Nummerierung füllen — Chat-Anker-Referenzen gehen sonst kaputt
 - Unique-Check nach Task-Anlage weglassen — Race Condition bei paralleler Erstellung erzeugt Duplikate
-- Status `done` verwenden — Skill-Issues nutzen `complete`
-- BPM-Scope Custom Fields verwenden (Typ `f7b8c62a`, Aufwand `ecc194e5`, etc.)
-  — Skill-Issues haben eigenen Scope (Typ `5b45b13a`, Issue-ID `e286a04a`, etc.)
+- Status `done` verwenden — Skill-Issues nutzen ihren eigenen Erledigt-Status (meist `complete`)
+- Custom Fields des Haupt-Scopes verwenden (Typ, Aufwand, …)
+  — Skill-Issues haben eigenen Scope mit eigenen Feld-IDs (Tracker-Config)
 - Issue-ID nur im Titel setzen, aber Custom Field `Issue-ID` leer lassen —
   beide müssen gesetzt sein
-- BPM-Modul-Kürzel (PM, DOC, ...) im Titel verwenden — Skill-Issues haben
+- Modul-Kürzel des Haupt-Scopes im Titel verwenden — Skill-Issues haben
   Format `<skill>-NNN:`, kein Kürzel-Block
-- Meilenstein-Tags (v1, post-v1, etc.) setzen — gelten nur für BPM-Scope
+- Meilenstein-Tags setzen — gelten nur für den Haupt-Scope
+- Prosa-Frage nach der Nummer stellen (`"Soll das tracker-008 werden?"`) — die Nummer ist automatisch ermittelt, es
+  gibt nichts zu fragen
 
 ---
 
@@ -261,6 +234,6 @@ Claude intern:
 - Tracker-Config muss im Abschnitt „Listen und Routing“ alle
   Skill-Issue-Listen enthalten
 - Tracker-Config muss im Abschnitt „Felder und Option-IDs“ den
-  Skill-Issues-Scope (6 Fields + 5 Typ-Option-IDs) enthalten
-- `anker-system.md` für Memory-`[ANKER-LIVE]`-Format
+  Skill-Issues-Scope (Felder + Typ-Option-IDs) enthalten
+- `anker-system.md` für Memory-`[ANKER-LIVE]`-Format (nur Cowork-Chat)
 - `batch-protocol.md` wenn mehrere Issues in einer Antwort angelegt werden

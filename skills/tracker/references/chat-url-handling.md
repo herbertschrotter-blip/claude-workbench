@@ -1,4 +1,4 @@
-# Chat-URL-Ermittlung (zentrale Hilfsmethode)
+# Chat-URL-Ermittlung (zentrale Hilfsmethode, nur Cowork-Chat)
 
 Referenz für tracker-Operationen die Chat-URLs in Custom Fields setzen.
 
@@ -75,11 +75,12 @@ Optionen: Manuell URL eingeben, Feld leer lassen, Abbrechen
 
 ## Chat-Start: Automatischer Kontext
 
-Bei `[CLICKUP]` in Memory → kompakte Zusammenfassung. Beispiel (BPM-Projekt):
+Bei `[CLICKUP]` in Memory → kompakte Zusammenfassung:
 ```
-📋 ClickUp: 12 offene V1-Tasks, 4 davon high
-   Höchste Prio: BPM-001 | PM | DB-Anbindung Orchestrator [high] [v1] [M]
+📋 ClickUp: <N> offene <Meilenstein>-Tasks, <n> davon high
+   Höchste Prio: <PRÄFIX>-NNN | <KÜRZEL> | <Titel> [<prio>] [<Meilenstein>] [<Aufwand>]
 ```
+Beispiel: `beispiele.md`, Abschnitt „Präfixe, Anker und Spaces“.
 
 **Zusätzlich:** Proaktiv nach aktueller Chat-URL fragen (Prosa, weil offene Frage):
 ```
@@ -89,4 +90,7 @@ nicht automatisch füllen."
 ```
 
 Wenn User ignoriert: Nicht nerven, aber bei erstem tracker-Call fragen.
+
+**Stale-Check für `[ANKER-LIVE]`:** einmal am Chat-Start, Details in `anker-system.md`, Abschnitt „Stale-Check (am
+Chat-Start)“.
 

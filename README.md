@@ -335,7 +335,7 @@ Der Body enthält je nach Skill: Zweck, Vorrang/Delegation, Kernregeln, Ablauf, 
 
 ### Progressive Disclosure — am Beispiel `tracker`
 
-Der `tracker`-Skill nutzt Progressive Disclosure: Die `SKILL.md` enthält nur Kernregeln und Routing-Tabelle, Details liegen in 14 `references/`-Dateien (anker-system, anti-patterns, batch-protocol, chat-url-handling, clickup-fields, clickup-tools, complete-task, create-task, issue-task, review-workflow, search-and-status, split-and-relations, start-task, update-task). Auch `code-erstellen` hat `references/` (beispiele, cowork, `stacks/`: csharp-wpf, home-assistant-yaml, python, typescript-lit).
+Der `tracker`-Skill nutzt Progressive Disclosure: Die `SKILL.md` enthält nur Kernregeln und Routing-Tabelle, Details liegen in 16 `references/`-Dateien (anker-system, anti-patterns, batch-protocol, beispiele, chat-url-handling, clickup-fields, clickup-tools, complete-task, cowork, create-task, issue-task, review-workflow, search-and-status, split-and-relations, start-task, update-task). Auch `code-erstellen` hat `references/` (beispiele, cowork, `stacks/`: csharp-wpf, home-assistant-yaml, python, typescript-lit).
 
 > **Operative Regelquelle:** [`skills/tracker/SKILL.md`](./skills/tracker/SKILL.md).
 
@@ -642,7 +642,7 @@ claude-workbench/
 │   ├── skill-neu/                         ← SKILL.md + references/ (cowork)
 │   ├── skill-pflege/                      ← SKILL.md + references/ (rule-inventory, delivery)
 │   ├── ticket/                            ← SKILL.md + test-prompts.md + references/ (beispiele)
-│   └── tracker/
+│   └── tracker/                           ← SKILL.md + references/ (16 Dateien, u. a. beispiele, cowork)
 │       ├── SKILL.md
 │       ├── references/
 │       └── references.zip                 ← entfällt in Umbau Phase 7

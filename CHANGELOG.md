@@ -8,6 +8,20 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.3] — 2026-10-28
+
+- **skills/tracker, Refactor (Umbau Phase 6):** neuer Abschnitt „Voraussetzung: Skill-Profil“ (`Tracker.Provider`,
+  `Tracker.Config`, Branch- und Push-Policy; Rückfall `## Tracker-Profil`, dann „Fehlende Werte“); Kern 333 statt 449
+  Zeilen mit einer Tabelle „Befehl → Reference“.
+  - BPM- und Heidi-Werte und alle Beispielabläufe in neuer `references/beispiele.md`; Memory, Werkzeugsuche, Desktop
+    Commander und Artifact in neuer `references/cowork.md`. references über 100 Zeilen mit Inhaltsverzeichnis.
+  - Gestrichen (freigegeben): Historie im Regeltext („Adressiert tracker-00N“, Sitzungen, Phasen, Versionen), die
+    erledigte Übergangsregel zum Sammel-Commit, ein Autorenhinweis und Feld-UUIDs, die in der Tracker-Config stehen.
+  - Lieferung nach einem Skill-Issue wie `skills/skill-pflege/references/delivery.md` (Zip auch bei nur references),
+    Version nach `Commit.Versionsregel`; tote Verweise repariert, Widersprüche in `clickup-tools.md` aufgelöst,
+    Doppeltes in `anti-patterns.md` entfernt; veraltete `references.zip` entfernt. Description unverändert.
+    Regel-Inventar `docs/skill-refactors/2026-10-28-tracker.md` (341 alte Zeilen).
+
 ## [v0.62.2] — 2026-10-28
 
 - **skills/audit, Refactor (Umbau Phase 6):** neuer Abschnitt „Voraussetzung: Skill-Profil“ (Feldtabelle; Rückfall auf
