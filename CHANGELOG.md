@@ -8,6 +8,18 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.0] — 2026-10-28
+
+- **skills/git-commit-helper, Refactor (Umbau Phase 6) mit neuem Verhalten:** „Voraussetzung: Skill-Profil“ mit
+  Feldtabelle; das ältere `## Commit-Profil` bleibt Rückfall, fehlende Werte laufen über „Fehlende Werte“.
+  - Neu: `Commit.Format` wird gelesen – Standard bleibt `[vX.Y.Z] Modul, Typ: Kurztitel`, ein abweichendes Format gilt,
+    `none` heißt Commit ohne Versions- und Modulteil; `none` ist für alle Commit-Felder gültig.
+  - Projektbeispiele (älteres Commit-Profil, Doku-Checklisten BPM/Heidi, Versionsregeln) in neuer
+    `references/beispiele.md`, Cowork-Regeln in neuer `references/cowork.md`; Schritte benannt statt nummeriert,
+    doppelte Regeln zusammengeführt. Überschrift „Prüfläufe vor dem Commit“ unverändert.
+  - Description: „Projektprofil“ → „Skill-Profil“ (525 Zeichen). Regel-Inventar
+    `docs/skill-refactors/2026-10-28-git-commit-helper.md` (77 alte Zeilen, nichts gestrichen).
+
 ## [v0.61.1] — 2026-10-28
 
 - **skills/code-erstellen, Refactor (Umbau Phase 6):** liest die Werte aus dem Skill-Profil v1 (`Code.*`, `Doku.*`,

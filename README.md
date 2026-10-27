@@ -282,7 +282,7 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 | **chatgpt-review** | Strukturierte Cross-LLM-Review-Prompts zwischen Claude und ChatGPT. | "besprich das mit ChatGPT", "zweite Meinung", "Folgeprompt für Runde 3" |
 | **audit** | Strikt read-only Konsistenzprüfung zwischen Code, Docs, Frontmatter und Quickload; Prüfung gegen Grundsatzregeln (z. B. HA). | "audit", "prüfe alles", "konsistenzcheck", "Grundsatzregeln prüfen" |
 | **tracker** | Standardisierte Schreibschnittstelle zum ClickUp-Task-System. | "tracker neu: PM — Regex-Bug", "tracker done BPM-042", "tracker suche Regex" |
-| **git-commit-helper** | Fertige Git-Commit-Befehle im Format `[vX.Y.Z] Modul, Typ: Kurztitel` (Commit-Profil). | "commit bitte", "commit-message", "PATCH oder MINOR?" |
+| **git-commit-helper** | Fertige Git-Commit-Befehle im Format `[vX.Y.Z] Modul, Typ: Kurztitel` (Skill-Profil). | "commit bitte", "commit-message", "PATCH oder MINOR?" |
 | **chat-wechsel** | Handover-Prompt für die nächste Claude-Session. | "neuer chat", "nächster chat", "übergabe" |
 | **sitzung** | Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü: Projekt → Gespräch → im richtigen Ordner mit Remote Control fortsetzen; Fenster verwalten, nach Neustart wiederherstellen, aufräumen (Skript `scripts/sitzung.py`). | "sitzung", "alte Sitzung öffnen", "Fenster wiederherstellen" |
 
@@ -634,7 +634,7 @@ claude-workbench/
 │   │   ├── SKILL.md
 │   │   └── references/                ← beispiele, cowork, stacks/
 │   ├── doc-pflege/SKILL.md
-│   ├── git-commit-helper/SKILL.md
+│   ├── git-commit-helper/             ← SKILL.md + references/ (beispiele, cowork) + scripts/ (checks.py, Tests)
 │   ├── mockup-erstellen/                 ← SKILL.md + references/ (sitemap, beispiele, cowork)
 │   ├── projekt-anlegen/                   ← SKILL.md + references/ (generator, grundsatz, github, stacks) + scripts/ (Generator, Tests) + templates/ (Bausteine)
 │   ├── sitzung/                           ← SKILL.md + references/ (befehle, umgebung) + scripts/sitzung.py

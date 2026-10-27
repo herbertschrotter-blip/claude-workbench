@@ -3,7 +3,7 @@ name: git-commit-helper
 description: >
   Erstellt fertige Git-Commit-Befehle und Commit-Messages im einheitlichen Format
   [vX.Y.Z] Modul, Typ: Kurztitel – projektneutral, Versionsquelle und
-  Doku-Checkliste kommen aus dem Projektprofil (CLAUDE.md des Repos). Use when
+  Doku-Checkliste kommen aus dem Skill-Profil (CLAUDE.md des Repos). Use when
   users want to commit changes, need a git commit command, ask for a commit
   message, or want the correct version bump for an existing change (including
   PATCH/MINOR/MAJOR decisions or semver questions). Do not trigger for code
@@ -33,7 +33,7 @@ Nur wenn die Hauptabsicht **die Commit-Erstellung selbst** ist
 bleibt git-commit-helper zuständig.
 
 **Wichtig:** Nach Code-Änderungen liefert code-erstellen einen
-Commit-Vorschlag INLINE (Schritt 9 seiner Load Order). Das ist kein
+Commit-Vorschlag INLINE (`skills/code-erstellen/SKILL.md`, Abschnitt „Commit und Doku-Hinweise“). Das ist kein
 git-commit-helper-Trigger. Dieser Skill springt erst an wenn der User
 explizit "commit", "commit-message", "welche Version" o.ä. fragt ODER
 wenn code-erstellen an ihn delegiert hat.
@@ -45,7 +45,7 @@ wenn code-erstellen an ihn delegiert hat.
 - **Fragen nur bei offener Entscheidung**, dann als Auswahlfrage mit dem Frage-Werkzeug der Umgebung. Typische Stellen:
   - Typ unklar: Feature, Fix, Change, Refactor, Perf, Docs
   - Version-Bump unklar: MAJOR (Breaking), MINOR (Feature), PATCH (Fix)
-  - ein benötigter Wert fehlt im Skill-Profil (Abschnitt „Skill-Profil“ unten)
+  - ein benötigter Wert fehlt im Skill-Profil (Abschnitt „Voraussetzung: Skill-Profil“)
 
   Prosa nur bei einer offenen Frage ohne feste Optionen (z.B. Kurztitel) oder wenn der Nutzer eine Präferenz
   signalisiert hat.
@@ -61,26 +61,72 @@ wenn code-erstellen an ihn delegiert hat.
 
   Ohne Push-Policy (kein Skill-Profil): `git push origin <branch>` bleibt als Glied in der Sequenz.
 
-## Commit-Format (VERBINDLICH, in allen Projekten gleich)
+## Voraussetzung: Skill-Profil
+
+Alles Projektspezifische steht im Repo, nicht im Skill: im Skill-Profil der `CLAUDE.md` (`docs/skill-profile-v1.md` im
+Skill-Repo). Claude liest es, bevor Version, Doku oder Commit-Sequenz angefasst werden.
+
+| Feld | Wofür |
+|------|-------|
+| `Commit.Format` | Format der ersten Zeile (Abschnitt „Commit-Format (Standard)“) |
+| `Commit.Module` | Modul-Namen |
+| `Commit.Versionsquelle` | aktuelle Version und die Datei, die hochgezählt wird |
+| `Commit.Versionsregel` | wann und wie die Nummer steigt; überschreibt die Zuordnung unter „Typen“ |
+| `Commit.Push-Policy`, `Branch-Policy` | Push und Branch (Grundsätze) |
+| `Commit.Pre-Commit-Checks`, `### Checks` | Prüfläufe vor dem Commit |
+| `Commit.Doku-Check` | Doku-Check vor dem Commit |
+
+Quellen in dieser Reihenfolge:
+
+1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). Eine andere `Profil-Version` als 1: nicht weiterarbeiten.
+2. **Rückfall:** der ältere Abschnitt `## Commit-Profil` der CLAUDE.md. Modul-Namen entsprechen `Module`, Bump-Regel
+   `Versionsregel`, Doku-Checkliste `Doku-Check`; die Versionsquelle heißt gleich (Muster:
+   `references/beispiele.md#Älteres Commit-Profil`).
+3. **Fehlt ein Wert:** nur dieses Feld melden und per Auswahlfrage klären: *Profil ergänzen* / *Wert einmalig nennen* /
+   *Abbrechen* (Regel „Fehlende Werte“ in `docs/skill-profile-v1.md`). Fehlt das Profil ganz: das Repo selbst
+   durchsuchen – `docs/`-Ordner, `*.md` in der Wurzel und in `docs/`, bekannte Versionsdateien
+   (Directory.Build.props, package.json, pom.xml, pyproject.toml, *.csproj) – und das Gefundene als Vorschlag für einen
+   Abschnitt `## Skill-Profil` zeigen. Angelegt wird er erst, wenn der Nutzer zustimmt.
+
+`none` ist gültig: der Teil entfällt, ohne Rückfrage.
+
+- `Commit.Format: none` → Commit ohne Versions- und Modulteil (Abschnitt „Commit-Format (Standard)“)
+- `Commit.Module: none` → kein Modul in der ersten Zeile
+- `Commit.Versionsquelle: none` → kein Versionsteil, keine Versionsdatei
+- `Commit.Pre-Commit-Checks: none` → keine Prüfläufe vor dem Commit
+- `Commit.Doku-Check: none` → kein Doku-Check
+
+Steht in `Commit.Versionsregel` oder `Commit.Doku-Check` ein `ref:<pfad>#<überschrift>`, gilt der Abschnitt, auf den es
+zeigt; Claude liest ihn vor dem Commit.
+
+Das Profil wird nie aus dem Gedächtnis angenommen. Einmal gelesen, gilt es
+für die Session.
+
+## Commit-Format (Standard)
 
 ```
 [vX.Y.Z] Modul, Typ: Kurztitel
 ```
 
-Das Format ist fest und projektübergreifend. Was sich je Projekt ändert
-(Versionsquelle, Versionsregel, Doku-Checkliste), steht im Skill-Profil.
+Das Format ist der Standard für alle Projekte. Was sich je Projekt ändert (`Commit.Format`, `Commit.Module`,
+`Commit.Versionsquelle`, `Commit.Versionsregel`, `Commit.Doku-Check`), steht im Skill-Profil (Abschnitt
+„Voraussetzung: Skill-Profil“). Für `Commit.Format` gilt:
 
-Wenn das Projekt eine Aufgaben- oder Ticket-Nummer führt (z.B. Bauplan-
-Schritt, ClickUp-ID), gehört sie an den Anfang des Kurztitels oder in die
-zweite Zeile der Message – nie vor das `[vX.Y.Z]`.
+- gleich dem Standard → das Format oben
+- ein anderes Format → dieses
+- `none` → Commit ohne Versions- und Modulteil, also `Typ: Kurztitel`
 
-**Modul:** ein Name aus der Modul-Liste des Skill-Profils. Berührt eine
+Wenn das Projekt eine Aufgaben- oder Ticket-Nummer führt (z. B. Aufgaben-ID aus dem
+Tracker; Beispiele: `references/beispiele.md#Aufgabennummer im Kurztitel`), gehört sie an den Anfang des Kurztitels
+oder in die zweite Zeile der Message – nie vor das `[vX.Y.Z]`.
+
+**Modul:** ein Name aus `Commit.Module`. Berührt eine
 Änderung mehrere Module, gilt das Hauptmodul (wo die Absicht liegt); die
 übrigen werden im Kurztitel genannt. Sind die Teile unabhängig, werden es
 zwei Commits.
 
 **Zweite Zeile (optional):** nach einer Leerzeile ein bis drei Sätze mit
-Begründung, Befund oder Verweis (Ticket, Bauplan-Abschnitt). Nie Prosa in
+Begründung, Befund oder Verweis (Ticket, Doku-Abschnitt). Nie Prosa in
 die erste Zeile packen.
 
 ### Typen
@@ -93,52 +139,26 @@ die erste Zeile packen.
 - Test → PATCH
 - Chore (Werkzeuge, Konfiguration, Abhängigkeiten) → PATCH
 
-Diese Zuordnung ist der Standard. Die Versionsregel im Skill-Profil darf sie
-überschreiben (z.B. „Vorabversion: jede eingespielte Änderung zählt die
-Vorab-Nummer hoch, unabhängig vom Typ“ oder „neue Nummer nur bei Änderungen unter
-`skills/**`“).
+Diese Zuordnung ist der Standard. `Commit.Versionsregel` darf sie überschreiben (Beispiele:
+`references/beispiele.md#Versionsregel`).
 
 Version aus der Versionsquelle des Skill-Profils ermitteln (z.B.
 Directory.Build.props bei WPF, package.json bei Node/TypeScript, pom.xml
 bei Java, INDEX.md wo das Projekt sie dort führt; bei `changelog:<Datei>` die
 Nummer des obersten Eintrags).
 
-## Skill-Profil (PFLICHT vor Schritt 1)
+## Ablauf
 
-Alles Projektspezifische steht im Repo, nicht im Skill. Quelle in dieser
-Reihenfolge:
+Die Schritte laufen in dieser Reihenfolge.
 
-1. **`CLAUDE.md` in der Repo-Wurzel, Abschnitt `## Skill-Profil`** (Spezifikation `docs/skill-profile-v1.md` im
-   Skill-Repo): Bereich `### Commit` (Module, Versionsquelle, Versionsregel, Push-Policy, Pre-Commit-Checks,
-   Doku-Check), dazu `Branch-Policy` und `### Checks`.
-2. Fehlt der Abschnitt: der ältere Abschnitt `## Commit-Profil` mit diesen Zeilen:
-   ```
-   ## Commit-Profil
-   - Modul-Namen: <feste Liste, z.B. Karte, Backend, Doku>
-   - Versionsquelle: <Datei und Feld, z.B. dreame_x60/card/package.json "version">
-   - Bump-Regel: <Standard | Vorabversion: jede Änderung zählt hoch | eigene Regel>
-   - Doku-Checkliste: <Datei → wann anfassen, eine Zeile je Datei>
-   ```
-   Modul-Namen entsprechen „Module“, Bump-Regel „Versionsregel“, Doku-Checkliste „Doku-Check“.
-3. Fehlt auch der: **Repo selbst durchsuchen** – `docs/`-Ordner,
-   `*.md` in der Wurzel und in `docs/`, bekannte Versionsdateien
-   (Directory.Build.props, package.json, pom.xml, pyproject.toml, *.csproj).
-   Das Gefundene als Vorschlag zeigen.
-4. Dann Auswahlfrage: „Skill-Profil fehlt“ → *Profil anlegen* (Abschnitt
-   `## Skill-Profil` in CLAUDE.md schreiben, mit dem Vorschlag aus 3) / *Einmalig angeben* /
-   *Abbrechen*.
-
-Das Profil wird nie aus dem Gedächtnis angenommen. Einmal gelesen, gilt es
-für die Session.
-
-## SCHRITT 0 — Arbeitsverzeichnis (PFLICHT)
+### Arbeitsverzeichnis (PFLICHT)
 
 Arbeitsverzeichnis = Repo-Wurzel, ermittelt mit
 `git rev-parse --show-toplevel` in der Shell, die gerade zur Verfügung steht
-(Claude Code: Bash oder PowerShell direkt; Cowork-Chat: Desktop Commander).
-Bei Worktrees gilt die Wurzel des Worktrees.
+(im Cowork-Chat: `references/cowork.md#Shell im Cowork-Chat`).
+Bei Worktrees gilt die Wurzel des Worktrees. Claude ermittelt es immer selbst, ohne zu fragen.
 
-## SCHRITT 1 — Git Status
+### Git-Status
 
 ```
 git status --short
@@ -146,21 +166,28 @@ git status --short
 
 in der Shell der Umgebung ausführen. Kein Commit ohne vorherigen Status.
 
-## SCHRITT 1a — Versionsdatei hochzählen (PFLICHT bei Version-Bump)
+### Versionsdatei hochzählen (PFLICHT bei Version-Bump)
 
 Die neue Version steht nicht nur in der Commit-Message: Die Versionsquelle
 aus dem Skill-Profil (z.B. Directory.Build.props, package.json samt
 package-lock.json, pom.xml; bei `changelog:<Datei>` ein neuer oberster Eintrag) wird auf die neue Nummer gesetzt und
 gehört mit in denselben Commit. Ohne Änderung der Versionsdatei kein `[vX.Y.Z]` mit
-neuer Nummer.
+neuer Nummer. Die neue Nummer folgt aus dem Typ und `Commit.Versionsregel`. Bei `Commit.Versionsquelle: none` entfällt
+dieser Schritt.
 
-## SCHRITT 1b — Doku-Checkliste VOR dem Commit
+### Doku-Check vor dem Commit (PFLICHT)
 
-Die Doku-Checkliste (Schritt 3) wird vor der Commit-Sequenz abgearbeitet,
-damit Code, Version und Doku in einem Commit landen. Schritt 3 beschreibt
-die Liste; ausgeführt wird sie hier, vor Schritt 2.
+Der Doku-Check kommt aus `Commit.Doku-Check` (im älteren Commit-Profil `Doku-Checkliste:` je Datei eine Zeile „Datei →
+wann“). Er wird vor der Commit-Sequenz abgearbeitet, damit Code, Version und Doku in einem Commit landen; jede
+betroffene Datei wird genannt, geändert und im selben Commit mitgenommen.
 
-## SCHRITT 2 — Commit-Befehle (One-Block-Regel)
+Fehlt der Wert im Profil (anders als `none`): `docs/` und `*.md` im Repo auflisten und per
+Auswahlfrage klären, welche Dateien bei dieser Änderung dran sind; das
+Ergebnis als Vorschlag für `Commit.Doku-Check` ins Profil übernehmen (Regel „Fehlende Werte“).
+
+Beispiel-Checklisten zweier Projekte: `references/beispiele.md#Doku-Check`.
+
+### Commit-Befehle (One-Block-Regel)
 
 **KERNREGEL:** Eine komplette Commit-Sequenz wird IMMER in EINEM Code-Block
 geliefert. Niemals aufgeteilt in mehrere Blöcke für `cd` / `add` / `commit`
@@ -169,9 +196,9 @@ können. Führt Claude die Befehle selbst aus (Claude Code), gilt dieselbe
 Sequenz als ein Aufruf.
 
 Das Glied `git push origin <branch>` steht nur in der Sequenz, wenn die Push-Policy es verlangt oder erlaubt
-(Grundsätze); sonst entfällt es.
+(Grundsätze); sonst entfällt es. Die Vorlage richtet sich nach der Shell, in der die Sequenz läuft.
 
-### PowerShell (Default, Windows)
+#### PowerShell (Windows)
 
 Trenner: `;` (Semikolon)
 
@@ -179,7 +206,7 @@ Trenner: `;` (Semikolon)
 cd "[Arbeitsverzeichnis]" ; git add <spezifische-dateien> ; git commit -m "[vX.Y.Z] Modul, Typ: Kurztitel" ; git push origin <branch> ; git log -1 --format="%h %s"
 ```
 
-### Bash (Linux/macOS, WSL, Git Bash)
+#### Bash (Linux/macOS, WSL, Git Bash)
 
 Trenner: `&&` (nur weitermachen wenn vorheriger Befehl OK)
 
@@ -187,7 +214,7 @@ Trenner: `&&` (nur weitermachen wenn vorheriger Befehl OK)
 cd "[Arbeitsverzeichnis]" && git add <spezifische-dateien> && git commit -m "[vX.Y.Z] Modul, Typ: Kurztitel" && git push origin <branch> && git log -1 --format="%h %s"
 ```
 
-### Regeln für die Sequenz
+#### Regeln für die Sequenz
 
 - Spezifische Pfade nach `git add`, nicht `git add .`
 - Ein Commit pro logische Änderung
@@ -199,7 +226,7 @@ cd "[Arbeitsverzeichnis]" && git add <spezifische-dateien> && git commit -m "[vX
   Commit (Abschnitt „Prüfläufe vor dem Commit“); ohne Skill-Profil der Testbefehl, den das Projekt vor dem Commit
   verlangt (CLAUDE.md). Bei rotem Ergebnis kein Commit
 
-### Prüfläufe vor dem Commit
+#### Prüfläufe vor dem Commit
 
 Die Checks laufen auf der Maschine, nicht im Modell; ihre Laufzeit ist Wartezeit für den Nutzer.
 
@@ -233,10 +260,9 @@ die Ausgabe aus der Log-Datei lesen. Läuft das Skript nicht (kein Python), gelt
   | integration | – | übersprungen – keine passende Datei |
 
 - **Claude Code** führt die Checks vor der Commit-Sequenz aus; die Sequenz folgt erst, wenn alle gelaufenen Checks
-  grün sind. **Cowork:** Die passenden Checks stehen als erste Glieder in der Sequenz, die übersprungenen nennt
-  Claude vor dem Block.
+  grün sind. Im Cowork-Chat: `references/cowork.md#Prüfläufe im Cowork-Chat`.
 
-### Wenn ein Glied der Sequenz fehlschlägt
+#### Wenn ein Glied der Sequenz fehlschlägt
 
 Rotes Testergebnis, abgelehnter Push, Hook-Fehler oder Konflikt: Sequenz
 bricht am fehlerhaften Glied ab (dafür `&&` bzw. Prüfung des Exit-Codes).
@@ -244,69 +270,32 @@ Ursache in einem Satz nennen, nichts überspringen, keinen Teil-Commit
 „trotzdem“ pushen. Erst wenn die Ursache behoben ist, die ganze Sequenz
 erneut liefern.
 
-### Mehrzeilig nur wenn User explizit darum bittet
+#### Mehrzeilig nur wenn User explizit darum bittet
 
 Wenn der Nutzer eine besser lesbare, mehrzeilige Variante will, in EINEM Block
 mit Backtick-Continuation (PowerShell) oder Backslash (Bash) liefern — nie
 in mehrere Code-Blöcke aufteilen.
 
-## SCHRITT 3 — Doc-Pflege Trigger (PFLICHT)
-
-Die Doku-Checkliste kommt aus dem Skill-Profil (`Doku-Check`; im älteren Commit-Profil `Doku-Checkliste:` je Datei
-eine Zeile „Datei → wann“). Sie wird vor der Commit-Sequenz abgearbeitet
-(Schritt 1b); jede betroffene Datei wird genannt, geändert und im selben
-Commit mitgenommen.
-
-Fehlt die Checkliste im Profil: `docs/` und `*.md` im Repo auflisten und per
-Auswahlfrage klären, welche Dateien bei dieser Änderung dran sind; das
-Ergebnis als Vorschlag für die Checkliste ins Profil übernehmen.
-
-Beispiel einer Checkliste (Projekt mit ADR/Quickload-Standard):
-
-```
-Checkliste:
-- [ ] Neues Doc? → INDEX.md
-- [ ] Neues Feature? → CHANGELOG.md
-- [ ] DB geändert? → DB-SCHEMA.md
-- [ ] Neue Architekturentscheidung? → ADR.md
-- [ ] Neues Konzept? → INDEX.md + BACKLOG.md
-- [ ] Neuer Entry Point? → INDEX.md
-- [ ] Doc geändert? → Frontmatter + Quickload aktuell?
-- [ ] Fachliche Invarianten betroffen? → Quickload prüfen
-```
-
-Beispiel einer Checkliste (Projekt mit Bauplan/Übergabe):
-
-```
-Checkliste:
-- [ ] Bauschritt fertig? → Statusliste im Bauplan
-- [ ] Befund oder Entscheidung? → Bauplan Abschnitt „Notizen aus dem Bau“
-- [ ] Stand geändert? → HANDOFF.md
-- [ ] Neue Entität oder Dienst? → Entitäts-Vertrag im Bauplan
-```
-
 ## Regeln
 
-1. Pfade in der Schreibweise der jeweiligen Shell (PowerShell: Backslash; Bash: Slash)
-2. `"` für Messages
-3. Ein Commit = eine Änderung
-4. Version korrekt hochzählen (Versionsquelle und Versionsregel aus dem Skill-Profil)
-5. Komplette Commit-Sequenz in EINEM Code-Block (One-Block-Regel, siehe Schritt 2)
-6. Keine Erklärungen
-7. Bei Renames: git mv
-8. Arbeitsverzeichnis IMMER automatisch (Repo-Wurzel)
-9. Doc-Pflege IMMER vor dem Commit (Checkliste aus dem Skill-Profil), damit Code und Doku zusammen landen
-10. Skill-Profil IMMER lesen, bevor Version oder Doku angefasst werden
-11. Versionsdatei gehört in denselben Commit wie die Versionsnummer in der Message
-12. Bei mehreren Commits in einer Antwort: je Commit ein eigener Block (One-Block-Regel gilt je Commit)
+- Pfade in der Schreibweise der jeweiligen Shell (PowerShell: Backslash; Bash: Slash)
+- Keine Erklärungen
+- Bei mehreren Commits in einer Antwort: je Commit ein eigener Block (One-Block-Regel gilt je Commit)
+
+## Fall → Reference
+
+| Fall | Reference |
+|------|-----------|
+| Beispielwerte: älteres Commit-Profil, Aufgabennummer, Versionsregel, Doku-Checklisten, Commit ohne Format | [references/beispiele.md](references/beispiele.md) |
+| Cowork-Chat: Shell, Sequenz zum Kopieren, Prüfläufe | [references/cowork.md](references/cowork.md) |
 
 ## VERBOTEN
 
 - Branch automatisch annehmen – ohne Branch-Policy, Shell oder Auswahlfrage
 - Pushen gegen die Push-Policy des Skill-Profils
 - Prosa-Fragen bei festen Entscheidungsoptionen (Typ, Version-Bump, fehlender Profilwert)
-- **Mehrere Code-Blöcke für eine Commit-Sequenz** — alles muss in EINEM Block stehen, semikolon- oder `&&`-getrennt (siehe Schritt 2 One-Block-Regel)
+- **Mehrere Code-Blöcke für eine Commit-Sequenz** — alles muss in EINEM Block stehen, semikolon- oder `&&`-getrennt (Abschnitt „Commit-Befehle (One-Block-Regel)“)
 - **Erklärungen zwischen den Befehlen** die das Kopieren stören — Erklärungen kommen vor oder nach dem Block, nie hinein
 - **Versionsquelle oder Doku-Dateien raten** — beides kommt aus dem Skill-Profil oder aus der Suche im Repo, nie aus dem Gedächtnis
-- **Werkzeugnamen fest verdrahten** (Desktop Commander, ask_user_input_v0, AskUserQuestion) — der Skill beschreibt die Handlung, Claude wählt das Werkzeug der Umgebung
+- **Werkzeugnamen fest verdrahten** (Frage- oder Shell-Werkzeug einer bestimmten Umgebung) — der Skill beschreibt die Handlung, Claude wählt das Werkzeug der Umgebung
 - **Checks ohne passende Datei ausführen oder übersprungene Checks verschweigen** (Abschnitt „Prüfläufe vor dem Commit“)
