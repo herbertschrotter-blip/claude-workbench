@@ -641,7 +641,7 @@ claude-workbench/
 │   ├── skill-auswertung/SKILL.md
 │   ├── skill-neu/                         ← SKILL.md + references/ (cowork)
 │   ├── skill-pflege/                      ← SKILL.md + references/ (rule-inventory, delivery)
-│   ├── ticket/                            ← SKILL.md + test-prompts.md
+│   ├── ticket/                            ← SKILL.md + test-prompts.md + references/ (beispiele)
 │   └── tracker/
 │       ├── SKILL.md
 │       ├── references/
