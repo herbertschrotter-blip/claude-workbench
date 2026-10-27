@@ -22,7 +22,7 @@ dieser Weg gilt: `../SKILL.md#Weg wählen`. Archiv, Phasen und Auswahlfragen ble
 - `codex login status` meldet eine Anmeldung (ChatGPT-Konto des Users, kein API-Key). Anmeldedaten von Codex nie lesen.
 - Fehlt eines davon: Weg kopieren und kurz sagen, warum. Anmelden kann nur der User selbst, z. B. mit
   `! codex login --device-auth`.
-- Codex-Optionen des Profils: nur Modell (`-m <modell>`) und Denktiefe (`-c model_reasoning_effort=<stufe>`); andere
+- Codex-Optionen der Review-Config (Allgemein): nur Modell (`-m <modell>`) und Denktiefe (`-c model_reasoning_effort=<stufe>`); andere
   Optionen nicht übernehmen.
 
 ## Sandbox-Test
@@ -42,7 +42,7 @@ codex sandbox -c sandbox_mode="read-only" -- true
 ## Runde 1
 
 Alle Pfade absolut und gequotet; der Aufruf läuft im Scratchpad der Sitzung, nicht im Repo. `<Optionen>` sind die
-Codex-Optionen des Review-Profils (leer, wenn keine), `<Websuche>` ist `live` oder `disabled` (Abschnitt „Websuche und
+Codex-Optionen der Review-Config (leer, wenn keine), `<Websuche>` ist `live` oder `disabled` (Abschnitt „Websuche und
 Dateiinhalt“), `<V>` die Nummer des Versuchs.
 
 ```
@@ -106,7 +106,7 @@ zwischen den Runden.
 ## Repo-Zugriff
 
 Du liest Dateien aus dem GitHub-Repo selbst über deine Websuche:
-- **Repo:** [Owner/Repo aus dem Review-Profil]
+- **Repo:** [Owner/Repo aus den Repos des Themas]
 - **Branch: `[aktueller Branch]`**, geprüfter Stand: Commit `[voller Commit-Hash]`
 - Link-Muster: https://raw.githubusercontent.com/[Owner]/[Repo]/[Commit]/[Pfad] – IMMER diesen Commit verwenden,
   auch für weitere Dateien

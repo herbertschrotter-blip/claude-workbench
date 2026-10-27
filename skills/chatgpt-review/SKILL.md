@@ -16,9 +16,9 @@ description: >
 Ermöglicht strukturiertes Review zwischen Claude und ChatGPT. In Claude Code führt Claude die Runden selbst über die
 Codex CLI, sonst kopiert der User die Prompts (Abschnitt „Weg wählen“). Der User entscheidet in jeder Runde.
 
-Was projektspezifisch ist (Ablage, Themen, Repo, Pflicht-Block, Kontextquelle), steht im
-**Review-Profil** der CLAUDE.md des Repos (Abschnitt „Voraussetzung: Review-Profil“). Der Skill
-läuft im Cowork-Chat (DC, Artifact) und in Claude Code (Write, Bash).
+Was projektspezifisch ist (Ablage, Themen, Repos, Pflicht-Block, Kontextquelle), steht in der **Review-Config** des
+Repos (Abschnitt „Voraussetzung: Skill-Profil“). Der Skill läuft in Claude Code und im Cowork-Chat; Dateien liest und
+schreibt Claude mit den Werkzeugen der Umgebung.
 
 ---
 
@@ -47,27 +47,42 @@ ChatGPT-Review (chatgpt-review)?"
 
 ---
 
-## Voraussetzung: Review-Profil
+## Voraussetzung: Skill-Profil
 
-Abschnitt `## Review-Profil` in der `CLAUDE.md` des Repos (Claude Code liest sie automatisch;
-Cowork per DC). Felder:
+Aus dem Skill-Profil der `CLAUDE.md` des Repos (`docs/skill-profile-v1.md` im Skill-Repo):
 
-| Feld | Bedeutung |
-|------|-----------|
-| Review-Ablage | Ordner der CGR-Serien + `INDEX.md` |
-| Themen | erlaubte `<thema>`-Werte (kebab-case) |
-| GitHub-Repo | Owner/Repo für den Repo-Zugriff-Block |
-| Pflicht-Block | Abschnitt, der in jedem Initialprompt steht |
-| Kontextquelle | woraus „Projektkontext“ im Prompt gebaut wird |
-| Reviewer-Rolle | Rolle im Prompt |
-| Ergebnis-Ort | wohin Entscheidungen nach Phase 3 gehen |
-| Codex-Optionen | optional: Modell (`-m`) und Denktiefe (`model_reasoning_effort`) für Codex; leer = Vorgaben von Codex |
+| Feld | Wofür |
+|------|-------|
+| `Review.Config` | Datei der Review-Config, meist `.claude/skill-config/review.md` |
+| `Commit.Push-Policy` | Push-Prüfung vor jedem Prompt mit Repo-Zugriff (Abschnitt „Grundsätze“) |
+| `Branch-Policy` | Branch im Repo-Zugriff-Block (Abschnitt „Grundsätze“) |
+
+Die Review-Config nennt:
+
+| Abschnitt | Feld | Bedeutung |
+|-----------|------|-----------|
+| Allgemein | Review-Ablage | Ordner der CGR-Serien |
+| Allgemein | Übersicht | `INDEX.md` der Review-Ablage |
+| Allgemein | Themen | erlaubte `<thema>`-Werte (kebab-case) |
+| Allgemein | GitHub-Repo | Owner/Repo des Projekts |
+| Allgemein | Codex-Optionen | optional: Modell (`-m`) und Denktiefe (`model_reasoning_effort`) für Codex; leer = Vorgaben von Codex |
+| je Thema | Reviewer-Rolle | Rolle im Prompt |
+| je Thema | Repos | Owner/Repo für den Repo-Zugriff-Block; fehlt die Zeile, gilt das GitHub-Repo aus „Allgemein“ |
+| je Thema | Kontextquelle | woraus „Projektkontext“ im Prompt gebaut wird |
+| je Thema | Pflicht-Block | Abschnitt, der in jedem Initialprompt steht |
+| je Thema | Ergebnis-Ort | wohin Entscheidungen nach Phase 3 gehen |
 
 Werte von BPM und Heidi als Beispiel: [`references/beispiele.md`](references/beispiele.md#profilwerte-bpm-und-heidi).
 
-**Fehlt das Profil:** BPM-Werte aus `references/beispiele.md` annehmen – nur wenn das Repo `Docs/Referenz/` hat;
-sonst Auswahlfrage „Profil anlegen (Vorschlag aus dem Repo)“. Repo-Pfad: Skill-Profil der CLAUDE.md (Claude Code)
-bzw. Memory `[PROJECT]` (Cowork).
+**Quellen in dieser Reihenfolge:**
+1. `Review.Config` aus dem Skill-Profil. Claude Code liest die `CLAUDE.md` automatisch; im Cowork-Chat kommt der
+   Repo-Pfad aus dem Memory `[PROJECT]`.
+2. Fehlt sie: der ältere Abschnitt `## Review-Profil` der `CLAUDE.md` (dieselben Felder, nicht nach Thema getrennt).
+3. Fehlt auch der: die Rückfallwerte aus
+   [`references/beispiele.md`](references/beispiele.md#rückfall-ohne-profil-bpm), wenn das Repo deren Bedingung
+   erfüllt.
+4. Sonst Auswahlfrage nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“; bei „Profil ergänzen“ schlägt
+   Claude die Werte aus dem Repo vor.
 
 ## Grundsätze
 
@@ -101,7 +116,7 @@ bzw. Memory `[PROJECT]` (Cowork).
 ## Vor dem Start: ChatGPT-Modell
 
 Falls der User schon gesagt hat welches Modell: nicht nochmal fragen. Im Weg codex gilt das Modell aus den
-Codex-Optionen des Profils, sonst die Vorgabe von Codex.
+Codex-Optionen der Review-Config, sonst die Vorgabe von Codex.
 
 ## Weg wählen
 
@@ -121,11 +136,11 @@ Zwei Wege führen eine Runde zu ChatGPT; beide nutzen dasselbe Archiv und diesel
 
 ## CGR-Ablagesystem
 
-Jede Review-Runde wird im Repo unter der **Review-Ablage des Profils** archiviert. Der vollständige Ablauf (ID-Schema,
+Jede Review-Runde wird im Repo unter der **Review-Ablage der Review-Config** archiviert. Der vollständige Ablauf (ID-Schema,
 Themen, Ablagestruktur, Index, Serie starten, Rundenstand, Runde starten, Lifecycle, Serie abschließen, retroaktive
 Nutzung) steht in [`references/archiv.md`](references/archiv.md). Kernregeln:
 
-- ID `CGR-<YYYY-MM-DD>-<thema>-r<runde>`: Datum = Start der Serie, Thema aus dem Review-Profil
+- ID `CGR-<YYYY-MM-DD>-<thema>-r<runde>`: Datum = Start der Serie, Thema aus der Review-Config
 - Je Serie ein Ordner `CGR-<YYYY-MM-DD>-<thema>/` mit `README.md` (u. a. `**Weg:**`, `**Codex-Thread:**`, `**Websuche:**`) und eine
   Zeile in der `INDEX.md` der Review-Ablage – beides vor dem ersten Prompt
 - Je Runde `r<N>/` mit `01-claude-prompt.md`, `02-chatgpt-response.md`, `03-claude-analysis.md`,
@@ -144,7 +159,7 @@ ChatGPT hat die Möglichkeit selbst Dateien aus dem GitHub-Repo zu lesen.
 ## Repo-Zugriff
 
 Du hast Zugriff auf das GitHub-Repo und kannst selbst Dateien lesen:
-- **Repo:** [Owner/Repo aus dem Review-Profil; BPM: INDEX.md Projekt-Metadaten]
+- **Repo:** [Owner/Repo aus den Repos des Themas; bei mehreren je Repo eine Zeile]
 - **Branch: `[aktueller Branch]`** — IMMER diesen Branch verwenden, NICHT `main`!
 - Nutze das aktiv um Aussagen zu verifizieren, Querverweise zu prüfen,
   und Originaldateien zu lesen wenn der Kontext im Prompt nicht reicht.
@@ -153,7 +168,7 @@ Du hast Zugriff auf das GitHub-Repo und kannst selbst Dateien lesen:
 
 **Regeln:**
 - Branch NICHT hardcoden — immer den in dieser Session ermittelten Branch verwenden
-- Owner/Repo aus dem Review-Profil (BPM: INDEX.md Projekt-Metadaten)
+- Owner/Repo aus der Review-Config (Repos des Themas)
 - **Push-Prüfung (Pflicht vor jedem Prompt mit Repo-Zugriff):** mit Shell
   `git fetch --quiet && git log origin/<branch>..HEAD --oneline` – gibt es Commits, sieht ChatGPT alte
   Dateien. Dann nach der Push-Policy (Abschnitt „Grundsätze“): ohne Rückfrage pushen oder Auswahlfrage „Jetzt pushen“ /
@@ -165,27 +180,25 @@ Du hast Zugriff auf das GitHub-Repo und kannst selbst Dateien lesen:
   Branch (Ausnahme von „Branch NICHT hardcoden“; der Branch steht weiter im Block). Ist die Websuche der Serie aus,
   ersetzt der Block „Dateien“ den Repo-Zugriff
 
-## Doc-Laderegel (Kontextquelle aus dem Review-Profil)
+## Doc-Laderegel (Kontextquelle aus der Review-Config)
 
-Beim Erstellen des Initialprompts den Projektkontext aus der **Kontextquelle des Profils** bauen:
+Beim Erstellen des Initialprompts den Projektkontext aus der **Kontextquelle des Themas** bauen. So kennt ChatGPT die
+tragenden Regeln des Projekts, ohne dass der User sie manuell einfügt.
 
 Wie BPM und Heidi ihre Kontextquelle lesen: [`references/beispiele.md`](references/beispiele.md#doc-laderegel-bpm-und-heidi).
-
-So weiß ChatGPT z.B. "SQLite ist SoR" (BPM) oder "Schreiben nach HA nur über DxApi, Vertrag eingefroren"
-(Heidi) ohne dass der User es manuell einfügt.
 
 **Format im Prompt:**
 
 ```
-## Projektkontext (aus der Kontextquelle des Profils; BPM: Quickloads)
+## Projektkontext (aus der Kontextquelle des Themas)
 
 ### [Doc-Name] (source_of_truth)
-- Zweck: [aus Quickload]
+- Zweck: [aus der Kontextquelle]
 - Fachliche Invarianten:
-  - [aus Quickload]
+  - [aus der Kontextquelle]
 
 ### [Doc-Name] (secondary)
-- Zweck: [aus Quickload]
+- Zweck: [aus der Kontextquelle]
 ```
 
 Nur Blöcke einfügen die relevant sind — nicht alle Docs.
@@ -194,13 +207,12 @@ Max 3-5 Blöcke im Prompt, sonst wird er zu lang.
 ## Pflicht-Block des Projekts (PFLICHT in jedem Initialprompt)
 
 Jedes Projekt hat Regeln, die ChatGPT kennen muss, damit es keine Vorschläge macht, die wir
-ausdrücklich nicht wollen. Welcher Block das ist, steht im Review-Profil („Pflicht-Block“).
+ausdrücklich nicht wollen. Welcher Block das ist, steht in der Review-Config beim Thema („Pflicht-Block“).
 
-Die Blöcke von Heidi („Regeln des Neubaus“) und BPM („Frühphase“) stehen wörtlich in
-[`references/beispiele.md`](references/beispiele.md#pflicht-blöcke). Für BPM gilt: Solange INDEX.md das Kapitel
-"Projekt-Phase (VERBINDLICH)" hat, MUSS jeder Initialprompt den Frühphasen-Block enthalten.
+Beispiele (Heidi „Regeln des Neubaus“, BPM „Frühphase“ mit der Bedingung, wann er gilt) stehen wörtlich in
+[`references/beispiele.md`](references/beispiele.md#pflicht-blöcke).
 
-**Regel (beide Projekte):**
+**Regel:**
 - Der Block kommt als eigener Abschnitt in den Initialprompt, **vor** "Projektkontext"
 - Bei Folgeprompts (Runde 2, 3, ...) nicht nochmal einfügen — einmal pro Review reicht
 - Wenn der User eine Regel bewusst aussetzt (z.B. Migration will), Block anpassen und im Prompt erwähnen warum
@@ -213,7 +225,7 @@ Die Blöcke von Heidi („Regeln des Neubaus“) und BPM („Frühphase“) steh
 
 ```
 ## Rolle
-Du bist ein erfahrener [Reviewer-Rolle aus dem Review-Profil] und führst ein technisches
+Du bist ein erfahrener [Reviewer-Rolle des Themas] und führst ein technisches
 Review-Gespräch mit einem Kollegen (Claude/Anthropic).
 
 ## Gesprächsformat
@@ -238,10 +250,10 @@ Dieses Gespräch läuft über einen Vermittler (den User).
 [FALLS FOKUS:] - Fokus: [Thema]
 
 ## <Pflicht-Block des Projekts>
-[Block aus "Pflicht-Block des Projekts" oben einfügen – BPM Frühphase, Heidi Regeln des Neubaus]
+[Block aus "Pflicht-Block des Projekts" oben einfügen]
 
 ## Projektkontext
-[Blöcke aus der Kontextquelle des Profils hier einfügen]
+[Blöcke aus der Kontextquelle des Themas hier einfügen]
 
 ## Das Konzept
 [Vollständiges Konzept/Code/Architektur]
@@ -253,7 +265,7 @@ Dieses Gespräch läuft über einen Vermittler (den User).
 **Wichtig:**
 - ALLEN Kontext aus dem Chat sammeln
 - Code vollständig, nicht gekürzt
-- Kontextquelle des Profils als Projektkontext einbauen (BPM: Quickloads; Heidi: Bauplan-Abschnitte)
+- Kontextquelle des Themas als Projektkontext einbauen
 - Fachliche Invarianten / Regeln explizit aufführen
 - Repo-Zugriff Block mit aktuellem Branch IMMER einfügen – nach Push-Prüfung
 - Weg codex: „Gesprächsformat“ und „Repo-Zugriff“ in der Fassung aus
@@ -307,16 +319,17 @@ User hat die Antwort in den Chat gepastet (oder als Datei geschickt). Vor der Ei
 - Optional: überarbeitetes Konzept
 
 **Ergebnisse zurück ins Repo (Auswahlfrage, nie automatisch):**
-- „Entscheidungen an Ergebnis-Ort“ → jede getroffene Entscheidung als Eintrag am Ergebnis-Ort des Profils
+- „Entscheidungen an Ergebnis-Ort“ → jede getroffene Entscheidung als Eintrag am Ergebnis-Ort des Themas
   (Beispiele BPM und Heidi: [`references/beispiele.md`](references/beispiele.md#ergebnis-ort)). Schreiben tut doc-pflege (Abschnitte „Neue Doc“ und „Begleit-Docs“),
   dieser Skill liefert die fertigen Einträge.
 - „Offene Punkte als Tasks“ → `tracker neu` je Punkt im Schema des Projekts (`<PRÄFIX>-NNN | KÜRZEL | …`),
   mit Verweis auf `CGR-<id> r<N>` in der Beschreibung
 - „Beides“ / „Nur Zusammenfassung“
-Verweise in beide Richtungen: README der Serie nennt die Bauplan-Notizen/ADRs und Task-IDs; Notiz/ADR nennt die CGR-ID.
+Verweise in beide Richtungen: README der Serie nennt die Einträge am Ergebnis-Ort und die Task-IDs; jeder Eintrag
+nennt die CGR-ID.
 
 **Archivierung (Serie-Abschluss):**
-- `README.md` der Serie finalisieren: Kernergebnisse, Links zu ADRs/Commits,
+- `README.md` der Serie finalisieren: Kernergebnisse, Links zu den Einträgen am Ergebnis-Ort und zu Commits,
   Status auf "Abgeschlossen"
 - `INDEX.md` Status-Update: Status-Spalte "Abgeschlossen", Kernergebnis
   in entsprechender Spalte
@@ -338,7 +351,7 @@ Gleichwertiger Gesprächspartner:
 
 **Zwei Ablage-Orte für Prompts:**
 
-1. **Primär: Repo-Archiv** (CGR-System, Review-Ablage des Profils):
+1. **Primär: Repo-Archiv** (CGR-System, Review-Ablage der Review-Config):
    ```
    <Repo>/<Review-Ablage>/CGR-YYYY-MM-DD-<thema>/r<N>/
      ├── 01-claude-prompt.md
@@ -381,18 +394,18 @@ Prompts in der Sprache des Users.
 - Branch automatisch annehmen – ohne Branch-Policy, Shell oder Auswahlfrage
 - Prosa-Fragen bei festen Entscheidungsoptionen (Multiple-Choice, Stufe-A-Entscheidungspunkte)
 - Uneinigkeit ohne Auswahlfrage auflösen
-- Initialprompt ohne den Pflicht-Block des Projekts erstellen (BPM Frühphase, Heidi Regeln des Neubaus)
+- Initialprompt ohne den Pflicht-Block des Themas erstellen
 - **Prompt mit Repo-Zugriff-Block ohne Push-Prüfung** – ChatGPT liest sonst alte Dateien
 - **Pushen gegen die Push-Policy des Skill-Profils**
 - **Rundennummer aus dem Chat raten** statt aus README/r<N>-Ordnern zu lesen
 - **Phase 3 ohne Auswahlfrage „Ergebnisse übernehmen“ beenden** – Entscheidungen bleiben sonst nur im Chat
-- **BPM-Ablage, -Themen oder -Frühphase für ein anderes Projekt annehmen** – alles aus dem Review-Profil
+- **Ablage, Themen oder Pflicht-Block eines anderen Projekts annehmen** – alles aus der Review-Config des Repos
 - **Review-Serie starten ohne CGR-Ordner + README.md + INDEX.md-Zeile**
 - **Runde durchlaufen ohne die 4 Dateien inkrementell abzulegen** — 01 in Phase 1, 02 vor Stufe A, 03 in Stufe A, 04 zwischen Stufe A und B
 - **INDEX.md-Status nicht aktualisieren** bei neuer Runde / Serie-Abschluss
 - **Alle 4 Dateien einer Runde gesammelt am Rundenende anlegen** — Archiv-Lücken bei Chat-Abbruch
 - **CGR-ID aus falschem Datum verwenden** — immer das aktuelle `YYYY-MM-DD` beim Serie-Start nehmen, auch wenn die Runde später läuft
-- **Prompt als Datei oder Download liefern** (Dateikarte, `SendUserFile`, `present_files`) statt als einen kopierbaren Codeblock im Chat
+- **Prompt als Datei oder Download liefern** (Dateikarte, Datei an den User senden) statt als einen kopierbaren Codeblock im Chat
 - **Codex ohne Sandbox starten** (`--dangerously-bypass-approvals-and-sandbox`, `--sandbox danger-full-access`)
 - **`codex exec` mit `--ephemeral`** – die Folgerunde braucht den gespeicherten Thread
 - **Geschützte Dateien in den Prompt legen** (Geheimnisse, gesperrte Pfade der Umgebung)

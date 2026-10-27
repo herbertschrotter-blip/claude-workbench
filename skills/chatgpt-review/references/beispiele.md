@@ -1,12 +1,13 @@
 # Beispielwerte BPM und Heidi
 
-Werte aus den Review-Profilen von BPM und Heidi. Sie zeigen, wie die Felder gefüllt werden, und gelten als Rückfall für
-BPM, wenn dort das Profil fehlt (`../SKILL.md#Voraussetzung: Review-Profil`). Für jedes andere Projekt gilt nur dessen
-eigenes Profil.
+Werte aus den Review-Profilen von BPM und Heidi. Sie zeigen, wie die Felder der Review-Config gefüllt werden
+(`../SKILL.md#Voraussetzung: Skill-Profil`); für BPM gelten sie außerdem als Rückfall (Abschnitt „Rückfall ohne Profil
+(BPM)“). Für jedes andere Projekt gilt nur dessen eigene Config.
 
 ## Inhalt
 
 - Profilwerte BPM und Heidi
+- Rückfall ohne Profil (BPM)
 - Themen
 - Doc-Laderegel BPM und Heidi
 - Pflicht-Blöcke
@@ -23,6 +24,13 @@ eigenes Profil.
 | Kontextquelle | woraus „Projektkontext“ im Prompt gebaut wird | Quickloads + Invarianten (DOC-STANDARD Kap. 8) | Bauplan Abschnitt 2 (Regeln), 4 (Vertrag), 7 (Seiten), die betroffene Karte aus 8, HANDOFF 3e; max. 3–5 Blöcke |
 | Reviewer-Rolle | Rolle im Prompt | „erfahrener .NET/WPF-Architekt“ | „erfahrener Frontend-Architekt für Web Components / Home Assistant“ |
 | Ergebnis-Ort | wohin Entscheidungen nach Phase 3 gehen | ADR.md, BACKLOG.md | Bauplan Abschnitt 10 (Notiz, Art `Widerspruch`/`Befund`), 10a bei Abweichung, HANDOFF 3e |
+
+In einer Review-Config stehen Review-Ablage, Themen und GitHub-Repo unter „Allgemein“, die übrigen Felder je Thema.
+
+## Rückfall ohne Profil (BPM)
+
+Hat ein Repo weder `Review.Config` noch `## Review-Profil`, aber den Ordner `Docs/Referenz/`, gelten die BPM-Werte aus
+„Profilwerte BPM und Heidi“.
 
 ## Themen
 
@@ -47,6 +55,10 @@ Heidi:
 2. Abschnitt 4 (Entitäts-Vertrag) → nur die betroffenen Entitäten/Dienste
 3. Die betroffene Aufgabenkarte aus Abschnitt 8 (Ziel, Nicht ändern, Akzeptanz) und Abschnitt 7 (Seite)
 4. HANDOFF 3e → Stand, Version, Stolpersteine; Abschnitt 10/10a → bekannte Befunde und Abweichungen
+
+So weiß ChatGPT z.B. "SQLite ist SoR" (BPM) oder "Schreiben nach HA nur über DxApi, Vertrag eingefroren"
+(Heidi) ohne dass der User es manuell einfügt. Bei BPM füllen „Zweck“ und „Fachliche Invarianten“ im Block
+„Projektkontext“ die Quickloads der Docs.
 
 ## Pflicht-Blöcke
 
@@ -93,3 +105,4 @@ Quelle: INDEX.md Kapitel "Projekt-Phase".
 
 - „Entscheidungen an Ergebnis-Ort“: Heidi: Bauplan Abschnitt 10 als Notiz `[Datum] [Aufgabe] Widerspruch/Befund · Schwere: … Entscheidung Herbert: …`,
   Abweichung vom v1-Verhalten zusätzlich als PD-Eintrag 10a; BPM: ADR.md.
+- Verweise: README der Serie nennt die Bauplan-Notizen bzw. ADRs; Notiz bzw. ADR nennt die CGR-ID.

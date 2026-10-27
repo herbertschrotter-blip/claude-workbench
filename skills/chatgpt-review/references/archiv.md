@@ -5,7 +5,7 @@ Ablauf des Review-Archivs im Detail; Kernregeln in `../SKILL.md#CGR-Ablagesystem
 ## Inhalt
 
 - ID-Schema
-- Themen-Enum (aus dem Review-Profil)
+- Themen-Enum (aus der Review-Config)
 - Ablagestruktur pro Serie
 - Globaler Index
 - Serie starten (vor Phase 1)
@@ -17,8 +17,8 @@ Ablauf des Review-Archivs im Detail; Kernregeln in `../SKILL.md#CGR-Ablagesystem
 - Retroaktive Nutzung
 
 
-Jede Review-Runde wird im Repo unter der **Review-Ablage des Profils** archiviert
-(BPM: `Docs/Referenz/chatgpt-reviews/`; Heidi: `docs/chatgpt-reviews/`). Schreiben: Cowork via DC,
+Jede Review-Runde wird im Repo unter der **Review-Ablage der Review-Config** archiviert (Beispiele:
+[`beispiele.md`](beispiele.md#profilwerte-bpm-und-heidi)). Schreiben: Cowork via DC,
 Claude Code via Write/Bash – die Struktur ist dieselbe. Die Archivierung läuft **inkrementell** — pro Runde 4 Dateien,
 angelegt in der jeweiligen Gesprächsphase.
 
@@ -32,13 +32,14 @@ CGR-<YYYY-MM-DD>-<thema>-r<runde>
 - `<thema>` = kebab-case aus Themen-Enum
 - `r<runde>` = Rundennummer (r1, r2, r3, ...)
 
-## Themen-Enum (aus dem Review-Profil)
+## Themen-Enum (aus der Review-Config)
 
 Beispiele (BPM, Heidi): [`beispiele.md`](beispiele.md#themen).
 
 - **Neues Thema** — Auswahlfrage mit Option "neues Thema", dann
-  Namensvorschlag per Prosa-Frage, danach Themenliste im Review-Profil **und** in der
-  `INDEX.md` der Review-Ablage erweitern
+  Namensvorschlag per Prosa-Frage, danach das Thema in der Review-Config eintragen (Allgemein → Themen, dazu ein
+  Abschnitt „Thema: <name>“ mit den Feldern je Thema; fehlende Werte nach „Fehlende Werte“ des Skill-Profils) **und**
+  die `INDEX.md` der Review-Ablage erweitern
 
 ## Ablagestruktur pro Serie
 
@@ -50,7 +51,7 @@ Beispiele (BPM, Heidi): [`beispiele.md`](beispiele.md#themen).
     │   ├── 01-claude-prompt.md       ← Claudes Prompt an ChatGPT
     │   ├── 02-chatgpt-response.md    ← ChatGPTs Antwort (Weg kopieren: aus dem Canvas)
     │   ├── 03-claude-analysis.md     ← Claudes Einschätzung/Reaktion
-    │   └── 04-user-decisions.md      ← Herberts Antworten + Entscheidungen
+    │   └── 04-user-decisions.md      ← Antworten + Entscheidungen des Users
     ├── r2/ ...
     └── r3/ ...
 ```
@@ -68,12 +69,12 @@ Status-Update. Bei Serie-Abschluss: Kernergebnis eintragen.
 
 Wenn der User eine neue Review-Serie startet, VOR Phase 1 Initialprompt:
 
-1. **Thema ermitteln** via Auswahlfrage (Optionen = Themen aus dem Review-Profil + "neues Thema"):
+1. **Thema ermitteln** via Auswahlfrage (Optionen = Themen aus der Review-Config + "neues Thema"):
    ```
    Frage: "Thema der Review-Serie?"
-   Optionen (Beispiel BPM): "skillsystem", "docs-refactor", "bpm-architektur",
-             "datenschutz-dbschema", "neues Thema"
+   Optionen: "<thema-1>", "<thema-2>", …, "neues Thema"
    ```
+   Beispiel-Themen: [`beispiele.md`](beispiele.md#themen).
    Bei "neues Thema": Prosa-Frage nach Kurzname (kebab-case).
 
 2. **CGR-ID festziehen:** `CGR-<aktuelles-YYYY-MM-DD>-<thema>`
@@ -168,11 +169,11 @@ Wenn User signalisiert "Serie fertig" / "keine weitere Runde":
 
 1. **README.md finalisieren:**
    - Kernergebnisse pro Runde
-   - Links zu resultierenden ADRs / Bauplan-Notizen / Commits
+   - Links zu den Einträgen am Ergebnis-Ort und zu Commits
    - Status: "Abgeschlossen"
 2. **INDEX.md Status-Update:** Status-Spalte auf "Abgeschlossen",
    Kernergebnis-Spalte befüllen.
-3. **Ergebnisse übernehmen** (Auswahlfrage, siehe `../SKILL.md#Phase 3: Abschluss`): Entscheidungen an den Ergebnis-Ort des Profils,
+3. **Ergebnisse übernehmen** (Auswahlfrage, siehe `../SKILL.md#Phase 3: Abschluss`): Entscheidungen an den Ergebnis-Ort des Themas,
    offene Punkte als Tasks über den tracker-Skill (Präfix des Projekts).
 4. Commit der Archivdateien: `[vX.Y.Z] <Doku-Modul>, Docs: CGR-<id> Runde <N> / Abschluss`
    (Claude Code committet selbst; Cowork liefert den Befehl)

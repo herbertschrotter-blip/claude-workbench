@@ -8,6 +8,19 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.60.9] — 2026-10-27
+
+- **skills/chatgpt-review, Refactor (Umbau Phase 6):** liest die Review-Config nach Skill-Profil v1, Kern ohne Projektwerte.
+  - „Voraussetzung: Review-Profil“ wird „Voraussetzung: Skill-Profil“: `Review.Config` mit Feldern für Allgemein und je
+    Thema, dazu `Commit.Push-Policy` und `Branch-Policy`; Quellen Config → altes `## Review-Profil` → Rückfall aus
+    `references/beispiele.md` → Auswahlfrage „Fehlende Werte“.
+  - Reviewer-Rolle, Repos, Kontextquelle, Pflicht-Block und Ergebnis-Ort gelten je Thema; mehrere Repos stehen im
+    Repo-Zugriff je in einer Zeile.
+  - BPM- und Heidi-Werte (Rückfall `Docs/Referenz/`, Frühphasen-Bedingung, Beispielsätze, Verweise am Ergebnis-Ort) nur
+    noch in `references/beispiele.md`; `archiv.md` mit Platzhaltern, neues Thema wird in der Config angelegt.
+  - Werkzeugnamen im Kern als Handlung. Regel-Inventar `docs/skill-refactors/2026-10-27-chatgpt-review.md` (64 alte
+    Zeilen, nichts gestrichen). Description unverändert.
+
 ## [v0.60.8] — 2026-10-27
 
 - **skills/chat-wechsel, Refactor (Umbau Phase 6):** Kern ohne Projektwerte, Cowork-Regeln in der Cowork-Reference.
