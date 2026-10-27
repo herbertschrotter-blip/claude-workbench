@@ -1,14 +1,14 @@
 # Stack: home-assistant-yaml — Home Assistant Pakete, Automationen, Skripte, Dashboards
 
-Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Code-Profil des Projekts
-`Stacks: home-assistant-yaml` enthält. Projektspezifisches (Host, Laufwerk, Deploy-Skript,
-Token-Variable) steht im Code-Profil bzw. der CLAUDE.md, nicht hier.
+Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Skill-Profil des Projekts
+`Code.Stacks: home-assistant-yaml` enthält. Projektspezifisches (Host, Laufwerk, Deploy-Skript,
+Token-Variable) steht im Skill-Profil bzw. der CLAUDE.md, nicht hier.
 
 ---
 
 ## Schichten und Kopplungsregeln
 
-- **Quelle der Wahrheit** ist das Repo (`ha/`), nie der Config-Ordner auf dem Host. Änderung im
+- **Quelle der Wahrheit** ist das Repo (Beispiel Heidi: `ha/`), nie der Config-Ordner auf dem Host. Änderung im
   Repo → deployen → prüfen.
 - **Pakete** (`packages/*.yaml`): Helfer (`input_*`), Template-Sensoren, `command_line`,
   `shell_command`. Ein Paket je Thema; neue Helfer-Domäne braucht Neustart.
@@ -44,8 +44,8 @@ Token-Variable) steht im Code-Profil bzw. der CLAUDE.md, nicht hier.
 
 | Betroffen | Zuerst |
 |-----------|--------|
-| neue Entität für die Karte | Vertrags-Doku + `contract.ts` des Karten-Stacks |
-| Entität mit unbekannter ID | `ha.ps1 get states/<id>` (echte ID) |
+| neue Entität für die Karte | Vertrags-Doku + Vertragsdatei des Karten-Stacks (Beispiel Heidi: `contract.ts`) |
+| Entität mit unbekannter ID | Zustand per REST-API `states/<id>` (echte ID; Beispiel Heidi: `ha.ps1 get states/<id>`) |
 | Automation | bestehenden Trace / Ist-Verhalten lesen |
 
 ## Prüfen und Ausliefern (Befehle aus dem Profil)

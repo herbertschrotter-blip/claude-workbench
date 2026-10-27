@@ -8,6 +8,17 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.61.1] — 2026-10-28
+
+- **skills/code-erstellen, Refactor (Umbau Phase 6):** liest die Werte aus dem Skill-Profil v1 (`Code.*`, `Doku.*`,
+  `Commit.*`, `Tracker.*`); das ältere `## Code-Profil` bleibt Rückfall, „Notiz-Ort“ entspricht `Code.Befund-Ort`.
+  - BPM- und Heidi-Werte (Profiltabelle, Ladereihenfolge, Doku-Check, Commit- und Tracker-Beispiel) in neuer
+    `references/beispiele.md`; Auto-Anker, Ausgabeformat und Desktop Commander in neuer `references/cowork.md`.
+  - Schritte heißen nach ihrem Inhalt statt nach Nummern; Tracker-Abgleich über tracker statt `clickup_search`;
+    Stack-Referenzen mit Kopfsatz zum Skill-Profil, Projektwerte als Beispiel markiert, Historie raus.
+  - Description: „Code-Profil“ → „Skill-Profil“ (1014 Zeichen). Regel-Inventar
+    `docs/skill-refactors/2026-10-28-code-erstellen.md` (196 alte Zeilen, gestrichen nur Historie D1).
+
 ## [v0.61.0] — 2026-10-28
 
 - **skills/ticket, Refactor (Umbau Phase 6) mit neuem Verhalten:** liest die Werte aus dem Skill-Profil v1

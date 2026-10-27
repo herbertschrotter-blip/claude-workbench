@@ -1,12 +1,12 @@
 # Stack: typescript-lit — Lit 3 Web Components in Home Assistant (TypeScript strict oder JavaScript)
 
-Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Code-Profil des Projekts
-`Stacks: typescript-lit` enthält. Projektspezifisches (Pfade, Pflicht-Docs, Deploy) steht
-im Code-Profil, nicht hier.
+Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Skill-Profil des Projekts
+`Code.Stacks: typescript-lit` enthält. Projektspezifisches (Pfade, Pflicht-Docs, Deploy) steht
+im Skill-Profil, nicht hier.
 
 Gilt für jede eigene Oberfläche in Home Assistant (HA-Grundsatz G-22). Pfade und Namen unten stammen aus der
-Heidi-Karte (TypeScript) und sind Beispiele; jedes Projekt nennt seine Entsprechungen im Code-Profil oder in der README.
-In JavaScript-Projekten (z. B. ha-baustelle, gebündelt mit esbuild) gelten die Regeln zu `tsc`, `strict` und `any`
+Heidi-Karte (TypeScript) und sind Beispiele; jedes Projekt nennt seine Entsprechungen im Skill-Profil oder in der README.
+In JavaScript-Projekten (z. B. gebündelt mit esbuild) gelten die Regeln zu `tsc`, `strict` und `any`
 sinngemäß über die Prüfungen des Projekts.
 
 ---
@@ -59,7 +59,7 @@ sinngemäß über die Prüfungen des Projekts.
 
 ## Tests
 
-Befehle und Pfade nennt das Profil (Feld Tests); die folgenden sind das Beispiel Heidi.
+Befehle und Pfade nennt das Profil (`Code.Tests`); die folgenden sind das Beispiel Heidi.
 
 - **Unit:** `node --test` über `tsx`, Dateien `tests/unit/*.test.ts`; Vektoren als JSON
   (`*.v1.json` aus der Referenz, `*.spec.json` handgeschrieben)
@@ -80,4 +80,4 @@ Befehle und Pfade nennt das Profil (Feld Tests); die folgenden sind das Beispiel
   gibt die App das gewählte Bild nicht an die Seite weiter (kein `change`, nichts passiert); mehrere Bilder = mehrmals
   wählen. **Den MIME-Typ nicht vorab prüfen** (Bilder aus der Galerie kommen oft ohne `type`); per
   `URL.createObjectURL` laden und das Laden entscheiden lassen. Jeden Schritt sichtbar melden („wird geladen“, Fehler),
-  nie still verwerfen. Befund ha-netzwerk FE-0001 (13.10.2026); derselbe Fehler steckt im Baustrommanager (FE-0027)
+  nie still verwerfen.

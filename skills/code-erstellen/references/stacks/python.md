@@ -1,8 +1,8 @@
-# Stack: python — Python-Skripte neben HA (Prognose, Laufprotokoll) und allgemein
+# Stack: python — Python-Skripte neben HA und allgemein
 
-Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Code-Profil des Projekts
-`Stacks: python` enthält. Projektspezifisches (Pfade, Aufruf über `shell_command`, Datenorte)
-steht im Code-Profil, nicht hier.
+Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Skill-Profil des Projekts
+`Code.Stacks: python` enthält. Projektspezifisches (Pfade, Aufruf über `shell_command`, Datenorte)
+steht im Skill-Profil, nicht hier.
 
 ---
 
@@ -13,7 +13,8 @@ steht im Code-Profil, nicht hier.
 - Wenn dieselbe Fachlogik auch in einem anderen Stack existiert (z.B. TypeScript-Karte),
   gelten **gemeinsame Vektoren** (JSON) als Vertrag: beide Seiten testen gegen dieselben Dateien.
 - Skripte, die HA aufruft (`shell_command`, `command_line`), geben JSON aus und schreiben
-  nur in die dafür vorgesehenen Dateien; Laufprotokolle werden nie gelöscht.
+  nur in die dafür vorgesehenen Dateien; Protokolle des Projekts (Beispiel Heidi: Laufprotokoll)
+  werden nie gelöscht.
 - Keine Abhängigkeiten außer Standardbibliothek, wenn das Skript auf dem HA-Host läuft.
 
 ## Modus-Eskalation (Beispiele)

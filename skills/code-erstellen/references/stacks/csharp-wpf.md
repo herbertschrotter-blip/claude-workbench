@@ -1,8 +1,8 @@
-# Stack: csharp-wpf — C# / .NET / WPF (BPM)
+# Stack: csharp-wpf — C# / .NET / WPF
 
-Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Code-Profil des Projekts
-`Stacks: csharp-wpf` enthält. Projektspezifisches (Pfade, Pflicht-Docs, Deploy) steht
-im Code-Profil, nicht hier.
+Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Skill-Profil des Projekts
+`Code.Stacks: csharp-wpf` enthält. Projektspezifisches (Pfade, Pflicht-Docs, Deploy) steht
+im Skill-Profil, nicht hier. Doc- und Dateinamen unten stammen aus BPM und sind Beispiele.
 
 ---
 
@@ -11,7 +11,7 @@ im Code-Profil, nicht hier.
 - View (XAML) → ViewModel prüfen; kein Code-Behind mit Fachlogik
 - Neuer Service → Interface + DI-Registrierung (`App.xaml.cs`)
 - Neuer Dialog → Theme-/Dialog-Referenz laden, bestehende Dialoge als Muster
-- DB-Änderung → `ProjectDatabase.cs` + `DB-SCHEMA.md`
+- DB-Änderung → Datenbank-Klasse + Schema-Doku (Beispiel BPM: `ProjectDatabase.cs` + `DB-SCHEMA.md`)
 - Externe Kommunikation → DSGVO-/DataClassification-Doc zuerst
 
 ## Modus-Eskalation (Beispiele)
@@ -39,14 +39,14 @@ im Code-Profil, nicht hier.
 | Betroffen | Zuerst laden |
 |-----------|--------------|
 | DI | `App.xaml.cs` |
-| Externe Kommunikation | `DSGVO-Architektur.md` |
+| Externe Kommunikation | Datenschutz-Doku (Beispiel BPM: `DSGVO-Architektur.md`) |
 | UI | UI-/Theme-Doc |
-| DB | `DB-SCHEMA.md` |
+| DB | Schema-Doku (Beispiel BPM: `DB-SCHEMA.md`) |
 
 ## Tests
 
 - xUnit/NUnit laut Projekt; Testprojekt neben dem Produktivprojekt
-- Befehl aus dem Code-Profil (z.B. `dotnet test`); im Cowork-Chat liefert der Skill den Befehl, der User führt aus
+- Befehl aus dem Skill-Profil (`Code.Tests`, z.B. `dotnet test`); im Cowork-Chat liefert der Skill den Befehl, der User führt aus
 
 ## Ausgabe (Cowork-Chat)
 
@@ -54,6 +54,6 @@ im Code-Profil, nicht hier.
 
 ## Typische Fehler
 
-- Migration bauen statt „Daten löschen, neu anlegen“ (Frühphasen-Prinzip, INDEX.md)
+- Migration bauen statt „Daten löschen, neu anlegen“ (Frühphasen-Prinzip laut Architekturregeln des Projekts, Beispiel BPM: INDEX.md)
 - Service ohne Interface registrieren; Bindings ohne `INotifyPropertyChanged`
 - Theme-Farben hart statt aus Ressourcen

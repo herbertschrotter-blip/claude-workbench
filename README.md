@@ -274,7 +274,7 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 
 | Skill | Aufgabe | Trigger-Beispiele |
 |---|---|---|
-| **code-erstellen** | Master-Orchestrator für Code-Änderungen (Code-Profil in der CLAUDE.md des Projekts). | "implementiere das Feature", "erstelle DocumentTypeRecognizer.cs", "baue Recovery-Logik ein" |
+| **code-erstellen** | Master-Orchestrator für Code-Änderungen (Skill-Profil in der CLAUDE.md des Projekts). | "implementiere das Feature", "erstelle DocumentTypeRecognizer.cs", "baue Recovery-Logik ein" |
 | **mockup-erstellen** | HTML-UI-Mockups nach Mockup-Profil. | "Mockup für ProfileWizard", "Screen-Design", "UI-Mockup" |
 | **doc-pflege** | Erstellt, pflegt und korrigiert Projektdokumentation nach dem Skill-Profil (Bereich Doku); prüfen ohne Änderung macht audit. | "pflege die docs", "schreib ein ADR", "neues Konzept für X" |
 | **projekt-anlegen** | Neue Projekte anlegen und einrichten: klären, Plan zeigen, lauffähiges und geprüftes Grundgerüst (Generator für unterstützte Stacks), Git, Skill-Profil, GitHub nach Rückfrage. | "neues Projekt", "ich will X bauen, weiß aber nicht wie", "Repo holen und einrichten" |
@@ -335,7 +335,7 @@ Der Body enthält je nach Skill: Zweck, Vorrang/Delegation, Kernregeln, Ablauf, 
 
 ### Progressive Disclosure — am Beispiel `tracker`
 
-Der `tracker`-Skill nutzt Progressive Disclosure: Die `SKILL.md` enthält nur Kernregeln und Routing-Tabelle, Details liegen in 14 `references/`-Dateien (anker-system, anti-patterns, batch-protocol, chat-url-handling, clickup-fields, clickup-tools, complete-task, create-task, issue-task, review-workflow, search-and-status, split-and-relations, start-task, update-task). Auch `code-erstellen` hat `references/` (`stacks/`: csharp-wpf, home-assistant-yaml, python, typescript-lit).
+Der `tracker`-Skill nutzt Progressive Disclosure: Die `SKILL.md` enthält nur Kernregeln und Routing-Tabelle, Details liegen in 14 `references/`-Dateien (anker-system, anti-patterns, batch-protocol, chat-url-handling, clickup-fields, clickup-tools, complete-task, create-task, issue-task, review-workflow, search-and-status, split-and-relations, start-task, update-task). Auch `code-erstellen` hat `references/` (beispiele, cowork, `stacks/`: csharp-wpf, home-assistant-yaml, python, typescript-lit).
 
 > **Operative Regelquelle:** [`skills/tracker/SKILL.md`](./skills/tracker/SKILL.md).
 
@@ -632,7 +632,7 @@ claude-workbench/
 │   ├── chatgpt-review/                    ← SKILL.md + references/ (codex, archiv, beispiele)
 │   ├── code-erstellen/
 │   │   ├── SKILL.md
-│   │   └── references/stacks/
+│   │   └── references/                ← beispiele, cowork, stacks/
 │   ├── doc-pflege/SKILL.md
 │   ├── git-commit-helper/SKILL.md
 │   ├── mockup-erstellen/                 ← SKILL.md + references/ (sitemap, beispiele, cowork)

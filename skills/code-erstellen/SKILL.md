@@ -1,7 +1,7 @@
 ---
 name: code-erstellen
 description: >
-  Plant und erzeugt Codeänderungen im aktiven Projekt nach dessen Code-Profil
+  Plant und erzeugt Codeänderungen im aktiven Projekt nach dessen Skill-Profil
   (Pflicht-Docs, Aufgabenquelle, Stack-Referenzen, Tests, Auslieferung) –
   projektneutral für jedes Repo mit Profil (z. B. C#/WPF, TypeScript/Lit,
   HA-YAML, Python). Use when users want to schreiben, erstellen, bauen,
@@ -24,9 +24,18 @@ description: >
 Stellt sicher dass vor jeder Code-Erstellung die relevanten Docs
 gelesen und geprüft wurden, die Akzeptanz der Aufgabe bekannt ist, Tests
 laufen und die Änderung ausgeliefert wird. Welche Docs, Tests und
-Auslieferungsschritte das sind, steht im **Code-Profil** des Projekts
-(Abschnitt „Voraussetzung: Code-Profil“). BPM nutzt die verbindliche
-Ladereihenfolge aus DOC-STANDARD.md Kapitel 8; andere Projekte ihre eigene.
+Auslieferungsschritte das sind, steht im **Skill-Profil** des Projekts
+(Abschnitt „Voraussetzung: Skill-Profil“), auch die Ladereihenfolge der Docs
+(`Code.Pflichtkontext`).
+
+| Fall | Reference |
+|------|-----------|
+| Stack `csharp-wpf` (C# / .NET / WPF) | [references/stacks/csharp-wpf.md](references/stacks/csharp-wpf.md) |
+| Stack `home-assistant-yaml` (Pakete, Automationen, Skripte, Dashboards) | [references/stacks/home-assistant-yaml.md](references/stacks/home-assistant-yaml.md) |
+| Stack `python` | [references/stacks/python.md](references/stacks/python.md) |
+| Stack `typescript-lit` (Lit-Komponenten in Home Assistant) | [references/stacks/typescript-lit.md](references/stacks/typescript-lit.md) |
+| Wie zwei Projekte (BPM, Heidi) die Werte füllen | [references/beispiele.md](references/beispiele.md) |
+| Arbeit im Cowork-Chat (Desktop Commander, Auto-Anker, Ausgabeformat, Tests, Auslieferung) | [references/cowork.md](references/cowork.md) |
 
 ---
 
@@ -39,10 +48,10 @@ Punkte ist, NICHT hier weiterarbeiten, sondern delegieren.**
 | Hauptabsicht | Zuständiger Skill |
 |--------------|-------------------|
 | UI-Entwurf, Layout-Klärung, Screen-Vorschlag, neues HTML-Mockup | **mockup-erstellen** |
-| Großer UI-Umbau (Modus Deep) und das Profil sagt „Mockup-Pflicht: ja“ → zuerst Mockup, Abnahme abwarten, dann hier weiter | **mockup-erstellen** (Mockup-Hook) |
+| Großer UI-Umbau (Modus Deep) und `Code.Mockup-Policy` greift → zuerst Mockup, Abnahme abwarten, dann hier weiter | **mockup-erstellen** (Mockup-Hook) |
 | Commit-Befehl, Commit-Message, Version-Bump | **git-commit-helper** |
 | ADR, Konzept, Frontmatter, Quickload, Doku-Refactor | **doc-pflege** |
-| ClickUp-Task-Aktion ohne Code-Arbeit (neu, done, update, split, …); eine Aufgabe per ID umsetzen („mach BSM-002“, „weiter mit BSM-014“) bleibt hier, tracker setzt nur den Status | **tracker** |
+| Tracker-Aktion ohne Code-Arbeit (neu, done, update, split, …); eine Aufgabe per ID umsetzen („mach <PRÄFIX>-NNN“, „weiter mit <PRÄFIX>-NNN“) bleibt hier, tracker setzt nur den Status | **tracker** |
 | Read-only Konsistenzprüfung zwischen Code und Docs | **audit** |
 
 Nur wenn die Hauptabsicht **echte Code-Implementierung** ist
@@ -63,17 +72,16 @@ code-erstellen sonst unbeabsichtigt die genannten Nachbarskills überschreibt.
   | Situation | Optionen |
   |-----------|----------|
   | Modus unklar | Lite, Standard, Deep |
-  | Zielschicht mehrdeutig | Domain, Application, Infrastructure, UI |
+  | Zielschicht mehrdeutig | die Schichten der Stack-Referenz |
   | Mehrere Referenz-Implementierungen | Dateinamen als Optionen |
   | Fachliche Invariante würde verletzt | "Trotzdem fortsetzen", "Abbrechen", "Andere Lösung" |
-  | Ausgabeformat mehrdeutig (nur Cowork) | Komplette Datei, SUCHE/ERSETZE, Download |
-  | ClickUp-Task-Zuordnung nach Commit | Task-Kandidaten als Optionen + "Kein Task" + "Neuen Task anlegen" |
+  | Aufgaben-Zuordnung nach Commit | Aufgaben-Kandidaten als Optionen + "Keine Aufgabe" + "Neue Aufgabe anlegen" |
   | Mehrere Blocking Conditions | Welche Datei zuerst laden (Kandidaten) |
-  | Commit-Version unklar (Major/Minor/Patch) | MAJOR (Breaking), MINOR (Feature), PATCH (Fix) |
+  | Commit-Version unklar (Major/Minor/Patch) | MAJOR (Breaking), MINOR (Feature), PATCH (Fix); `Commit.Versionsregel` hat Vorrang (z.B. Vorabversion: jede Änderung zählt hoch) |
   | User muss Referenzdatei angeben | Kandidaten aus Projektstruktur |
   | Bestehende Daten/Configs betroffen | "Daten löschen, neu anlegen lassen", "Migration bauen", "Abbrechen" |
   | Tests rot nach dem Bau | "Fix jetzt", "Test anpassen (Begründung)", "Abbrechen" |
-  | Mockup-Pflicht greift (Deep + UI) | "Mockup zuerst", "Ohne Mockup weiter (User-Entscheid)" |
+  | `Code.Mockup-Policy` greift (Deep + UI) | "Mockup zuerst", "Ohne Mockup weiter (User-Entscheid)" |
 
   Prosa-Fragen nur, wenn:
   - Offene Frage ohne feste Optionen (Beispiel: "Welcher Kurztitel für den Commit?")
@@ -84,9 +92,9 @@ code-erstellen sonst unbeabsichtigt die genannten Nachbarskills überschreibt.
   `current` → der aktuelle Branch aus der Shell (`git branch --show-current`); `fixed:<branch>` → der aktuelle muss
   dieser sein, sonst Auswahlfrage (wechseln / abbrechen). Ohne Shell gilt bei `fixed:<branch>` dieser Branch, bei `current` eine Auswahlfrage. Ohne Skill-Profil:
   1. Prüfe ob Branch bereits in dieser Session bekannt ist → verwenden
-  2. **Shell verfügbar** (Claude Code: Bash/PowerShell; Cowork: DC): `git branch --show-current`
-     liefert den Branch – das ist eine Tatsache, keine Frage. Nennt das Code-Profil einen
-     Pflicht-Branch (Heidi: `dreame_x60`) und der aktuelle weicht ab → Auswahlfrage
+  2. **Shell verfügbar:** `git branch --show-current`
+     liefert den Branch – das ist eine Tatsache, keine Frage. Nennt das ältere Code-Profil einen
+     Pflicht-Branch und der aktuelle weicht ab → Auswahlfrage
      (wechseln / trotzdem / abbrechen), nie stumm weiterarbeiten.
   3. **Keine Shell** (reiner Chat, GitHub API): Branches auflisten und **per Auswahlfrage**
      den aktiven wählen lassen (Optionen = alle Branch-Namen, z.B. aus `git branch -a`)
@@ -102,111 +110,59 @@ code-erstellen sonst unbeabsichtigt die genannten Nachbarskills überschreibt.
 (`git rev-parse --show-toplevel`); bei Worktrees gilt der Worktree, nie das
 Haupt-Checkout.
 
-**Cowork-Chat:** Wenn dieser Skill DC-Operationen auslöst (z.B. Code-Dateien lesen,
-Entry Points prüfen), das Arbeitsverzeichnis nach **cc-steuerung**, Abschnitt
-„Arbeitsverzeichnis“, ermitteln.
+**Cowork-Chat:** [references/cowork.md](references/cowork.md#profil-und-dateien-lesen).
 
 **Keine hardcodierten absoluten Pfade** – in keiner Umgebung.
 
 ---
 
-## Auto-Anker bei Task-Keywords (Phase 1 des Chat-Anker-Systems)
+## Voraussetzung: Skill-Profil
 
-**Zweck:** Wenn im Chat ein Thema auftaucht das offensichtlich ein späterer Task wird (aber aktuell noch kein Task existiert), setzt dieser Skill automatisch einen temp-Anker. Das stellt sicher, dass die Diskussionsstelle später via `conversation_search` wiederfindbar ist.
+Die Werte kommen aus dem Skill-Profil der `CLAUDE.md` im Repo (`docs/skill-profile-v1.md` im Skill-Repo):
 
-**Gilt nur im Cowork-Chat.** In Claude Code gibt es weder Chat-Suche noch `[ANKER-LIVE]`-Memory;
-dort ersetzt eine Auswahlfrage den Anker: „Task jetzt anlegen (`tracker neu`)“ / „Im
-Notiz-Ort des Profils vermerken“ (Heidi: Bauplan Abschnitt 10) / „Nichts“. Anker-Präfix =
-Projekt-Präfix aus der Tracker-Config (BPM `BPM`, Heidi `DX`).
+| Feld | Wofür |
+|------|-------|
+| `Code.Stacks` | Schlüssel der Stack-Referenzen in `references/stacks/<key>.md` (Schichten, Kopplung, Impact-Zeilen, Tests, typische Fehler je Sprache); mehrere erlaubt |
+| `Code.Pflichtkontext` | Docs und ihre Ladereihenfolge vor dem Code |
+| `Code.Aufgabenquelle` | wo Ziel und Akzeptanz stehen (Pflicht, wenn das Projekt Aufgaben führt) |
+| `Code.Architekturregeln` | Schichten und Kopplung des Projekts (wer darf wen kennen, wo wird verdrahtet), Regeln zu Migration und Daten |
+| `Code.Tests` | Namen der Checks (Befehle unter `### Checks`, auch Build und Lint), Pflicht vor dem Commit |
+| `Code.Auslieferung` | Schritte nach dem Commit |
+| `Code.Mockup-Policy` | wann ein UI-Umbau zuerst als Mockup kommt (`required:<bedingung>`); `none` = nie Pflicht |
+| `Code.Befund-Ort` | wo Befunde und Ideen ohne Aufgabe landen |
+| `Doku.Router`, `Doku.Entscheidungs-Ort` | Routing zu den Docs; Grundentscheidungen des Projekts |
+| `Commit.Format`, `Commit.Versionsquelle`, `Commit.Versionsregel`, `Commit.Doku-Check` | Commit-Zeile, Version, Doku-Hinweise |
+| `Tracker.Provider`, `Tracker.Config` | Tracker-Abgleich und Präfix der Aufgaben |
+| `Branch-Policy` | Branch (Grundsätze) |
 
-Konzept-Doc: `docs/chat-anker-konzept.md` (Phase 1).
-Anker-Format + Memory-Registry: siehe tracker-Skill Kapitel "Chat-Anker-System".
+Pflichtfelder: die Grundfelder, `Code.Stacks`, `Code.Pflichtkontext`, `Code.Architekturregeln`, `Code.Tests`,
+`Code.Auslieferung`; `Code.Aufgabenquelle`, wenn das Projekt Aufgaben führt.
 
-### Task-Keywords (Trigger für Auto-Anker)
+1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Teil entfällt. Steht ein Pflichtfeld auf
+   `fehlt` oder fehlt es: genau dieses Feld nennen und nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“,
+   fragen. Eine andere `Profil-Version` als 1: nicht weiterarbeiten.
+2. **Rückfall:** der ältere Abschnitt `## Code-Profil` der CLAUDE.md. Seine Felder entsprechen den v1-Feldern: Stacks →
+   `Code.Stacks`, Build/Lint und Tests → `Code.Tests`, Pflicht-Docs → `Code.Pflichtkontext`, Aufgabenquelle →
+   `Code.Aufgabenquelle`, Schichten / Kopplung → `Code.Architekturregeln`, Auslieferung → `Code.Auslieferung`,
+   Mockup-Pflicht → `Code.Mockup-Policy`, Notiz-Ort (Befunde und Ideen ohne Aufgabe) → `Code.Befund-Ort`.
+3. **Fehlt beides:** der Router im Repo (meist `INDEX.md`), soweit vorhanden
+   ([references/beispiele.md](references/beispiele.md#rückfall-ohne-profil-bpm)); was dann noch fehlt, per Auswahlfrage
+   nach der Profil-Regel „Fehlende Werte“ (Profil ergänzen / einmalig nennen / abbrechen). Nie ohne Docs coden.
 
-Claude erkennt folgende Formulierungen als klares Task-Signal:
-
-- "das müssen wir noch bauen"
-- "später implementieren"
-- "ins backlog"
-- "backlog-wert"
-- "da brauchen wir einen task"
-- "sollten wir im task tracken"
-- "muss noch gemacht werden"
-- "als task anlegen"
-
-Wenn User diese Keywords nutzt UND das Thema noch keinen offenen Task hat → Auto-Anker setzen.
-
-### Ablauf
-
-1. Keyword erkannt UND Kontext ist klar (Thema identifizierbar)
-2. TEMP-ID generieren:
-   - Primär in der Shell (Cowork: DC PowerShell, siehe tracker-Skill "TEMP-ID Generierung")
-   - Fallback: Claude erzeugt `TEMP-<yyMMddHHmm><3 Zufallsbuchstaben>`
-3. Anker-Zeile im Chat-Response einfügen (möglichst am Anfang des relevanten Abschnitts):
-   ```
-   [<PRÄFIX>-ANCHOR-TEMP-<id>] — Idee: <kurzbeschreibung max 60 Zeichen>
-   ```
-4. Memory aktualisieren (Cowork):
-   ```
-   memory_user_edits(command: "add", control: "[ANKER-LIVE] TEMP-<id>|offen|<ISO-timestamp>|<kurzbeschreibung>")
-   ```
-5. Kurzer Hinweis im Chat: "Anker gesetzt — wird bei `tracker neu` mit Task-ID verknüpft."
-
-### Wann KEIN Auto-Anker
-
-- User spricht nur über bestehende Tasks (nicht Task-würdiger Neu-Content)
-- Thema ist zu vage für eine 60-Zeichen-Kurzbeschreibung
-- Innerhalb 24h existiert bereits ein Anker mit ähnlichem Thema (Duplikat-Check via `[ANKER-LIVE]`)
-- User sagt explizit "kein Task daraus" o.ä.
-- Mehr als 10 Anker bereits in `[ANKER-LIVE]` — User sollte erst aufräumen
-
-**Im Zweifel: KEIN Anker.** Lieber ein paar Anker verpassen als den Chat zuspammen.
-
-### Anti-Pattern
-
-- Anker mitten in Code-Blöcken einfügen
-- Mehrere Anker direkt hintereinander für dasselbe Thema
-- Anker setzen für Dinge die der User nur erwähnt ohne Handlungsabsicht
-- Anker mit generischen Beschreibungen wie "Feature X" oder "TODO"
-
----
-
-## Voraussetzung: Code-Profil
-
-Das Projekt beschreibt in einem **Code-Profil**, was dieser Skill vor, während und nach
-dem Bau braucht. Ort: Abschnitt `## Code-Profil` in der `CLAUDE.md` des Repos (Claude Code
-liest sie automatisch; im Cowork-Chat per DC lesen). Felder:
-
-| Feld | Bedeutung | BPM | Heidi |
-|------|-----------|-----|-------|
-| **Stacks** | Schlüssel der Stack-Referenzen in `references/stacks/<key>.md` (Schichten, Kopplung, Impact-Zeilen, Tests, typische Fehler je Sprache); mehrere erlaubt | `csharp-wpf` | `typescript-lit, home-assistant-yaml, python` |
-| Build/Lint | Befehle des Projekts | laut INDEX.md | `npm run check`, `npm run lint`, `npm run build` |
-| Pflicht-Docs | Ladereihenfolge vor dem Code | INDEX.md → Quickload → Invarianten → Pflichtlesen (DOC-STANDARD Kap. 8) | CLAUDE.md, docs/HANDOFF.md, BAUPLAN.md Abschnitt 2 (Regeln) + 4 (Vertrag) |
-| Aufgabenquelle | Wo Ziel + Akzeptanz stehen | ClickUp-Task (Description-Template) | BAUPLAN.md Abschnitt 8 Karte + ClickUp DX-Task |
-| Schichten / Kopplung | Wer darf wen kennen, wo wird verdrahtet | View→ViewModel, Service→Interface+DI, DB→Schema | contract → device/profile → selectors → Komponenten; Schreiben nur über DxApi |
-| Tests | Befehl + Pflicht vor Commit | laut INDEX.md | `npm test` in dreame_x60/card (check, unit, build, E2E) |
-| Auslieferung | Schritte nach dem Commit | laut INDEX.md | `deploy.ps1 -OnlyCard` + Ressourcen-Version; Backend: check_config + reload/restart |
-| Mockup-Pflicht | Deep + UI zuerst als Mockup? | nein | ja (Herbert: große Umbauten zuerst als Mockup) |
-| Notiz-Ort | Wo Befunde/Ideen ohne Task landen | Memory / Backlog | BAUPLAN.md Abschnitt 10 |
-
-**Stack-Referenzen laden:** Für jeden Schlüssel in `Stacks:` die Datei `references/stacks/<key>.md`
+**Stack-Referenzen laden:** Für jeden Schlüssel in `Code.Stacks` die Datei `references/stacks/<key>.md`
 lesen, **bevor** Modus, Impact Check oder Blocking beurteilt werden. Sie liefern die
 sprachspezifische Lesart der neutralen Regeln unten. Fehlt eine Datei → Auswahlfrage
 „Stack-Referenz aus dem Repo ableiten und anlegen“ / „Ohne Stack-Referenz weiter“; nie stumm
 raten. Neue Sprache = neue Datei, der Skill selbst bleibt unverändert.
-Vorhanden: `csharp-wpf`, `typescript-lit`, `home-assistant-yaml`, `python`.
+Vorhanden: siehe Tabelle im Abschnitt „Zweck“.
 
-**Fehlt das Profil:** `INDEX.md` im Repo als Profil nehmen (BPM-Weg, optional DOC-STANDARD.md;
-Stack `csharp-wpf`).
-Fehlt auch das: Auswahlfrage „Profil jetzt anlegen (ich schlage Werte aus dem Repo vor)“ /
-„Ohne Profil, ich nenne die Dateien“. Nie ohne Docs coden.
+Werte von BPM und Heidi als Beispiel: [references/beispiele.md](references/beispiele.md#profilwerte-bpm-und-heidi).
 
 ---
 
-## Load Order (verbindlich)
+## Ablauf (verbindlich)
 
-### 1. Anfrage klassifizieren → Modus
+### Anfrage klassifizieren → Modus
 
 Kriterien sind stack-neutral; die konkreten Beispiele je Sprache stehen in
 `references/stacks/<key>.md` (Abschnitt „Modus-Eskalation“).
@@ -232,59 +188,46 @@ Eskalation auf Deep:
 - Profil oder Stack-Referenz können eigene Kriterien ergänzen
 ```
 
-**Bei Unsicherheit (Anfrage passt zu mehreren Modi):** Auswahlfrage mit Optionen Lite, Standard, Deep.
+**Bei Unsicherheit (Anfrage passt zu mehreren Modi):** Auswahlfrage (Grundsätze, „Modus unklar“).
 
-**Mockup-Hook:** Modus Deep + UI betroffen + Profil „Mockup-Pflicht: ja“ → an
-**mockup-erstellen** delegieren, Abnahme des Users abwarten, erst dann Schritt 2.
-Ausnahme nur per Auswahlfrage („Ohne Mockup weiter“).
+**Mockup-Hook:** Modus Deep + UI betroffen + `Code.Mockup-Policy` greift → an
+**mockup-erstellen** delegieren, Abnahme des Users abwarten, erst dann weiter mit
+„Aufgabenquelle und Pflichtkontext laden“. Ausnahme nur per Auswahlfrage („Ohne Mockup weiter“).
 
-### 2. Aufgabenquelle und Pflicht-Docs laden
+### Aufgabenquelle und Pflichtkontext laden
 
-1. **Aufgabenquelle** aus dem Profil lesen (ClickUp-Task, Bauplan-Karte): Ziel,
+1. **Aufgabenquelle** aus dem Profil lesen (`Code.Aufgabenquelle`, z.B. Aufgabe im Tracker oder Karte im Bauplan): Ziel,
    **Akzeptanzkriterien**, „Nicht ändern“, Voraussetzungen. Jede Akzeptanz-Zeile wird
-   ein Testfall (Schritt 7b) und eine Zeile im Impact Check.
-2. **Pflicht-Docs** in der Reihenfolge des Profils laden. BPM: INDEX.md → Task-to-Doc
-   Routing → Primary/Secondary/Reference. Heidi: CLAUDE.md (automatisch), HANDOFF.md
-   Abschnitt 3e, BAUPLAN.md Abschnitt 2 und 4, bei Domänen-Logik Abschnitt 6.
+   ein Testfall (Abschnitt „Tests“) und eine Zeile im Impact Check.
+2. **Pflichtkontext** in der Reihenfolge des Profils laden (`Code.Pflichtkontext`; Beispiele:
+   [references/beispiele.md](references/beispiele.md#ladereihenfolge-bpm)).
 3. **Grundentscheidungen:** Nennt das Profil `Doku.Entscheidungs-Ort`, die dort dokumentierten
    Grundentscheidungen (Zweck, Grenzen, Datenhaltung, Auslieferung) vor der ersten fachlichen
    Erweiterung lesen. Sie sind Projektkontext, keine unveränderliche Architektur; eine Änderung
    daran wird dort nachgetragen.
 
-### 3. Quickload-First-Pass (BPM: DOC-STANDARD Kapitel 8; andere Projekte: Ladereihenfolge des Profils)
+### Kopf zuerst lesen
 
-**Verbindliche Ladereihenfolge (BPM):**
-
-```
-1. INDEX.md → Routing (welche Doc?)
-2. Frontmatter + AI-Quickload lesen → Filter (relevant? welches Kapitel?)
-3. Fachliche Invarianten prüfen → Sofort sichtbar ohne Langform
-4. Pflichtlesen-Kapitel laden → Immer wenn Modul betroffen
-5. Weitere Kapitel nur bei Bedarf nachladen
-```
+Gilt, wo die Docs einen Kopf haben (Frontmatter, Quickload); sonst die Docs des Pflichtkontexts ganz lesen.
 
 **Ablauf:**
-1. Relevante Docs aus INDEX-Routing identifizieren (Primary zuerst)
-2. Für jede Doc: Nur erste ~30 Zeilen laden (Frontmatter + Quickload)
+1. Relevante Docs aus dem Router (`Doku.Router`) bzw. dem Pflichtkontext identifizieren (Primary zuerst)
+2. Für jede Doc: Nur den Kopf laden (etwa die ersten 30 Zeilen: Frontmatter + Quickload)
 3. Fachliche Invarianten sofort in den Impact Check übernehmen
 4. Pflichtlesen-Kapitel: IMMER laden wenn Modul betroffen → Blocking Condition
-5. Aus Quickload-Kapitel-Feld entscheiden welche Kapitel relevant sind
+5. Aus dem Kopf (Kapitel-Feld) entscheiden welche Kapitel relevant sind
 6. Nur relevante Kapitel als Langform nachladen
-7. Quickload nicht vorhanden? → Fallback: ganze Doc laden
+7. Kein Kopf vorhanden? → Fallback: ganze Doc laden
 
-**Limits:**
-- Lite: Quickload max 3 Docs, Langform max 2
-- Standard: Quickload max 6 Docs, Langform max 4
-- Deep: Quickload max 10 Docs, Langform max 8
+Höchstzahlen je Modus: Abschnitt „Modus-Übersicht“.
 
-### 4. Code Entry Points laden
+### Code Entry Points laden
 
 Kopplungsregeln aus den Stack-Referenzen (Abschnitt „Schichten und Kopplungsregeln“ in
-`references/stacks/<key>.md`) plus die projektspezifische Zeile „Schichten / Kopplung“ im
-Code-Profil. Bei mehreren Stacks (z.B. Karte + Backend) die Schnittstelle dazwischen – der
-Vertrag – zuerst laden.
+`references/stacks/<key>.md`) plus die Regeln des Projekts (`Code.Architekturregeln`). Bei mehreren Stacks (z.B. Karte +
+Backend) die Schnittstelle dazwischen – der Vertrag – zuerst laden.
 
-### 5. Impact Check
+### Impact Check
 
 Zeilen stack-neutral; die Lesart je Sprache (was „Verdrahtung“ oder „Persistenz“ konkret
 heißt) steht in `references/stacks/<key>.md`, Abschnitt „Impact-Check-Zeilen“.
@@ -305,11 +248,11 @@ heißt) steht in `references/stacks/<key>.md`, Abschnitt „Impact-Check-Zeilen�
 - Referenzimplementierung: [Name oder Nein]
 - Fachliche Invarianten verletzt?: [Liste oder Nein] (Regeln des Projekts, „Nicht ändern“ der Aufgabe)
 - Akzeptanzkriterien der Aufgabenquelle: [Liste → werden Testfälle]
-- Tests betroffen (Profil-Befehl): [welche Dateien]
-- Auslieferung nötig (Profil): [Ja/Nein, welcher Schritt]
+- Tests betroffen (Code.Tests): [welche Dateien]
+- Auslieferung nötig (Code.Auslieferung): [Ja/Nein, welcher Schritt]
 ```
 
-### 6. Blocking Conditions
+### Blocking Conditions
 
 Blockiere Code-Erstellung wenn:
 - Zielschicht unklar → Auswahlfrage mit den Schichten der Stack-Referenz
@@ -318,45 +261,46 @@ Blockiere Code-Erstellung wenn:
 - Externe Kommunikation ohne Datenschutz-Doc → erst laden (laut Stack-Referenz/Profil)
 - UI ohne Design-Doc bzw. Mockup → erst laden
 - Schema/Vertrag ohne Doc → erst laden (Vertrags-Doku des Profils)
-- **Stack-Referenz für einen Schlüssel aus `Stacks:` nicht gelesen** → erst lesen
+- **Stack-Referenz für einen Schlüssel aus `Code.Stacks` nicht gelesen** → erst lesen
 - **Pflichtlesen-Kapitel nicht geladen obwohl Modul betroffen** → laden
 - **Akzeptanzkriterien der Aufgabenquelle nicht gelesen** → erst lesen
-- **Mockup-Pflicht greift und kein abgenommenes Mockup** → mockup-erstellen (siehe Schritt 1)
+- **`Code.Mockup-Policy` greift und kein abgenommenes Mockup** → mockup-erstellen (siehe „Anfrage klassifizieren“, Mockup-Hook)
 - **Fachliche Invariante würde verletzt werden** → Auswahlfrage (Trotzdem fortsetzen / Abbrechen / Andere Lösung)
-- **Migration / Backward-Compatibility wäre nötig** → Auswahlfrage (Daten löschen + neu anlegen / Migration explizit gewünscht / Abbrechen) — Frühphasen-Prinzip (BPM: INDEX.md)
+- **Migration / Backward-Compatibility wäre nötig** → Auswahlfrage (Daten löschen + neu anlegen / Migration explizit gewünscht / Abbrechen) — Frühphasen-Prinzip laut `Code.Architekturregeln`
 
 → NICHT blind coden, per Auswahlfrage nachfragen welche Datei noch geladen werden muss.
 
-### 7. Code erzeugen
+### Code erzeugen
 
-Standards aus Project Files, Referenzimplementierungen als Muster. Nichts fest
+Standards aus den Architekturregeln und dem Pflichtkontext des Projekts, Referenzimplementierungen als Muster. Nichts fest
 verdrahten, was das Profil als dynamisch nennt.
 
-### 7b. Tests (Pflicht, Befehl aus dem Profil)
+### Tests (Pflicht, Checks aus `Code.Tests`)
 
-1. Für jede Akzeptanz-Zeile aus Schritt 2 einen Test schreiben oder erweitern
+1. Für jede Akzeptanz-Zeile aus der Aufgabenquelle einen Test schreiben oder erweitern
    (Unit für Domäne/Selektoren, E2E für Bedienung; Muster und Orte laut Stack-Referenz „Tests“)
-2. **Claude Code:** Testbefehl des Profils ausführen (plus Build/Lint-Befehle des Profils).
-   Exit-Code 0 ist Bedingung für Schritt 9.
+2. **Claude Code:** die Checks aus `Code.Tests` ausführen (dazu Build und Lint, soweit dort genannt).
+   Exit-Code 0 ist Bedingung für den Commit.
    Es laufen nur Checks, deren Pfad-Muster eine geänderte Datei trifft; übersprungene werden genannt. Unabhängige
    Checks laufen gleichzeitig, lange im Hintergrund mit Ausgabe in eine Datei, die vollständig gelesen wird – Regeln in
    `skills/git-commit-helper/SKILL.md#Prüfläufe vor dem Commit`. Ist ein Pre-Commit-Check hier schon grün gelaufen und
    seitdem keine Datei mehr geändert, läuft er vor dem Commit nicht noch einmal. In Claude Code übernimmt das das
-   Skript von git-commit-helper: `python3 <Skills-Ordner>/git-commit-helper/scripts/checks.py --checks <Tests des
-   Profils, mit Komma>`.
-   **Cowork:** Testbefehl im Commit-Block mitliefern; der User führt aus und meldet das Ergebnis.
+   Skript von git-commit-helper: `python3 <Skills-Ordner>/git-commit-helper/scripts/checks.py --checks <Code.Tests, mit
+   Komma>`.
+   **Cowork-Chat:** [references/cowork.md](references/cowork.md#tests-und-selbst-review-im-cowork-chat).
 3. **Tests rot** → Auswahlfrage: „Fix jetzt“ / „Test anpassen (Begründung in Aufgabenquelle)“ /
    „Abbrechen“. Nie einen roten Test still löschen oder überspringen.
 4. Ergebnis melden als Tabelle Check / Dauer / Ergebnis, übersprungene Checks eingeschlossen; dazu Anzahl der
    Tests, was rot war und warum. Kein „Tests laufen“ ohne Ausgabe.
 
-### 7c. Selbst-Review (Pflicht vor dem Commit)
+### Selbst-Review (Pflicht vor dem Commit)
 
 Tests finden nicht alles. Vor dem Commit den eigenen Diff mit frischem Blick prüfen: Fehler, Randfälle, Sicherheit,
 unnötige Komplexität.
 
 1. **Claude Code:** den eingebauten Skill `code-review` auf den aktuellen Diff laden (Stufe `low`, im Modus Deep
-   `medium`). **Cowork:** den Diff selbst lesen, mit denselben vier Fragen. Das Review meldet nur; beheben, testen
+   `medium`). **Cowork-Chat:** [references/cowork.md](references/cowork.md#tests-und-selbst-review-im-cowork-chat).
+   Das Review meldet nur; beheben, testen
    und committen macht dieser Skill. Hat es doch Dateien geändert oder committet (`git status`, `git log`), das dem
    Nutzer sagen und den Stand prüfen, bevor es weitergeht.
 2. Jeden Befund beheben oder mit Begründung stehen lassen; nach einer Korrektur die betroffenen Checks aus „Tests“
@@ -365,110 +309,101 @@ unnötige Komplexität.
 
 Entfällt nur, wenn der Diff keinen Code enthält (nur Doku); dann im Bericht „entfällt: kein Code“.
 
-### 8. Ausgabeformat (nur Cowork-Chat → suche-ersetze)
+### Ausgabe
 
-**Claude Code:** entfällt – Dateien werden direkt mit Edit/Write geändert; Ausgabe im Chat ist
+**Claude Code:** Dateien werden direkt geändert; Ausgabe im Chat ist
 die Zusammenfassung (Dateien, Tests, Commit), nicht der Code.
 
-**Cowork:**
-- Neue Datei → komplett
-- < 600 Zeilen UND > 30% geändert → komplett
-- ≥ 600 Zeilen → SUCHE/ERSETZE
-- Stack-Besonderheiten (z.B. XAML → Download) laut Stack-Referenz „Ausgabe“
+**Cowork-Chat:** Ausgabeformat (komplett, SUCHE/ERSETZE, Download) nach
+[references/cowork.md](references/cowork.md#ausgabeformat).
 
-**Bei Mehrdeutigkeit:** Auswahlfrage mit den möglichen Formaten.
+### Commit und Doku-Hinweise (→ git-commit-helper + doc-pflege)
 
-### 9. Commit + DocMaintenanceHints (→ git-commit-helper + doc-pflege)
-
-Format, Versionsquelle und Bump-Regel kommen aus dem **Commit-Profil** des Repos
-(git-commit-helper). Die Doku-Zeilen sind die **Doku-Checkliste des Commit-Profils** –
-unten das BPM-Beispiel; Heidi: Bauplan-Statusliste, Abschnitt 10/10a, HANDOFF 3e,
-Abschnitt 4 + contract.ts bei neuen Entitäten.
+Format, Versionsquelle und Bump-Regel kommen aus dem Skill-Profil (`Commit.Format`, `Commit.Versionsquelle`,
+`Commit.Versionsregel`; git-commit-helper). Die Doku-Zeilen (DocMaintenanceHints) sind die Punkte aus
+`Commit.Doku-Check`. Beispiele aus zwei Projekten: [references/beispiele.md](references/beispiele.md#doku-check-und-commit).
 
 ```
 [vX.Y.Z] Modul, Typ: Kurztitel
 
-📝 Doc-Pflege nötig (BPM-Beispiel):
-- INDEX.md: [Ja/Nein]
-- DB-SCHEMA.md: [Ja/Nein]
-- CHANGELOG.md: [Ja/Nein]
-- ADR.md: [Ja/Nein]
-- Frontmatter: [welche Docs]
-- Quickload: [welche Docs]
+📝 Doc-Pflege nötig:
+- <je Punkt aus Commit.Doku-Check>: [Ja/Nein]
+- Frontmatter / Kopf: [welche Docs]
 
 🧪 Tests: [Befehl, Ergebnis, Exit-Code]
 🔍 Selbst-Review: [Stufe, Befunde, behoben / begründet offen]
 📂 Gelesene Dateien: [Liste]
-📋 Quickload-Only: [Liste]
+📋 Nur Kopf gelesen: [Liste]
 ⚠️ Annahmen: [falls vorhanden]
 🚫 Nicht geladen: [Begründung]
 ```
 
-**Version-Bump unklar?** Auswahlfrage:
-- MAJOR (Breaking Change)
-- MINOR (neues Feature)
-- PATCH (Bugfix)
-(Bump-Regel des Commit-Profils hat Vorrang, z.B. Vorabversion: jede Änderung zählt hoch.)
+**Version-Bump unklar?** Auswahlfrage nach den Grundsätzen („Commit-Version unklar“).
 
-### 9b. Auslieferung (Schritte aus dem Profil)
+### Auslieferung (Schritte aus `Code.Auslieferung`)
 
 Nur wenn das Profil eine Auslieferung nennt. **Claude Code** führt sie aus und prüft das
-Ergebnis; **Cowork** liefert die Befehle. Die Schritte stehen im Profil („Auslieferung“), die
+Ergebnis; im Cowork-Chat: [references/cowork.md](references/cowork.md#auslieferung). Die Schritte stehen im Profil
+(`Code.Auslieferung`), die
 Prüfreihenfolge je Stack in der Stack-Referenz (z.B. home-assistant-yaml: Deploy → check_config →
 reload/restart → Zustand prüfen). Zum Schluss dem User sagen, was er wie sichtprüfen soll.
 
-### 10. ClickUp Tracker-Abgleich (optional)
+### Tracker-Abgleich (optional)
 
-Nach erfolgreichem Commit prüfen:
-1. Gibt es einen offenen ClickUp-Task der zu dieser Änderung passt?
-   - `clickup_search` mit Schlüsselwörtern aus dem Commit-Titel
+Nur wenn das Projekt einen Tracker führt (`Tracker.Provider`). Nach erfolgreichem Commit prüfen:
+1. Gibt es eine offene Aufgabe, die zu dieser Änderung passt?
+   - über tracker suchen (`tracker suche`) mit Schlüsselwörtern aus dem Commit-Titel
 2. **Wenn Kandidaten gefunden → Auswahlfrage:**
    ```
-   Frage: "Commit passt zu folgenden Tasks. Welcher soll auf Done?"
+   Frage: "Commit passt zu folgenden Aufgaben. Welche soll auf Done?"
    Optionen:
-   - "<PRÄFIX>-004 | 5998er Statikplaene Erkennung"   (Beispiel BPM)
-   - "<PRÄFIX>-007 | andere passende Task"
-   - "Kein Task passt"
-   - "Neuen Task anlegen"
+   - "<PRÄFIX>-NNN | <Titel der Aufgabe>"
+   - "<PRÄFIX>-NNN | <andere passende Aufgabe>"
+   - "Keine Aufgabe passt"
+   - "Neue Aufgabe anlegen"
    ```
-3. Bei "Neuen Task anlegen" → `tracker neu` aufrufen
-4. Bei Task-Auswahl → `tracker done` aufrufen
+3. Bei "Neue Aufgabe anlegen" → `tracker neu` aufrufen
+4. Bei Aufgaben-Auswahl → `tracker done` aufrufen
 5. NICHT automatisch schließen — nur vorschlagen
 6. Alle ClickUp-Operationen über den **tracker-Skill**, NICHT direkt
 
-Beispiel-Ausgabe nach Commit:
+Beispiel aus einem Projekt: [references/beispiele.md](references/beispiele.md#tracker-abgleich).
 
-```
-[v0.25.30] PlanManager, Fix: 5998er Statikplaene Erkennung
+---
 
-📝 Doc-Pflege nötig: Nein
-🎯 ClickUp: 1 passender Task gefunden
-```
-→ dann Auswahlfrage mit dem Task als Option
+## Aufgaben-Stichwörter
+
+Klingt ein Thema im Gespräch offensichtlich nach einer späteren Aufgabe, für die es noch keine gibt (z.B. „das müssen
+wir noch bauen“, „ins backlog“), fragt Claude in Claude Code per Auswahlfrage: „Aufgabe jetzt anlegen (`tracker neu`)“ /
+„Am Befund-Ort vermerken“ (`Code.Befund-Ort`) / „Nichts“. Einen Chat-Anker gibt es hier nicht, weil Claude Code weder
+Chat-Suche noch `[ANKER-LIVE]`-Memory hat. Im Cowork-Chat setzt Claude stattdessen einen Auto-Anker:
+[references/cowork.md](references/cowork.md#auto-anker-bei-aufgaben-stichwörtern).
 
 ---
 
 ## Modus-Übersicht
 
-| Modus | Quickload | Langform | Code | Impact | Tests |
-|-------|-----------|----------|------|--------|-------|
+| Modus | Kopf (Docs) | Langform | Code | Impact | Tests |
+|-------|-------------|----------|------|--------|-------|
 | Lite | max 3 | max 2 | 1-3 | Kurz | bestehende laufen lassen |
 | Standard | max 6 | max 4 | 3-8 | Voll | + je Akzeptanz-Zeile ein Test |
 | Deep | max 10 | max 8 | 5-12+ | Voll + Blocking | + E2E für den Benutzerfluss; Mockup-Hook |
+
+Kopf und Langform zählen nur Docs mit Kopf (Abschnitt „Kopf zuerst lesen“).
 
 ---
 
 ## VERBOTEN
 
-- Code ohne Pflicht-Docs des Profils und ohne die Stack-Referenzen aus `Stacks:`
-- Quickload-First-Pass überspringen
+- Code ohne Pflichtkontext des Profils (`Code.Pflichtkontext`) und ohne die Stack-Referenzen aus `Code.Stacks`
+- Kopf zuerst lesen überspringen, wo die Docs einen Kopf haben
 - Pflichtlesen-Kapitel ignorieren
 - Fachliche Invarianten ignorieren
 - Annahmen ohne geladene Dateien
 - Impact Check weglassen
 - DocMaintenanceHints weglassen
 - Branch automatisch annehmen — ohne Branch-Policy, Shell oder Auswahlfrage
-- Hardcodierte absolute Pfade bei Dateizugriff (DC oder Claude Code)
+- Hardcodierte absolute Pfade bei Dateizugriff, in keiner Umgebung
 - ClickUp-Tasks direkt erstellen/schließen (→ immer über tracker-Skill)
 - Tasks automatisch als Done markieren ohne User-Bestätigung
 - **Prosa-Fragen bei festen Entscheidungsoptionen** — IMMER Auswahlfrage (Branch-Auswahl, wenn die Shell ihn nicht liefert; Task-Zuordnung nach Commit; Modus-Auswahl bei Unsicherheit; Blocking-Condition-Auflösung, wenn Kandidaten bekannt)
@@ -476,13 +411,12 @@ Beispiel-Ausgabe nach Commit:
 - **Roten Test löschen oder überspringen** ohne Auswahlfrage und Begründung
 - **Checks laufen lassen, deren Pfad-Muster keine geänderte Datei trifft**, oder übersprungene Checks verschweigen
 - **Akzeptanzkriterien der Aufgabenquelle ignorieren** — sie sind die Testliste
-- **Deep-UI-Umbau ohne Mockup**, wenn das Profil Mockup-Pflicht sagt — außer der User entscheidet es per Auswahlfrage
+- **Deep-UI-Umbau ohne Mockup**, wenn `Code.Mockup-Policy` greift — außer der User entscheidet es per Auswahlfrage
 - **Auslieferung vergessen**, wenn das Profil eine nennt — nach dem Commit ist die Änderung erst fertig, wenn sie läuft
 - **Stack-Begriffe eines Projekts (WPF, DI, SQLite, XAML) für ein anderes annehmen** — Schichten und Kopplung aus der Stack-Referenz des Profils
 - **Sprachspezifisches in die SKILL.md schreiben** — gehört nach `references/stacks/<key>.md`; die SKILL.md bleibt neutral
 - Optionen im Chat aufzählen und auf getippte Antwort warten
-- Migration / Backward-Compatibility automatisch bauen ohne User-Freigabe (siehe Frühphasen-Prinzip in INDEX.md)
-- **Auto-Anker bei vagen Themen setzen** — lieber keinen Anker als einen unscharfen
-- **Anker mit generischen Beschreibungen** ("Feature X", "TODO") — immer konkret benennen
-- **Anker setzen ohne Memory-Update** (Cowork) — Chat-Zeile UND `[ANKER-LIVE]`-Eintrag gehören zusammen; in Claude Code stattdessen Auswahlfrage tracker neu / Notiz-Ort
+- Migration / Backward-Compatibility automatisch bauen ohne User-Freigabe (Frühphasen-Prinzip, `Code.Architekturregeln`)
 - **Commit ohne Selbst-Review des Diffs** (Abschnitt „Selbst-Review“) oder mit offenem Befund ohne Begründung
+- Verbote zum Auto-Anker im Cowork-Chat: [references/cowork.md](references/cowork.md#verboten-im-cowork-chat); in Claude
+  Code statt Anker die Auswahlfrage aus „Aufgaben-Stichwörter“
