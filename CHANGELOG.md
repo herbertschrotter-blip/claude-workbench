@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.11] — 2026-10-28
+
+- **skills/code-erstellen, Change (Umbau Phase 7):** Die Description nennt als Beispiel für Arbeit an einer Aufgabe per ID
+  „mach AB-002“, „weiter mit AB-014“ statt des Präfixes eines echten Projekts; INDEX.md (Konfliktpaar code-erstellen ↔
+  tracker) gleich.
+
 ## [v0.62.10] — 2026-10-28
 
 - **skills/chatgpt-review, Change (Umbau Phase 7):** Fehlt Review-Config und Review-Profil, keine Rückfallwerte eines
