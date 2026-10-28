@@ -78,9 +78,8 @@ Werte von BPM und Heidi als Beispiel: [`references/beispiele.md`](references/bei
 1. `Review.Config` aus dem Skill-Profil. Claude Code liest die `CLAUDE.md` automatisch; im Cowork-Chat kommt der
    Repo-Pfad aus dem Memory `[PROJECT]`.
 2. Fehlt sie: der ältere Abschnitt `## Review-Profil` der `CLAUDE.md` (dieselben Felder, nicht nach Thema getrennt).
-3. Fehlt auch der: die Rückfallwerte aus
-   [`references/beispiele.md`](references/beispiele.md#rückfall-ohne-profil-bpm), wenn das Repo deren Bedingung
-   erfüllt.
+3. Fehlt auch der: was das Repo selbst nennt (Review-Ordner, Router), als Vorschlag für die Auswahlfrage sammeln; nie
+   ohne Rückfrage übernehmen. Beispiel: [`references/beispiele.md`](references/beispiele.md#rückfall-ohne-profil-bpm).
 4. Sonst Auswahlfrage nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“; bei „Profil ergänzen“ schlägt
    Claude die Werte aus dem Repo vor.
 

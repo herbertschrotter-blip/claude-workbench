@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.10] — 2026-10-28
+
+- **skills/chatgpt-review, Change (Umbau Phase 7):** Fehlt Review-Config und Review-Profil, keine Rückfallwerte eines
+  bestimmten Projekts mehr, sondern ein Vorschlag aus dem Repo für die Auswahlfrage nach „Fehlende Werte“; das Beispiel
+  bleibt in `references/beispiele.md`.
+
 ## [v0.62.9] — 2026-10-28
 
 - **skills/mockup-erstellen, Change (Umbau Phase 7):** Fehlt jedes Profil, keine BPM-Werte mehr annehmen, sondern
