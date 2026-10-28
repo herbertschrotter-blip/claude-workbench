@@ -278,7 +278,7 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 | **mockup-erstellen** | HTML-UI-Mockups nach Mockup-Profil. | "Mockup für ProfileWizard", "Screen-Design", "UI-Mockup" |
 | **doc-pflege** | Erstellt, pflegt und korrigiert Projektdokumentation nach dem Skill-Profil (Bereich Doku); prüfen ohne Änderung macht audit. | "pflege die docs", "schreib ein ADR", "neues Konzept für X" |
 | **projekt-anlegen** | Neue Projekte anlegen und einrichten: klären, Plan zeigen, lauffähiges und geprüftes Grundgerüst (Generator für unterstützte Stacks), Git, Skill-Profil, GitHub nach Rückfrage. | "neues Projekt", "ich will X bauen, weiß aber nicht wie", "Repo holen und einrichten" |
-| **ticket** | Fehler-Tickets eines Projekts einzeln und immer im selben Ablauf bearbeiten (acht Schritte). | "ticket liste", "ticket HT-0007", "nimm das nächste ticket" |
+| **ticket** | Fehler-Tickets eines Projekts einzeln und immer im selben Ablauf bearbeiten (acht Schritte). | "ticket liste", "ticket FE-0007", "tickets prüfen", "nimm das nächste ticket" |
 | **chatgpt-review** | Strukturierte Cross-LLM-Review-Prompts zwischen Claude und ChatGPT. | "besprich das mit ChatGPT", "zweite Meinung", "Folgeprompt für Runde 3" |
 | **audit** | Strikt read-only Konsistenzprüfung zwischen Code, Docs, Frontmatter und Quickload; Prüfung gegen Grundsatzregeln (z. B. HA). | "audit", "prüfe alles", "konsistenzcheck", "Grundsatzregeln prüfen" |
 | **tracker** | Standardisierte Schreibschnittstelle zum ClickUp-Task-System. | "tracker neu: PM — Regex-Bug", "tracker done BPM-042", "tracker suche Regex" |
@@ -315,7 +315,7 @@ skills/<skill-name>/
 ```
 
 Die Testsätze eines Skills liegen nicht mehr im Skill-Ordner, sondern als Eval-Fälle zentral unter `quality/evals/`
-(Kapitel 3); `test-prompts.md` ist eine Altlast (noch bei ticket, entfällt in Umbau-Phase 7).
+(Kapitel 3); `test-prompts.md` gibt es nicht mehr.
 
 ### Aufbau einer `SKILL.md`
 
@@ -641,7 +641,7 @@ claude-workbench/
 │   ├── skill-auswertung/SKILL.md
 │   ├── skill-neu/                         ← SKILL.md + references/ (cowork)
 │   ├── skill-pflege/                      ← SKILL.md + references/ (rule-inventory, delivery)
-│   ├── ticket/                            ← SKILL.md + test-prompts.md + references/ (beispiele)
+│   ├── ticket/                            ← SKILL.md + references/ (beispiele)
 │   └── tracker/                           ← SKILL.md + references/ (16 Dateien, u. a. beispiele, cowork)
 │       ├── SKILL.md
 │       ├── references/

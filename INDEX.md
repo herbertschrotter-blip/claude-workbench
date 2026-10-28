@@ -29,7 +29,7 @@ wiederholt sie nicht.
 | **skill-neu** | Neue Skills für dieses Repo anlegen (Absicht, Kollisionsprüfung, Neutralität, Eval-Fälle) | "neuer Skill für X", "erstelle einen Skill" |
 | **skill-pflege** | Bestehende Skills ändern: Safe Patch oder Refactor mit Regel-Inventar; Lieferung | "Skill updaten", "Skill ändern", "Skill erweitern" |
 | **skill-auswertung** | Skill-Log auswerten (Zündungen im Alltag), Modi Schnellblick/Standard/Tiefenanalyse; Befunde → Eval-Fälle, tracker, skill-pflege; Regeln des Skill-Wächters nachschärfen (`regeln.json`, nach Freigabe) | "skills auswerten", "skill-log auswerten", "wie zünden die Skills", "Wächter-Regeln nachschärfen" |
-| **ticket** | Fehler-Tickets eines Projekts einzeln, immer im selben Ablauf, jeder Schritt mit Auswahlfrage | "ticket HT-0007", "ticket liste", "nimm das nächste ticket" |
+| **ticket** | Fehler-Tickets eines Projekts einzeln, immer im selben Ablauf, jeder Schritt mit Auswahlfrage | "ticket FE-0007", "ticket liste", "tickets prüfen", "nimm das nächste ticket" |
 | **tracker** | Einzige Schreibschnittstelle für ClickUp-Aufgaben und Skill-Issues | "tracker neu", "tracker done", "tracker issue", "tracker suche" |
 
 Was jeder Skill ausdrücklich **nicht** übernimmt, steht in seiner Description („Do not trigger for …“) und in seinem

@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.7] — 2026-10-28
+
+- **skills/ticket, Change (Umbau Phase 7):** Description ohne Ticketnummer einer bestimmten App (`FE-0007` statt
+  `HT-0007`) und mit dem Auslöser „tickets prüfen“ (Skill-Issue ticket-002); 869 Zeichen. `test-prompts.md` entfernt,
+  ihre fehlenden Fälle sind Eval-Fälle (`ticket-discard`, `ticket-close`, `ticket-no-trigger-support`).
+
 ## [v0.62.6] — 2026-10-28
 
 - **skills/audit, Fix (Nacharbeit Umbau Phase 6):** Grundsatz G-23 (Home Assistant) prüft die Ticket-Config
