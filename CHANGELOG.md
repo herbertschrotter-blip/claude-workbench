@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.4] — 2026-10-28
+
+- **skills/mockup-erstellen, Fix (Nacharbeit Umbau Phase 6):** Mockup-Hook nennt `Code.Mockup-Policy` im Skill-Profil
+  statt „Mockup-Pflicht: ja“; im Branch-Rückfall „älteres Code-Profil“. Description unverändert.
+
 ## [v0.62.3] — 2026-10-28
 
 - **skills/tracker, Refactor (Umbau Phase 6):** neuer Abschnitt „Voraussetzung: Skill-Profil“ (`Tracker.Provider`,

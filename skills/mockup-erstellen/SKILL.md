@@ -55,7 +55,7 @@ einer README steht.
 
 **Wichtig:** Mockup-erstellen liefert HTML in die Mockup-Ablage des Profils. Sobald es um
 echten Code (XAML/C#, TypeScript/Lit) geht, gehört die Arbeit in code-erstellen. Umgekehrt
-ruft code-erstellen diesen Skill über den **Mockup-Hook** (Deep + UI + Profil „Mockup-Pflicht: ja“)
+ruft code-erstellen diesen Skill über den **Mockup-Hook** (Deep + UI + `Code.Mockup-Policy` im Skill-Profil)
 auf und wartet auf die festgehaltene Abnahme (Abschnitt „Abnahme festhalten“).
 
 ---
@@ -83,7 +83,7 @@ auf und wartet auf die festgehaltene Abnahme (Abschnitt „Abnahme festhalten“
 - **Branch** nach der Branch-Policy im Skill-Profil der `CLAUDE.md`: `current` → der aktuelle Branch aus der Shell
   (`git branch --show-current`); `fixed:<branch>` → der aktuelle muss dieser sein, sonst Auswahlfrage (wechseln /
   abbrechen). Ohne Shell gilt bei `fixed:<branch>` dieser Branch, bei `current` eine Auswahlfrage. Ohne Skill-Profil: Branch aus Chat-Kontext verwenden; mit Shell (Claude Code: Bash/PowerShell, Cowork: DC)
-  `git branch --show-current`, Pflicht-Branch aus dem Code-Profil beachten; ohne Shell und unbekannt: Auswahlfrage mit
+  `git branch --show-current`, Pflicht-Branch aus dem älteren Code-Profil beachten; ohne Shell und unbekannt: Auswahlfrage mit
   den Branch-Namen aus `git branch -a`. NIE automatisch einen Branch annehmen.
 
 ---
