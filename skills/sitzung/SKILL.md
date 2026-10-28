@@ -55,7 +55,7 @@ Tipp erreichbar sind.
 ## Ablauf bei „sitzung“
 
 Direkte Wünsche überspringen die Menüs („sitzung fenster“, „sitzung wiederherstellen“, „öffne die Tickets-Sitzung von
-ha-baustelle“): gleich zum passenden Abschnitt.
+<Projekt>“): gleich zum passenden Abschnitt.
 
 ### 1. Lage holen
 

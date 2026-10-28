@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.13] — 2026-10-28
+
+- **skills/sitzung, Change (Umbau Phase 7):** Das Beispiel für direkte Wünsche nennt „<Projekt>“ statt eines echten
+  Projektnamens.
+
 ## [v0.62.12] — 2026-10-28
 
 - **skills/mockup-erstellen, Change (Umbau Phase 7):** Die Description nennt das Skill-Profil (Bereich Mockup) statt des
