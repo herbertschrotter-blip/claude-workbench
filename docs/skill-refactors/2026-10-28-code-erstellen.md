@@ -306,4 +306,6 @@ Schritte hat außen keine Folgen.
   `beispiele.md` und als „Beispiel BPM/Heidi“ in den Stack-Referenzen; keine Historie; Werkzeugnamen der Cowork-Umgebung
   nur in `cowork.md`; Verweise über Abschnittsnamen statt Schrittnummern. Description 1014 Zeichen.
 - **Prüfskript:** läuft nach dem Push per GitHub Actions (kein PowerShell auf dem HA).
-- **Routing-Eval:** offen (`--tag code-erstellen` nach dem Commit).
+- **Routing-Eval:** `--tag code-erstellen` nach Commit 7c0bc42: 40 Fälle, 38 mit 3/3, alle kritischen 3/3.
+  `code-erstellen-real-weiter-mit` 2/3 (normal; schon am 22.10. vor dem Umbau einmal 2/3),
+  `sitzung-real-neustart-kein-skill` 2/3 (normal, sitzung zündete einmal). Schwelle erfüllt. CI-Lauf 40602470896 grün.

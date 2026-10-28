@@ -225,4 +225,5 @@ Freigabe von D1 (freigegeben). Kein Split nötig: die Modi teilen Voraussetzung 
   Werkzeugnamen (DC) nur in C; keine Historie; keine Nummernverweise auf Projekt-Docs im Kern.
 - **Description:** unverändert, 994 Zeichen.
 - **Prüfskript:** läuft auf dem HA nicht (kein PowerShell); CI nach dem Push.
-- **Routing-Eval:** offen (`--tag doc-pflege` nach dem Commit, vor dem Upload).
+- **Routing-Eval:** `--tag doc-pflege` nach Commit b323ed4: 21 Fälle, 20 mit 3/3, alle kritischen 3/3.
+  `doc-pflege-real-uebergabe-bauplan` 2/3 (normal, ein Lauf ohne Skill). Schwelle erfüllt. CI-Lauf 40602535120 grün.

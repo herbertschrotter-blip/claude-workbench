@@ -185,4 +185,5 @@ Evals mit Bezug: `quality/evals/commit-command`, `commit-version-bump`, `commit-
   BPM, Heidi, Bauplan, `dreame_x60` und `skills/**` nur noch in `beispiele.md`; Werkzeugnamen (Desktop Commander) nur in
   `cowork.md`; keine Querverweise über Nummern; keine Historie. Description 525 Zeichen.
 - **Prüfskript:** läuft auf dem HA nicht; nach dem Push per GitHub Actions.
-- **Routing-Eval:** offen (nach dem Commit, `--tag git-commit-helper`, wegen E1 Pflicht).
+- **Routing-Eval:** `--tag git-commit-helper` nach Commit b59da75: 7 Fälle, alle 3/3 (Score 1.00). CI-Lauf
+  40602503111 grün.
