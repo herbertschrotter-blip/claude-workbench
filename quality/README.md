@@ -59,12 +59,12 @@ Grenze sie prüfen.
 | chatgpt-review | 4 | 0 |
 | tracker | 4 | 3 |
 | git-commit-helper | 3 | 2 |
-| ticket | 5 | 2 |
+| ticket | 8 | 2 |
 | cc-steuerung | 3 | 2 |
 | projekt-anlegen | 17 | 5 |
 | skill-auswertung | 6 | 3 |
 | sitzung | 6 | 3 |
-| **gesamt** | **97** | **34** |
+| **gesamt** | **100** | **34** |
 
 ## Nicht abgedeckt
 
@@ -155,6 +155,9 @@ Stand 21.10.2026, 111 Fälle.
 | `ticket-real-naechstes-ticket` | ticket | Nächstes Ticket bitte. | ticket | tracker | normal, echt |
 | `ticket-real-tickets-pruefen` | ticket | tickets prüfen | ticket | tracker | normal, echt |
 | `ticket-no-trigger-bug-without-number` | ticket | In der Kartenansicht springt die Roboterposition hin und her. Kannst du das beheben? | code-erstellen | ticket | normal |
+| `ticket-discard` | ticket | ticket verwerfen FE-0002, das war nur ein Test von mir | ticket | tracker | normal |
+| `ticket-close` | ticket | FE-0004 ist behoben, ticket schließen | ticket | tracker | normal |
+| `ticket-no-trigger-support` | ticket | Ich habe beim Energieversorger ein Support-Ticket offen, formuliere mir eine Nachfrage. | – | ticket | normal |
 | `cc-not-in-claude-code` | cc-steuerung | Ich arbeite in Claude Code. Zeig mir bitte den Git-Status des Repos. | – | cc-steuerung | kritisch, Pilot |
 | `cc-prefix-code` | cc-steuerung | cc: implementiere im ImportService eine Wiederholung bei Netzwerkfehlern. | code-erstellen | – | normal |
 | `cc-no-trigger-file-read` | cc-steuerung | Lies die README.md und sag mir kurz, worum es in dem Projekt geht. | – | cc-steuerung | kritisch |
