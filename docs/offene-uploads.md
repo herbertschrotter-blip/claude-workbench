@@ -12,6 +12,3 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| mockup-erstellen | v0.62.4 | 5da4110 | Zip: SKILL.md + references/ (4 Dateien) | 2026-10-28 |
-| tracker | v0.62.5 | 0d6b50b | Zip: SKILL.md + references/ (17 Dateien) | 2026-10-28 |
-| audit | v0.62.6 | 62d3969 | Zip: SKILL.md + references/ (5 Dateien) | 2026-10-28 |
