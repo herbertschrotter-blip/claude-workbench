@@ -23,7 +23,7 @@ wiederholt sie nicht.
 | **code-erstellen** | Code planen und ändern nach dem Profil des Repos (Pflichtkontext, Aufgabenquelle, Stack-Referenzen, Tests, Auslieferung) | jede Anfrage, die Code-Erstellung oder -Änderung meint |
 | **doc-pflege** | Projektdoku anlegen, pflegen, korrigieren, Audit-Befunde beheben; Sitzungsabschluss | "pflege docs", "schreib ADR", "neues Konzept", "behebe die Audit-Befunde", "Sitzung abschließen" |
 | **git-commit-helper** | Commit-Befehle und -Messages im Format `[vX.Y.Z] Modul, Typ: Kurztitel`, Version-Bump | "commit", "git commit", "PATCH oder MINOR?" |
-| **mockup-erstellen** | HTML-Mockups nach dem Mockup-Profil, Token-Abgleich, Abnahme festhalten | "Mockup für", "Screen-Design", "UI-Mockup", "erst ins Mockup einbauen" |
+| **mockup-erstellen** | HTML-Mockups nach dem Skill-Profil (Bereich Mockup), Token-Abgleich, Abnahme festhalten | "Mockup für", "Screen-Design", "UI-Mockup", "erst ins Mockup einbauen" |
 | **projekt-anlegen** | Neue Projekte anlegen und einrichten, nach Stack: für unterstützte Stacks ein lauffähiges, geprüftes Grundgerüst ohne Fachlogik (Generator); bestehendes Repo für die Skills einrichten (Skill-Profil, Configs); Übergabe an mockup-erstellen, code-erstellen oder tracker | "neues Projekt", "leg mir ein Projekt an", "ich will X bauen, weiß aber nicht wie", "Repo holen und einrichten", "richte die Skills hier ein", "X überarbeiten" (Altbestand ohne Projekt) |
 | **sitzung** | Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü: Projekt → Gespräch → fortsetzen im richtigen Ordner mit Remote Control; Fenster verwalten, wiederherstellen, aufräumen | "sitzung", "alte Sitzung öffnen", "wo sind meine Sitzungen", "Fenster wiederherstellen" |
 | **skill-neu** | Neue Skills für dieses Repo anlegen (Absicht, Kollisionsprüfung, Neutralität, Eval-Fälle) | "neuer Skill für X", "erstelle einen Skill" |
@@ -64,6 +64,11 @@ Abschnitt „Vorrang / Delegation“.
 | projekt-anlegen ↔ mockup-erstellen | neues Projekt aufsetzen, auch bei offener Art → projekt-anlegen (bietet mockup-erstellen an); nur Aussehen entwerfen → mockup-erstellen |
 | projekt-anlegen ↔ skill-neu | neues Projekt → projekt-anlegen; neuer Skill → skill-neu |
 | skill-neu ↔ skill-pflege | Die SKILL.md gibt es schon → skill-pflege; ganz neuer Skill → skill-neu |
+| sitzung ↔ projekt-anlegen | vorhandenes Gespräch oder Fenster → sitzung; neues Projekt anlegen → projekt-anlegen |
+| sitzung ↔ skill-auswertung | Gespräche und Fenster verwalten → sitzung; Skill-Log auswerten → skill-auswertung |
+| skill-auswertung ↔ audit | Zündungen der Skills aus dem Log auswerten → skill-auswertung; Code, Doku oder Skills gegen ihre Regeln prüfen → audit |
+| skill-auswertung ↔ skill-neu | Befunde aus dem Log → skill-auswertung; einen neuen Skill anlegen → skill-neu |
+| projekt-anlegen ↔ tracker / doc-pflege / git-commit-helper | neues Projekt anlegen oder Repo einrichten → projekt-anlegen (legt Doku, ersten Commit und Profil selbst an); nur Aufgaben → tracker, nur Doku → doc-pflege, nur Git → git-commit-helper |
 | skill-auswertung ↔ skill-pflege | Log auswerten, Befunde finden → skill-auswertung; Skill-Text ändern, auch nach einem Befund → skill-pflege |
 | cc-steuerung ↔ Fachskills | cc-steuerung ist Modalität (WIE), der Fachskill bleibt für das WAS zuständig; beide dürfen gleichzeitig aktiv sein |
 

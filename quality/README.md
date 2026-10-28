@@ -49,22 +49,22 @@ Grenze sie prüfen.
 
 | Skill | Fälle | davon kritisch |
 |---|---|---|
-| code-erstellen | 11 | 0 |
+| code-erstellen | 13 | 0 |
 | doc-pflege | 8 | 2 |
-| audit | 7 | 6 |
-| mockup-erstellen | 8 | 0 |
+| audit | 8 | 6 |
+| mockup-erstellen | 10 | 0 |
 | skill-pflege | 6 | 3 |
 | skill-neu | 5 | 3 |
-| chat-wechsel | 4 | 0 |
-| chatgpt-review | 4 | 0 |
+| chat-wechsel | 5 | 0 |
+| chatgpt-review | 7 | 0 |
 | tracker | 4 | 3 |
 | git-commit-helper | 3 | 2 |
 | ticket | 8 | 2 |
 | cc-steuerung | 3 | 2 |
-| projekt-anlegen | 17 | 5 |
+| projekt-anlegen | 21 | 5 |
 | skill-auswertung | 6 | 3 |
-| sitzung | 6 | 3 |
-| **gesamt** | **100** | **34** |
+| sitzung | 7 | 3 |
+| **gesamt** | **114** | **34** |
 
 ## Nicht abgedeckt
 
@@ -77,7 +77,7 @@ Grenze sie prüfen.
 
 ## Fälle
 
-Stand 21.10.2026, 111 Fälle.
+Stand 28.10.2026, 114 Fälle.
 
 | Fall | Skill | Testsatz | soll auslösen | darf nicht auslösen | Art |
 |---|---|---|---|---|---|

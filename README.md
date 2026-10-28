@@ -248,7 +248,7 @@ claude-workbench/
 ├── MEMORY-RUBRIKEN.md     ← Konvention für 4 Memory-Rubriken
 ├── .claude/skill-config/  ← Configs der Skills für dieses Repo (tracker, review, skill-log)
 ├── .github/workflows/     ← validate-skills.yml – Prüfskript nach jedem Push
-├── .claude-plugin/        ← marketplace.json: Marketplace workbench (Plugins work, skill-workshop)
+├── .claude-plugin/        ← marketplace.json: Marketplace workbench (Plugins work, skill-workshop, work-hooks)
 ├── docs/                  ← Konzepte, Regeln, Reviews, Umbau-Plan
 ├── plugins/               ← Plugin work-hooks (Skill-Log, Skill-Wächter); work ruft dieselben Skripte auf
 ├── evals/                 ← Manuelle Skill-Routing-Evals (bis v0.20)
@@ -275,7 +275,7 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 | Skill | Aufgabe | Trigger-Beispiele |
 |---|---|---|
 | **code-erstellen** | Master-Orchestrator für Code-Änderungen (Skill-Profil in der CLAUDE.md des Projekts). | "implementiere das Feature", "erstelle DocumentTypeRecognizer.cs", "baue Recovery-Logik ein" |
-| **mockup-erstellen** | HTML-UI-Mockups nach Mockup-Profil. | "Mockup für ProfileWizard", "Screen-Design", "UI-Mockup" |
+| **mockup-erstellen** | HTML-UI-Mockups nach dem Skill-Profil (Bereich Mockup). | "Mockup für ProfileWizard", "Screen-Design", "UI-Mockup" |
 | **doc-pflege** | Erstellt, pflegt und korrigiert Projektdokumentation nach dem Skill-Profil (Bereich Doku); prüfen ohne Änderung macht audit. | "pflege die docs", "schreib ein ADR", "neues Konzept für X" |
 | **projekt-anlegen** | Neue Projekte anlegen und einrichten: klären, Plan zeigen, lauffähiges und geprüftes Grundgerüst (Generator für unterstützte Stacks), Git, Skill-Profil, GitHub nach Rückfrage. | "neues Projekt", "ich will X bauen, weiß aber nicht wie", "Repo holen und einrichten" |
 | **ticket** | Fehler-Tickets eines Projekts einzeln und immer im selben Ablauf bearbeiten (acht Schritte). | "ticket liste", "ticket FE-0007", "tickets prüfen", "nimm das nächste ticket" |
@@ -371,7 +371,7 @@ Das Eval-System misst, ob ein Skill bei den richtigen Queries triggert und bei d
 ### Neu: automatische Routing-Tests (`quality/evals/`)
 
 Seit Umbau Phase 1 (24.09.2026) gibt es Testfälle für `claude plugin eval` (Manifest `quality/.claude-plugin/plugin.json`,
-nur für Tests). 87 Fälle, davon 32 kritisch und 9 aus echten Prompts des Skill-Logs (Tag `real`); Tabelle aller Fälle in
+nur für Tests). 114 Fälle, davon 34 kritisch und 19 aus echten Prompts des Skill-Logs (Tag `real`); Tabelle aller Fälle in
 [`quality/README.md`](./quality/README.md). Aufruf und Schwellen: Skill-Profil in [`CLAUDE.md`](./CLAUDE.md) und [`docs/skillsystem-umbau.md`](./docs/skillsystem-umbau.md).
 Die mechanische Prüfung aller Skills macht [`tools/validate-skills.ps1`](./tools/validate-skills.ps1), auf Rechnern ohne
 PowerShell (HA) nach jedem Push per GitHub Actions.
@@ -581,7 +581,7 @@ claude-workbench/
 │   └── test-project-generator.yml         ← Projekt-Generator: jede Kombination erzeugt und geprüft (Linux, Windows)
 │
 ├── .claude-plugin/
-│   └── marketplace.json                   ← Marketplace workbench: Plugins work und skill-workshop (strict: false,
+│   └── marketplace.json                   ← Marketplace workbench: Plugins work, skill-workshop und work-hooks (strict: false,
 │                                            Skills aus skills/, Hooks direkt im Eintrag)
 │
 ├── docs/
@@ -589,6 +589,7 @@ claude-workbench/
 │   ├── chatgpt-reviews/                   ← CGR-Archiv + INDEX.md
 │   ├── fragilitaeten-und-fruehwarn.md
 │   ├── installation.md                    ← Installation: Ablauf, Updates, Entfernen, Fehlerquellen
+│   ├── offene-uploads.md                  ← Skill-Lieferungen, die noch bei claude.ai hochzuladen sind
 │   ├── ha-grundsatz/
 │   ├── skill-guard-v1.md                  ← Skill-Wächter
 │   ├── skill-log-v1.md                    ← Skill-Log
@@ -612,13 +613,15 @@ claude-workbench/
 │
 ├── plugins/
 │   └── work-hooks/                        ← Plugin nur mit Hooks: .claude-plugin/plugin.json; hooks/: hooks.json,
-│                                            skill_log.py, skill_guard.py, regeln.json, Test des Wächters
+│                                            skill_log.py, skill_guard.py, regeln.json, skill_sync.py, Tests
 │
 ├── quality/                               ← für claude plugin eval selbst ein Plugin
 │   ├── .claude-plugin/plugin.json         ← Eval-Manifest (experimental.evals: evals)
 │   ├── skills → ../skills                 ← Symlink, damit die Evals die Skills laden
 │   ├── README.md                          ← Regeln und Tabelle aller Fälle
-│   └── evals/                             ← 87 Fälle (prompt.md + graders/), 9 aus echten Prompts
+│   ├── baseline/                          ← Grundmessung vor dem Umbau
+│   ├── real-environment/                  ← echte Sitzungen gegen Skills von Anthropic (EXT)
+│   └── evals/                             ← 114 Fälle (prompt.md + graders/), 19 aus echten Prompts
 │
 ├── reference/
 │   └── anthropic-skill-creator/
@@ -636,22 +639,21 @@ claude-workbench/
 │   ├── doc-pflege/                    ← SKILL.md + references/ (beispiele, cowork)
 │   ├── git-commit-helper/             ← SKILL.md + references/ (beispiele, cowork) + scripts/ (checks.py, Tests)
 │   ├── mockup-erstellen/                 ← SKILL.md + references/ (sitemap, beispiele, cowork)
-│   ├── projekt-anlegen/                   ← SKILL.md + references/ (generator, grundsatz, github, stacks) + scripts/ (Generator, Tests) + templates/ (Bausteine)
+│   ├── projekt-anlegen/                   ← SKILL.md + references/ (generator, grundsatz, github, stacks, windows-netzlaufwerk) + scripts/ (Generator, Tests) + templates/ (Bausteine)
 │   ├── sitzung/                           ← SKILL.md + references/ (befehle, umgebung) + scripts/sitzung.py
 │   ├── skill-auswertung/SKILL.md
 │   ├── skill-neu/                         ← SKILL.md + references/ (cowork)
 │   ├── skill-pflege/                      ← SKILL.md + references/ (rule-inventory, delivery)
 │   ├── ticket/                            ← SKILL.md + references/ (beispiele)
 │   └── tracker/                           ← SKILL.md + references/ (16 Dateien, u. a. beispiele, cowork)
-│       ├── SKILL.md
-│       ├── references/
-│       └── references.zip                 ← entfällt in Umbau Phase 7
 │
 └── tools/
     ├── install.sh, install.ps1            ← Installation: Voraussetzungen, Marketplace, dann einrichten.py
     ├── einrichten.py, test_einrichten.py  ← Plugins, Optionen, autoUpdate, skillOverrides, Probe der Hooks
     ├── commands/statistik.md              ← Befehl /statistik des Plugins work
     ├── skill-log/                         ← skill_log_report.py (Bericht), dashboard.py (Dashboard), Tests
+    ├── statusline.py                      ← Statuszeile
+    ├── test_sitzung.py                    ← Tests zum Skript des Skills sitzung
     └── validate-skills.ps1                ← Prüfskript (PowerShell 7)
 ```
 
