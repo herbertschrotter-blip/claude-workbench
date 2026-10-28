@@ -205,6 +205,12 @@ Je Skill:
 
 **Abnahme:** Kein Skill ist schlechter als seine Grundmessung.
 
+**Phase 6 abgeschlossen am 28.10.2026.** mockup-erstellen v0.60.7, chat-wechsel v0.60.8, chatgpt-review v0.60.9, ticket
+v0.61.0, code-erstellen v0.61.1, git-commit-helper v0.62.0, doc-pflege v0.62.1, audit v0.62.2, tracker v0.62.3;
+Nacharbeit an Verweisen v0.62.4–v0.62.6. Inventare unter `docs/skill-refactors/`; alle kritischen Eval-Fälle 3/3, alle
+Uploads bei claude.ai bestätigt. Nebenbefunde als Skill-Issues: code-erstellen-003, -004, ticket-001, -002,
+doc-pflege-002, chat-wechsel-003.
+
 ### Phase 7 – Gesamtabnahme
 
 - [ ] alle Fälle und die echten Sitzungen
