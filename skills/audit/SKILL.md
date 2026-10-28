@@ -115,8 +115,9 @@ läuft, das sie braucht.
 1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Prüfpunkt oder das Modul entfällt.
 2. **Rückfall:** die älteren Abschnitte `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router) und `## Code-Profil`
    (Schichten/Kopplung, Aufgabenquelle, Stacks, Tests) der CLAUDE.md.
-3. **Fehlt beides:** der Rückfall eines Projekts aus `references/beispiele.md`, Abschnitt „Rückfall ohne Profil“, wenn
-   das Repo dessen Merkmale hat.
+3. **Fehlt beides:** was das Repo selbst nennt (Router, Standard-Doc, Tests), als Vorschlag sammeln und mit dem nächsten
+   Punkt vorlegen; nie ohne Rückfrage übernehmen. Wie das bei einem Projekt aussieht: `references/beispiele.md`, Abschnitt
+   „Rückfall ohne Profil“.
 4. **Was dann noch fehlt** oder auf `fehlt` steht: genau dieses Feld melden und nach `docs/skill-profile-v1.md`,
    Abschnitt „Fehlende Werte“, fragen (Profil ergänzen / Wert einmalig nennen / abbrechen); fehlt das Profil ganz, mit
    einem Vorschlag aus dem Repo. Das Profil ergänzt nicht audit, sondern doc-pflege (Projekt-Init) oder der Nutzer. Nie

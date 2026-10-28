@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.8] — 2026-10-28
+
+- **skills/audit, Change (Umbau Phase 7):** Fehlt jedes Profil, nimmt audit nicht mehr den Rückfall eines bestimmten
+  Projekts, sondern sammelt, was das Repo nennt, als Vorschlag für die Auswahlfrage nach „Fehlende Werte“; das Beispiel
+  bleibt in `references/beispiele.md`.
+
 ## [v0.62.7] — 2026-10-28
 
 - **skills/ticket, Change (Umbau Phase 7):** Description ohne Ticketnummer einer bestimmten App (`FE-0007` statt
