@@ -104,9 +104,8 @@ Cowork: für Schreiboperationen Arbeitsverzeichnis nach **cc-steuerung**, Abschn
    Abschnitt „Fehlende Werte“, fragen.
 2. Fehlt der Abschnitt: das ältere `## Mockup-Profil` der `CLAUDE.md` mit den Feldern unten. Die Spalte „Skill-Profil“
    nennt, wo der Wert dort steht.
-3. **Fehlt beides:** die BPM-Werte aus [references/beispiele.md](references/beispiele.md) und `references/sitemap.md`
-   annehmen – nur wenn das Repo tatsächlich `Docs/Mockups/` hat; sonst Auswahlfrage „Profil anlegen (Vorschlag aus dem
-   Repo)“.
+3. **Fehlt beides:** Auswahlfrage nach „Fehlende Werte“ mit einem Vorschlag aus dem Repo (z. B. ein vorhandener
+   Mockup-Ordner); nie ohne Rückfrage annehmen. Beispielwerte: [references/beispiele.md](references/beispiele.md).
 
 | Feld | Skill-Profil | Bedeutung |
 |------|--------------|-----------|

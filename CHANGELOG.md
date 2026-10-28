@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.9] — 2026-10-28
+
+- **skills/mockup-erstellen, Change (Umbau Phase 7):** Fehlt jedes Profil, keine BPM-Werte mehr annehmen, sondern
+  Auswahlfrage nach „Fehlende Werte“ mit einem Vorschlag aus dem Repo; Beispielwerte bleiben in `references/beispiele.md`.
+
 ## [v0.62.8] — 2026-10-28
 
 - **skills/audit, Change (Umbau Phase 7):** Fehlt jedes Profil, nimmt audit nicht mehr den Rückfall eines bestimmten
