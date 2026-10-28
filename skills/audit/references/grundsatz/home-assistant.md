@@ -78,7 +78,7 @@ Je Regel: Kandidaten finden, im Kontext beurteilen, Nachweis zuordnen. „—“
 | G-20 Arbeitsweise | 0 | Commit mit Doku, Entscheidungen | gemeinsam gepflegt? | Nachweis vor dem Einspielen |
 | G-21 Ausfall | 1¹ | Ersatzwerte (`\| float(0)`, `\| int(0)`), Verfügbarkeitsprüfungen, `outage` | Sperre, Frische, Erholung | Ausfallfälle je kritischer Quelle |
 | G-22 Lit | 3 | Lit-Import, `innerHTML`, Bündelung | tatsächliche Umsetzung der Oberfläche | Bundle-Prüfung |
-| G-23 Tickets | 2; Knopf ab 3 | Ticket-Profil, `tools/ticket.py`, Aktion `<domain>.ticket`, `meldungen.json`, Melden-Knopf | Bilder kommen an, Rückmeldung nennt sie | Test über den ganzen Weg |
+| G-23 Tickets | 2; Knopf ab 3 | Ticket-Config (`Ticket.Config`), `tools/ticket.py`, Aktion `<domain>.ticket`, `meldungen.json`, Melden-Knopf | Bilder kommen an, Rückmeldung nennt sie | Test über den ganzen Weg |
 
 ¹ Ab Stufe 1 mindestens: `unavailable`/`unknown` nie als `0` oder `false` deuten; voller Ausfallvertrag ab Stufe 2.
 Tests in der Tabelle sind mögliche Belege, keine neuen Pflichten.

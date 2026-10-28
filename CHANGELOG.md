@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.6] — 2026-10-28
+
+- **skills/audit, Fix (Nacharbeit Umbau Phase 6):** Grundsatz G-23 (Home Assistant) prüft die Ticket-Config
+  (`Ticket.Config`) statt des Ticket-Profils.
+
 ## [v0.62.5] — 2026-10-28
 
 - **skills/tracker, Fix (Nacharbeit Umbau Phase 6):** `references/anker-system.md` nennt die Orte der Kopien in
