@@ -6,7 +6,7 @@
 
 **Konzept-Doc:** `docs/chat-anker-konzept.md` im Skill-Repo.
 
-**Hinweis:** Diese Datei ist die Master-Spezifikation. `code-erstellen` (Auto-Anker) und `chat-wechsel` (Übergabe) haben eigene lokale Kopien der für sie relevanten Teile. Bei Änderungen der Spec müssen dort die Kopien mit-gepflegt werden.
+**Hinweis:** Diese Datei ist die Master-Spezifikation. `code-erstellen` (Auto-Anker, `skills/code-erstellen/references/cowork.md#Auto-Anker bei Aufgaben-Stichwörtern`) und `chat-wechsel` (Übergabe, `skills/chat-wechsel/references/cowork.md#Chat-Anker-Übergabe (nur Cowork)`) haben eigene Kopien der für sie relevanten Teile. Bei Änderungen der Spec müssen dort die Kopien mit-gepflegt werden.
 
 ## Inhalt
 

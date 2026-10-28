@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.5] — 2026-10-28
+
+- **skills/tracker, Fix (Nacharbeit Umbau Phase 6):** `references/anker-system.md` nennt die Orte der Kopien in
+  code-erstellen und chat-wechsel über Datei und Überschrift (beide `references/cowork.md`).
+
 ## [v0.62.4] — 2026-10-28
 
 - **skills/mockup-erstellen, Fix (Nacharbeit Umbau Phase 6):** Mockup-Hook nennt `Code.Mockup-Policy` im Skill-Profil
