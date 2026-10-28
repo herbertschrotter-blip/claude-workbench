@@ -12,4 +12,3 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| ticket | v0.62.7 | ea5ee8d | Zip (SKILL.md + references/beispiele.md, 2 Dateien) | 28.10.2026 |
