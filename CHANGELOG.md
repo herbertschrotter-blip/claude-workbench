@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.12] — 2026-10-28
+
+- **skills/mockup-erstellen, Change (Umbau Phase 7):** Die Description nennt das Skill-Profil (Bereich Mockup) statt des
+  alten Mockup-Profils; der VERBOTEN-Punkt zur Ablage nennt kein bestimmtes Projekt mehr („Ablage oder Namensschema aus
+  den Beispielen oder einem anderen Projekt annehmen“).
+
 ## [v0.62.11] — 2026-10-28
 
 - **skills/code-erstellen, Change (Umbau Phase 7):** Die Description nennt als Beispiel für Arbeit an einer Aufgabe per ID

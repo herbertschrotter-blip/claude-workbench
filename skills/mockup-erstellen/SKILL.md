@@ -2,8 +2,8 @@
 name: mockup-erstellen
 description: >
   Erstellt UI-Mockups als HTML-Entwürfe für neue Screens, Dialoge und
-  Layoutvarianten – nach dem Mockup-Profil des Projekts (Ablage, Designquelle,
-  Ansichten). Use when users want to mocken, entwerfen, skizzieren,
+  Layoutvarianten – nach dem Skill-Profil des Projekts (Bereich Mockup: Ablage,
+  Designquelle, Ansichten). Use when users want to mocken, entwerfen, skizzieren,
   zeigen, visualisieren, layouten, or want to clarify how a screen should
   look before coding — including mockups, screen designs, UI proposals,
   layout drafts, dialog sketches, tab/panel arrangements, and changes to an
@@ -283,7 +283,7 @@ Pflicht, sobald der User abnimmt.
 - **Speichern ohne Token-Abgleich** gegen die Designquelle (Abschnitt „Token-Abgleich“) oder mit Tokens, die es dort nicht gibt
 - **Speichern ohne die Pflichtansichten des Profils** (`Mockup.Ansichten`) ohne Auswahlfrage
 - **Abnahme nur im Chat** – ohne Eintrag am Abnahme-Ort gilt das Mockup als nicht abgenommen (Abschnitt „Abnahme festhalten“)
-- **BPM-Ablage oder -Namensschema für ein anderes Projekt annehmen** – alles aus dem Skill-Profil
+- **Ablage oder Namensschema aus den Beispielen oder einem anderen Projekt annehmen** – alles aus dem Skill-Profil
 - **Externe Ressourcen im Mockup** (Web-Fonts, CDN), wenn das Projekt sie verbietet
 - Prosa-Fragen bei festen Entscheidungsoptionen (z.B. Archiv-vs-Überschreiben-Entscheidung)
 - **Mockup ohne Klick-Navigation auf interaktive Elemente speichern** (Profil „Sitemap: ja“) — alle Buttons/Tabs/Karten brauchen `onclick` (`references/sitemap.md#Interaktivität und Klick-Navigation`)
