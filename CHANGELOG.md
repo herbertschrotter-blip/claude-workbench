@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.62.14] — 2026-10-28
+
+- **skills/code-erstellen, Change:** v0.62.11 zurückgenommen – die Description nennt wieder „mach BSM-002“, „weiter mit
+  BSM-014“ (INDEX.md ebenso). Mit dem neutralen Präfix fiel der echte Fall `code-erstellen-real-weiter-mit` auf 1/3; das
+  Präfix steht nur als Beispiel, nicht als Zuständigkeit.
+
 ## [v0.62.13] — 2026-10-28
 
 - **skills/sitzung, Change (Umbau Phase 7):** Das Beispiel für direkte Wünsche nennt „<Projekt>“ statt eines echten
