@@ -20,7 +20,8 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import skill_log_report as r  # noqa: E402
 
 # Testprojekte der Plugin-Umstellung (07./08.10.2026) – zählen nicht
-TEST_PROJECTS = {"plugtest", "mptest-proj", "guard-test", "proj", "home", "t-deny", "t-base", "t-over", "t-plug"}
+TEST_PROJECTS = {"plugtest", "mptest-proj", "guard-test", "proj", "home", "t-deny", "t-base", "t-over", "t-plug",
+                 "tmp"}  # tmp: Upload-Abgleich mit claude -p (Art test im Report)
 # Umbenannte Projekte zusammenführen (alter Name → neuer)
 RENAMED = {"claude-skills-bpm": "claude-workbench"}
 

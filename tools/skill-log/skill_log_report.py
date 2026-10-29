@@ -5,7 +5,8 @@ Liest alle <JJJJ-MM>.jsonl aus einem oder mehreren Ordnern (z. B. HA und Laptop)
 und zeigt je Skill, wie oft er gezündet hat, dazu Prompts ohne Skill und Runden mit mehreren Skills.
 
 Je Runde führt die Auswertung außerdem:
-- `art`: `prompt`, `system` (Meldung einer Hintergrundaufgabe oder eines Subagenten) oder `leer` (nur Bild o. Ä.)
+- `art`: `prompt`, `system` (Meldung ohne Nutzer: Hintergrundaufgabe, Subagent, andere Sitzung, Desktop-App),
+  `befehl` (beginnt mit `!`), `leer` (nur Bild o. Ä.) oder `test` (Prüflauf ohne Nutzer im Projekt `tmp`)
 - `aktiv`: Skills, die in der Sitzung vorher schon geladen waren und laut Skill-Wächter noch gelten: Eine Grenze aus
   `regeln.json` (commit, aufgabenstart, task_id; docs/skill-guard-v1.md) verbraucht sie. Was eine Sitzung vor dem Log
   geladen hatte (Gabelung mit `fork`, Fortsetzung mit `resume`), und die Grenzen commit und aufgabenstart kommen aus
@@ -29,7 +30,12 @@ import re
 import sys
 
 _MONTH_FILE = re.compile(r"^\d{4}-\d{2}\.jsonl$")
-_SYSTEM_PREFIXES = ("<task-notification", "<agent-message")
+_SYSTEM_PREFIXES = ("<task-notification", "<agent-message", "<cross-session-message",
+                    "Another Claude session sent a message:", "Background (from the session that started this one)",
+                    "This is an app-generated request for a suggested next user message")
+_REMINDER = re.compile(r"^\s*<system-reminder>.*?</system-reminder>", re.S)
+# Prüfläufe ohne Nutzer: Upload-Sync-Abgleich (claude -p in /tmp) – Projekt-ID aus dem Ordner /tmp
+_TEST_PROJECTS = ("tmp",)
 _COMMAND_NAME = re.compile(r"<command-name>/?([\w:.-]+)</command-name>")
 _REPO_SKILLS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "skills")
 _GUARD_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "plugins", "work-hooks", "hooks")
@@ -167,7 +173,7 @@ def arbeitszeit(entries, pause=PAUSE, key=lambda e: e.get("project") or "?"):
                 active.setdefault(key(cur), []).append((a, b))
         for e in events:
             if e["event"] == "prompt":
-                start = e if prompt_kind(e.get("text")) == "prompt" else None
+                start = e if prompt_kind(e.get("text"), e.get("project")) == "prompt" else None
             elif e["event"] == "turn_end" and start is not None:
                 a, b = _secs(start["ts"]), _secs(e["ts"])
                 if b > a:
@@ -186,10 +192,22 @@ def short(name):
     return (name or "?").split(":")[-1]
 
 
-def prompt_kind(text):
+def prompt_kind(text, project=None):
+    """Art einer Runde: prompt, system (Meldung ohne Nutzer), befehl (!), leer, test (Prüflauf ohne Nutzer).
+    Vorangestellte <system-reminder>-Blöcke zählen nicht; bleibt danach nichts, ist es eine Systemmeldung
+    (Befund Auswertung 29.10.2026: Meldungen anderer Sitzungen und der Desktop-App liefen als Prompt)."""
     stripped = (text or "").strip()
     if not stripped:
         return "leer"
+    if project in _TEST_PROJECTS:
+        return "test"
+    if stripped.startswith("<system-reminder>"):
+        rest = stripped
+        while _REMINDER.match(rest):
+            rest = _REMINDER.sub("", rest, count=1).strip()
+        if not rest or rest.startswith("<system-reminder>"):
+            return "system"
+        stripped = rest
     if stripped.startswith(_SYSTEM_PREFIXES):
         return "system"
     if stripped.startswith("!"):
@@ -287,7 +305,7 @@ def build_rounds(entries, skill_names=None, transcripts_dir=None):
         if event == "prompt":
             text = entry.get("text") or ""
             slash = entry.get("slash")
-            if task and prompt_kind(text) == "prompt" and task.search(text):
+            if task and prompt_kind(text, entry.get("project")) == "prompt" and task.search(text):
                 active[session] = verbrauchen(active.get(session, set()), "task_id", grenzen)
             current = {
                 "ts": entry.get("ts"),
@@ -296,7 +314,7 @@ def build_rounds(entries, skill_names=None, transcripts_dir=None):
                 "project": entry.get("project"),
                 "text": text,
                 "slash": slash,
-                "art": prompt_kind(text),
+                "art": prompt_kind(text, entry.get("project")),
                 "aktiv": sorted(active.get(session, set())),
                 "unsicher": session in open_round,
                 "skills": [],
@@ -350,6 +368,7 @@ def report(rounds, limit_without):
     system = sum(1 for r in rounds if r["art"] == "system")
     empty = sum(1 for r in rounds if r["art"] == "leer")
     commands = sum(1 for r in rounds if r["art"] == "befehl")
+    tests = sum(1 for r in rounds if r["art"] == "test")
     with_skill = [r for r in prompts if r["skills"]]
     without = [r for r in prompts if not r["skills"]]
     without_active = [r for r in without if not r["aktiv"]]
@@ -369,7 +388,8 @@ def report(rounds, limit_without):
             if not s["ok"]:
                 failed[name] += 1
 
-    print(f"Runden: {len(rounds)}  davon Systemmeldungen: {system}  Shell-Befehle (!): {commands}  leer: {empty}")
+    print(f"Runden: {len(rounds)}  davon Systemmeldungen: {system}  Shell-Befehle (!): {commands}  leer: {empty}  "
+          f"Prüfläufe: {tests}")
     print(f"Prompts: {len(prompts)}  mit Skill: {len(with_skill)}  ohne Skill: {len(without)} "
           f"(davon ohne aktiven Skill der Sitzung: {len(without_active)})  mehrere Skills: {len(multi)}  "
           f"unsicher zugeordnet: {len(unsure)}")

@@ -67,6 +67,25 @@ class ArtTest(unittest.TestCase):
         self.assertEqual(r.prompt_kind("nächstes ticket"), "prompt")
         self.assertEqual(r.prompt_kind("! git status"), "befehl")
 
+    def test_meldungen_ohne_nutzer(self):
+        # Befund Auswertung 29.10.2026
+        for text in ("<cross-session-message from=\"uds:/tmp/x\"> HA wird neu gestartet </cross-session-message>",
+                     "Another Claude session sent a message: <agent-message from=\"a1\">",
+                     "Background (from the session that started this one): Der Nutzer hat …",
+                     "This is an app-generated request for a suggested next user message. The user did not write this.",
+                     "<system-reminder> The session \"x\" you started finished a turn. </system-reminder>",
+                     "<system-reminder>a</system-reminder>\n<system-reminder>b</system-reminder>"):
+            self.assertEqual(r.prompt_kind(text), "system", text)
+
+    def test_nutzertext_nach_system_reminder_bleibt_prompt(self):
+        text = "<system-reminder> The user started this session without choosing a project folder </system-reminder>\nmach weiter"
+        self.assertEqual(r.prompt_kind(text), "prompt")
+        self.assertEqual(r.prompt_kind("<system-reminder> offen ohne Ende"), "system")
+
+    def test_pruefprojekt_ist_test(self):
+        self.assertEqual(r.prompt_kind("Antworte nur mit ok.", "tmp"), "test")
+        self.assertEqual(r.prompt_kind("Antworte nur mit ok.", "claude-workbench"), "prompt")
+
 
 class AktivTest(unittest.TestCase):
     def test_skill_bleibt_in_der_sitzung_aktiv(self):

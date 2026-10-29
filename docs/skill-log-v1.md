@@ -148,9 +148,14 @@ haben die Option leer und gleichen nicht ab.
 - Dashboard: `tools/skill-log/dashboard.py` (bzw. Befehl `/statistik` des Plugins `work`) schreibt eine HTML-Seite
   mit Kennzahlen, Projekten, Zündungen je Skill, Verlauf je Tag und Blockaden des Wächters – nur Zahlen, keine
   Prompt-Texte; Testprojekte der Plugin-Umstellung zählen nicht, `claude-skills-bpm` zählt als `claude-workbench`
-- trennt die Runden nach Art (`art`): `prompt`, `system` (Meldungen von Hintergrundaufgaben und Subagenten,
-  `<task-notification>`, `<agent-message>`), `befehl` (beginnt mit `!`: Shell-Befehl, den die Claude-Desktop-App als
-  Prompt schickt) und `leer` (nur Bild); bewertet werden nur Prompts
+- trennt die Runden nach Art (`art`): `prompt`, `system` (Meldungen ohne Nutzer: Hintergrundaufgaben und Subagenten
+  `<task-notification>`, `<agent-message>`, auch nach „Another Claude session sent a message:“; andere Sitzungen
+  `<cross-session-message>`, „Background (from the session that started this one)“; Vorschlagsanfragen der
+  Desktop-App „This is an app-generated request …“; Text, der nur aus `<system-reminder>`-Blöcken besteht – folgt
+  danach Nutzertext, zählt dieser), `befehl` (beginnt mit `!`: Shell-Befehl, den die Claude-Desktop-App als
+  Prompt schickt), `leer` (nur Bild) und `test` (Prüflauf ohne Nutzer im Projekt `tmp`, z. B. der Upload-Abgleich
+  mit `claude -p`); bewertet werden nur Prompts. Läufe von `claude plugin eval` sind im Log nicht erkennbar und
+  zählen als Prompt
 - führt je Runde die Skills, die in der Sitzung schon geladen waren und laut Skill-Wächter noch gelten (`aktiv`): Die
   Grenzen aus `regeln.json` (commit, aufgabenstart, task_id; `docs/skill-guard-v1.md`) verbrauchen sie wie im
   Wächter. Was eine Sitzung vor dem Log geladen hatte (Gabelung `fork`, `resume`), und die Grenzen commit und
