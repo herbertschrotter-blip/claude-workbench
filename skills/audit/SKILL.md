@@ -389,6 +389,16 @@ Beispiel: `references/beispiele.md`, Abschnitt „Nach dem Report“.
 - Vollaudit: max 35 Tool-Calls; das Ergebnis der Tests (`Code.Tests`) vorher vom Nutzer erfragen statt selbst zu bauen
   (read-only)
 
+### Arbeit aufteilen (Claude Code)
+
+Ein Vollaudit oder ein Teilaudit über mehrere Module liest viel, und die Module hängen nicht voneinander ab. In Claude
+Code gibt die Sitzung das Lesen deshalb an Agenten des Plugins `work`: je Modul (bei großen Modulen je Bereich) ein
+`work:erkunder` mit klarem Auftrag – Modul, Prüfpunkte aus dem Profil, Prüfumfang, erwartete Rückgabe als Befunde mit
+Datei und Stelle. Die Agenten laufen parallel; die Grenzen oben gelten für die Sitzung, jeder Agent bekommt seine
+eigenen Prüfpunkte. Bewerten, Ampel, Report und Weitergabe macht die Sitzung selbst: Sie prüft jeden gemeldeten Befund
+an der genannten Stelle nach, bevor er in den Report kommt. Ein Teilaudit mit einem Modul läuft ohne Agenten. Im
+Cowork-Chat gibt es keine Agenten.
+
 ---
 
 ## VERBOTEN
@@ -410,3 +420,5 @@ Beispiel: `references/beispiele.md`, Abschnitt „Nach dem Report“.
 - **Eine Regel grün melden, weil ein Test existiert** – „Test vorhanden“ ist kein Ausführungsnachweis
 - **Geheime Werte im Report zitieren** oder gesperrte Bereiche öffnen, um darin zu suchen
 - **Außerhalb des Prüfumfangs lesen** (`Modul.Prüfumfang`), wo das Profil ihn begrenzt
+- **Befunde eines Agenten ungeprüft in den Report übernehmen** oder einem Agenten Schreibrechte geben (Abschnitt
+  „Arbeit aufteilen (Claude Code)“)

@@ -93,6 +93,11 @@ Jede Runde ohne Skill und jede mit mehreren Skills bekommt ein Urteil:
   (`session` aus dem Log). Den Satz der Description benennen, der das Verhalten erklärt oder fehlt, und einen
   Formulierungsvorschlag machen. Nur lesen – Transcripts nie ändern und nichts daraus weitergeben, was nach Geheimnis
   aussieht.
+- **Tiefenanalyse mit Agenten (Claude Code):** Bei mehr als drei Verdachtsfällen liest je Fall ein `work:erkunder`
+  das Transcript, parallel. Sein Auftrag nennt Sitzung, Zeitpunkt, Prompt und Urteil, die Description des betroffenen
+  Skills und was zurückkommt: die Stelle im Transcript, was Claude dort tat und warum, ohne Geheimnisse. Urteil,
+  Ursache in der Description und Formulierungsvorschlag macht die Sitzung selbst. Im Cowork-Chat gibt es keine
+  Agenten.
 
 **Wächter** (ab Standard, wenn das Log `guard`-Ereignisse enthält): Für jede Regel mit Treffern im Bereich die Treffer
 prüfen – berechtigt oder Fehlalarm (der Nutzer widerspricht, Claude lädt den Skill danach nicht, die Aufgabe gehört
@@ -140,6 +145,7 @@ auf Wunsch.
 - „Ausgewertet bis“ vorrücken, ohne dass die Runden bis dahin ausgewertet wurden
 - eine Runde als Fehler zählen, ohne die Description des betroffenen Skills gelesen zu haben
 - `regeln.json` ohne Freigabe ändern oder eine Regel ohne Treffer-Grundlage hochstufen
+- ein Urteil aus der Zusammenfassung eines Agenten übernehmen, ohne die Description des Skills selbst gelesen zu haben
 
 ## VERWEIS
 

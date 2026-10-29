@@ -8,6 +8,17 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.65.0] — 2026-10-29
+
+- **skills/audit, skill-auswertung, doc-pflege, skill-pflege, Feature:** Lesen auf Agenten des Plugins `work`
+  verteilen (nur Claude Code), Schreiben und Urteil bleiben in der Sitzung, Befunde der Agenten werden nachgeprüft;
+  je ein neuer VERBOTEN-Punkt.
+  - audit: Abschnitt „Arbeit aufteilen (Claude Code)“ – je Modul ein `erkunder` parallel; ein Modul ohne Agenten.
+  - skill-auswertung: Tiefenanalyse mit mehr als drei Verdachtsfällen – je Transcript ein `erkunder`.
+  - doc-pflege: „Doku pflegen“ mit vielen Docs – `erkunder` je Doc-Gruppe sucht veraltete Stellen; beim Umbau einer
+    langen Doc prüft ein `gutachter` die Vollständigkeit gegen das Original.
+  - skill-pflege: großer Refactor – `gutachter` prüft den Abgleich Alt→Neu und Neu→Alt, `erkunder` sucht Verweise.
+
 ## [v0.64.0] — 2026-10-29
 
 - **skills/code-erstellen, Feature:** Neuer Abschnitt „Arbeit aufteilen“ mit Reference `references/agenten.md`: In

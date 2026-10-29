@@ -106,6 +106,12 @@ unter `docs/skill-refactors/<Datum>-<skill>.md`. Format, Zustände und Prüfunge
 12. Abschluss (unten). Inventar und Umbau kommen in denselben Commit; das Eval-Ergebnis wird danach im Inventar
     nachgetragen.
 
+**Agenten (Claude Code):** Bei einem großen Refactor (viele Inventar-Zeilen oder mehrere references) prüft vor dem
+Commit ein `work:gutachter` (Plugin `work`) den Abgleich unabhängig: alter Stand, neuer Stand und Inventar, gemeldet
+wird jede Regel ohne Neu-Ort und jede neue Aussage ohne ID. Verweise aus vielen anderen Skills darf ein
+`work:erkunder` zusammensuchen. Umbauen, Inventar führen und entscheiden bleibt in der Sitzung; jeden Befund selbst
+nachprüfen.
+
 ## Description ändern
 
 - Frontmatter nur ändern, wenn der Auftrag es verlangt oder sich Auslöser oder Zuständigkeit ändern.
@@ -187,6 +193,7 @@ erst dann entfernen. Das ist kein eigener Auslöser, nur der Nachgang einer Änd
   Auswahlfrage geklärt ist
 - Auswahlfrage im selben Antwortblock wie eine Lieferung
 - Memory-Einträge ohne Bestätigung entfernen
+- einen Agenten Skill-Dateien ändern lassen oder seine Befunde ungeprüft übernehmen
 
 ## VERWEIS
 

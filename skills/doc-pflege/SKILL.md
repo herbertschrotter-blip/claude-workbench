@@ -269,6 +269,10 @@ Kapitel) oder Befunde aus einem Audit beheben.
 Alle Pflicht-Docs (`Doku.Pflichtdokumente`) durchgehen und nachziehen, was nicht mehr stimmt; übergebene Audit-Befunde als
 Aufgabenliste abarbeiten. Danach die geänderten Docs prüfen (Abschnitt „Prüfen nach dem Schreiben“).
 
+**Mit Agenten (Claude Code):** Sind es viele Docs, sucht je Doc-Gruppe ein `work:erkunder` (Plugin `work`) parallel
+die veralteten Stellen und meldet sie mit Datei, Stelle und Grund. Geschrieben wird nur in der Sitzung selbst, damit
+die Doku aus einer Hand bleibt; jede gemeldete Stelle vor dem Ändern selbst nachlesen.
+
 ---
 
 ### Neue Doc oder Umbau
@@ -303,7 +307,8 @@ Danach die neue oder umgebaute Doc prüfen (Abschnitt „Prüfen nach dem Schrei
 3. Inhalt auf die Standard-Kapitel mappen
 4. Pflichtteile der Vorlage (z. B. Frontmatter, Quickload) ergänzen oder aktualisieren
 5. Invarianten-Check (siehe oben)
-6. Vollständigkeits-Check gegen das Original
+6. Vollständigkeits-Check gegen das Original; bei einer langen Doc in Claude Code zusätzlich ein `work:gutachter`, der
+   Original und Umbau unabhängig abgleicht und fehlende Inhalte meldet
 
 **REFACTORING-INVARIANTE (HARTE REGEL):**
 - KEIN Inhalt darf gelöscht oder gekürzt werden — nur umordnen
@@ -387,3 +392,5 @@ macht audit.
 - Statusliste auf `fertig` setzen, solange Tests oder Commit fehlen
 - Pfade oder Dateinamen eines anderen Projekts annehmen (auch aus `references/beispiele.md`) — alles aus dem Skill-Profil
 - Sitzung ohne Sitzungsabschluss beenden, wenn Docs geändert wurden
+- Docs von einem Agenten schreiben lassen oder seine Funde ungeprüft übernehmen (Abschnitt „Doku pflegen“, „Mit
+  Agenten“)
