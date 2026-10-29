@@ -63,8 +63,9 @@ Grenze sie prüfen.
 | cc-steuerung | 3 | 2 |
 | projekt-anlegen | 21 | 5 |
 | skill-auswertung | 6 | 3 |
-| sitzung | 7 | 3 |
-| **gesamt** | **114** | **34** |
+| sitzung | 6 | 3 |
+| neustart | 6 | 2 |
+| **gesamt** | **119** | **36** |
 
 ## Nicht abgedeckt
 
@@ -77,7 +78,7 @@ Grenze sie prüfen.
 
 ## Fälle
 
-Stand 28.10.2026, 114 Fälle.
+Stand 29.10.2026, 119 Fälle.
 
 | Fall | Skill | Testsatz | soll auslösen | darf nicht auslösen | Art |
 |---|---|---|---|---|---|
@@ -194,4 +195,9 @@ Stand 28.10.2026, 114 Fälle.
 | `sitzung-real-wo-sitzungen` | sitzung | Wo sind meine ganzen Sitzungen? | sitzung | – | normal, echt |
 | `sitzung-no-trigger-handover` | sitzung | Wir machen morgen weiter. Mach mir den Übergabe-Prompt für den nächsten Chat und richte dafür gleich ein neues Fenster im Projekt ein. | chat-wechsel | sitzung | kritisch |
 | `sitzung-no-trigger-tmux-config` | sitzung | Stell in meiner tmux.conf ein, dass die Statusleiste oben steht und Strg+a statt Strg+b der Präfix ist. | – | sitzung | normal |
-| `sitzung-real-neustart-kein-skill` | sitzung | Mach bitte einen Neustart. | keiner | sitzung, code-erstellen | normal, echt, Ziel |
+| `neustart-ha` | neustart | Die neue Integration ist eingespielt. Starte jetzt Home Assistant neu, aber erst, wenn in den anderen Claude-Chats gerade nichts gegen HA läuft, und prüf danach, ob alles wieder hochgekommen ist. | neustart | code-erstellen, sitzung | kritisch |
+| `neustart-pause-bitte` | neustart | Nachricht aus der Sitzung ha-hausbau: Home Assistant wird neu gestartet. Bitte schließe deine laufende Aufgabe ab, beginne danach keine Aktion gegen Home Assistant und antworte mit „bereit“. | neustart | – | normal |
+| `neustart-real-mach-neustart` | neustart | Mach bitte einen Neustart. | neustart | sitzung, code-erstellen | normal, echt |
+| `neustart-no-trigger-claude-fenster` | neustart | Der Claude im Fenster ha-hausbau hängt. Starte Claude in diesem tmux-Fenster neu und setz das Gespräch dort fort. | sitzung | neustart | kritisch |
+| `neustart-no-trigger-geraet` | neustart | Der Saugroboter reagiert nicht mehr auf Befehle. Starte ihn über Home Assistant neu. | – | neustart | normal |
+| `neustart-no-trigger-reload` | neustart | Ich habe in automations.yaml eine Bedingung geändert. Lade nur die Automationen neu, kein Neustart. | – | neustart | normal |

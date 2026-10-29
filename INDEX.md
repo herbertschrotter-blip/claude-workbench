@@ -1,6 +1,6 @@
 # INDEX — Skill-Übersicht
 
-Verzeichnis der 15 Skills im Repo `claude-workbench`: wofür jeder zuständig ist, wann er auslöst und wie Konflikte
+Verzeichnis der 16 Skills im Repo `claude-workbench`: wofür jeder zuständig ist, wann er auslöst und wie Konflikte
 zwischen Skills entschieden werden. Die Regeln selbst stehen in den Skills und in den Dokumenten unten – dieser Index
 wiederholt sie nicht.
 
@@ -24,6 +24,7 @@ wiederholt sie nicht.
 | **doc-pflege** | Projektdoku anlegen, pflegen, korrigieren, Audit-Befunde beheben; Sitzungsabschluss | "pflege docs", "schreib ADR", "neues Konzept", "behebe die Audit-Befunde", "Sitzung abschließen" |
 | **git-commit-helper** | Commit-Befehle und -Messages im Format `[vX.Y.Z] Modul, Typ: Kurztitel`, Version-Bump | "commit", "git commit", "PATCH oder MINOR?" |
 | **mockup-erstellen** | HTML-Mockups nach dem Skill-Profil (Bereich Mockup), Token-Abgleich, Abnahme festhalten | "Mockup für", "Screen-Design", "UI-Mockup", "erst ins Mockup einbauen" |
+| **neustart** | System (z. B. Home Assistant) abgestimmt neu starten: Konfiguration prüfen, andere Claude-Sitzungen des Rechners um Pause bitten, warten (höchstens 15 Minuten, dann Auswahlfrage), neu starten, kontrollieren, freigeben; Antwort auf die Pause-Bitte einer anderen Sitzung | "neustart", "starte HA neu", "mach einen Neustart", Einspielen mit Neustart, Pause-Bitte einer anderen Sitzung |
 | **projekt-anlegen** | Neue Projekte anlegen und einrichten, nach Stack: für unterstützte Stacks ein lauffähiges, geprüftes Grundgerüst ohne Fachlogik (Generator); bestehendes Repo für die Skills einrichten (Skill-Profil, Configs); Übergabe an mockup-erstellen, code-erstellen oder tracker | "neues Projekt", "leg mir ein Projekt an", "ich will X bauen, weiß aber nicht wie", "Repo holen und einrichten", "richte die Skills hier ein", "X überarbeiten" (Altbestand ohne Projekt) |
 | **sitzung** | Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü: Projekt → Gespräch → fortsetzen im richtigen Ordner mit Remote Control; Fenster verwalten, wiederherstellen, aufräumen | "sitzung", "alte Sitzung öffnen", "wo sind meine Sitzungen", "Fenster wiederherstellen" |
 | **skill-neu** | Neue Skills für dieses Repo anlegen (Absicht, Kollisionsprüfung, Neutralität, Eval-Fälle) | "neuer Skill für X", "erstelle einen Skill" |
@@ -39,7 +40,7 @@ Abschnitt „Vorrang / Delegation“.
 
 - **Orchestrator:** code-erstellen (ruft mockup-erstellen, git-commit-helper, doc-pflege, tracker, audit auf)
 - **Ändern Dinge:** skill-neu, skill-pflege (Skills), doc-pflege (Doku), projekt-anlegen (neue Projekte)
-- **Abläufe:** chat-wechsel, chatgpt-review, audit, ticket, skill-auswertung, sitzung
+- **Abläufe:** chat-wechsel, chatgpt-review, audit, ticket, skill-auswertung, sitzung, neustart
 - **Schnittstellen:** tracker (ClickUp), git-commit-helper (Git), mockup-erstellen (HTML-Mockups)
 - **Modalität:** cc-steuerung (läuft parallel zum Fachskill, nur im Cowork-Chat)
 
@@ -64,6 +65,8 @@ Abschnitt „Vorrang / Delegation“.
 | projekt-anlegen ↔ mockup-erstellen | neues Projekt aufsetzen, auch bei offener Art → projekt-anlegen (bietet mockup-erstellen an); nur Aussehen entwerfen → mockup-erstellen |
 | projekt-anlegen ↔ skill-neu | neues Projekt → projekt-anlegen; neuer Skill → skill-neu |
 | skill-neu ↔ skill-pflege | Die SKILL.md gibt es schon → skill-pflege; ganz neuer Skill → skill-neu |
+| neustart ↔ sitzung | System (z. B. Home Assistant) neu starten → neustart; Claude oder ein tmux-Fenster neu starten, Fenster nach einem Neustart wiederherstellen → sitzung |
+| neustart ↔ code-erstellen | Code ändern und einspielen → code-erstellen; braucht das Einspielen einen Neustart, ruft code-erstellen neustart auf; ein Neustart ohne Code-Arbeit → neustart |
 | sitzung ↔ projekt-anlegen | vorhandenes Gespräch oder Fenster → sitzung; neues Projekt anlegen → projekt-anlegen |
 | sitzung ↔ skill-auswertung | Gespräche und Fenster verwalten → sitzung; Skill-Log auswerten → skill-auswertung |
 | skill-auswertung ↔ audit | Zündungen der Skills aus dem Log auswerten → skill-auswertung; Code, Doku oder Skills gegen ihre Regeln prüfen → audit |

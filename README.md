@@ -73,7 +73,7 @@ Updates, Entfernen und was bei Problemen hilft: [`docs/installation.md`](./docs/
 Claude-Skills von Herbert Schrotter für Claude Code, als Plugin-Marketplace `workbench`. Entstanden im Projekt
 BauProjektManager (BPM), heute für C#-, TypeScript-, Python- und Home-Assistant-Projekte im Einsatz.
 
-Dieses Repo enthält 15 Skills samt Evals, Prüfskript, Refactor-Dokumentation und Memory-Konventionen, dazu zwei Hooks
+Dieses Repo enthält 16 Skills samt Evals, Prüfskript, Refactor-Dokumentation und Memory-Konventionen, dazu zwei Hooks
 (Skill-Log und Skill-Wächter). Die Skills sind projektneutral: Projektwerte (Pfade, Präfixe, IDs, Befehle) kommen aus
 dem Skill-Profil in der `CLAUDE.md` des jeweiligen Repos und dessen Configs unter `.claude/skill-config/`. Sie sind auf
 eine bestimmte Arbeitsweise zugeschnitten (Deutsch, ClickUp, Commit-Format `[vX.Y.Z] Modul, Typ: Kurztitel`, Kapitel 10);
@@ -130,7 +130,7 @@ Die Logik steht in [`tools/einrichten.py`](./tools/einrichten.py).
 
 | Plugin | Inhalt | Wann |
 |---|---|---|
-| `work` | 11 Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Reviews) + Hooks Skill-Log und Skill-Wächter | Standard |
+| `work` | 12 Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Neustart, Reviews) + Hooks Skill-Log und Skill-Wächter | Standard |
 | `skill-workshop` | skill-neu, skill-pflege, skill-auswertung | zusätzlich, für die Arbeit an Skills |
 | `work-hooks` | nur Skill-Log und Skill-Wächter, ohne Skills | wenn die Skills schon anders geladen werden (z. B. Upload bei claude.ai). **Nie zusammen mit `work`** – sonst läuft jeder Hook doppelt |
 
@@ -183,6 +183,7 @@ und `work:<name>`). Im Terminal die claude.ai-Fassung je Skill abschalten, in `~
   "anthropic-skills:audit": "off", "anthropic-skills:chat-wechsel": "off", "anthropic-skills:chatgpt-review": "off",
   "anthropic-skills:code-erstellen": "off", "anthropic-skills:doc-pflege": "off", "anthropic-skills:git-commit-helper": "off",
   "anthropic-skills:mockup-erstellen": "off", "anthropic-skills:projekt-anlegen": "off", "anthropic-skills:sitzung": "off",
+  "anthropic-skills:neustart": "off",
   "anthropic-skills:ticket": "off", "anthropic-skills:tracker": "off", "anthropic-skills:skill-neu": "off",
   "anthropic-skills:skill-pflege": "off", "anthropic-skills:skill-auswertung": "off"
 }
@@ -254,7 +255,7 @@ claude-workbench/
 ├── evals/                 ← Manuelle Skill-Routing-Evals (bis v0.20)
 ├── quality/               ← Eval-Plugin: evals/ (Testfälle für claude plugin eval), skills → ../skills
 ├── reference/             ← Externe Referenz-Artefakte
-├── skills/                ← 15 Skills, je ein Ordner mit SKILL.md
+├── skills/                ← 16 Skills, je ein Ordner mit SKILL.md
 └── tools/                 ← Installation (install.sh/.ps1, einrichten.py), Prüfskript, Auswertung des Skill-Logs, Statuszeile
 ```
 
@@ -262,7 +263,7 @@ Die folgenden Kapitel erklären jeden dieser Ordner und die darin liegenden Date
 
 ---
 
-## Kapitel 1 — Die 15 Skills im Überblick
+## Kapitel 1 — Die 16 Skills im Überblick
 
 Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Meta-Skills** und **Modalitäts-Skills**.
 
@@ -285,6 +286,7 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 | **git-commit-helper** | Fertige Git-Commit-Befehle im Format `[vX.Y.Z] Modul, Typ: Kurztitel` (Skill-Profil). | "commit bitte", "commit-message", "PATCH oder MINOR?" |
 | **chat-wechsel** | Handover-Prompt für die nächste Claude-Session. | "neuer chat", "nächster chat", "übergabe" |
 | **sitzung** | Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü: Projekt → Gespräch → im richtigen Ordner mit Remote Control fortsetzen; Fenster verwalten, nach Neustart wiederherstellen, aufräumen (Skript `scripts/sitzung.py`). | "sitzung", "alte Sitzung öffnen", "Fenster wiederherstellen" |
+| **neustart** | System (z. B. Home Assistant) abgestimmt neu starten: Konfiguration prüfen, andere Claude-Sitzungen um Pause bitten, warten, neu starten, kontrollieren, freigeben (Skript `scripts/sitzungen.py`). | "neustart", "starte HA neu", "mach einen Neustart" |
 
 ### Meta-Skills (ändern andere Skills)
 
@@ -371,7 +373,7 @@ Das Eval-System misst, ob ein Skill bei den richtigen Queries triggert und bei d
 ### Neu: automatische Routing-Tests (`quality/evals/`)
 
 Seit Umbau Phase 1 (24.09.2026) gibt es Testfälle für `claude plugin eval` (Manifest `quality/.claude-plugin/plugin.json`,
-nur für Tests). 114 Fälle, davon 34 kritisch und 19 aus echten Prompts des Skill-Logs (Tag `real`); Tabelle aller Fälle in
+nur für Tests). 119 Fälle, davon 36 kritisch und 19 aus echten Prompts des Skill-Logs (Tag `real`); Tabelle aller Fälle in
 [`quality/README.md`](./quality/README.md). Aufruf und Schwellen: Skill-Profil in [`CLAUDE.md`](./CLAUDE.md) und [`docs/skillsystem-umbau.md`](./docs/skillsystem-umbau.md).
 Die mechanische Prüfung aller Skills macht [`tools/validate-skills.ps1`](./tools/validate-skills.ps1), auf Rechnern ohne
 PowerShell (HA) nach jedem Push per GitHub Actions.
@@ -621,7 +623,7 @@ claude-workbench/
 │   ├── README.md                          ← Regeln und Tabelle aller Fälle
 │   ├── baseline/                          ← Grundmessung vor dem Umbau, Gesamtabnahme nach Phase 7
 │   ├── real-environment/                  ← echte Sitzungen gegen Skills von Anthropic (EXT)
-│   └── evals/                             ← 114 Fälle (prompt.md + graders/), 19 aus echten Prompts
+│   └── evals/                             ← 119 Fälle (prompt.md + graders/), 19 aus echten Prompts
 │
 ├── reference/
 │   └── anthropic-skill-creator/
@@ -640,6 +642,7 @@ claude-workbench/
 │   ├── git-commit-helper/             ← SKILL.md + references/ (beispiele, cowork) + scripts/ (checks.py, Tests)
 │   ├── mockup-erstellen/                 ← SKILL.md + references/ (sitemap, beispiele, cowork)
 │   ├── projekt-anlegen/                   ← SKILL.md + references/ (generator, grundsatz, github, stacks, windows-netzlaufwerk) + scripts/ (Generator, Tests) + templates/ (Bausteine)
+│   ├── neustart/                          ← SKILL.md + references/ (sitzungen, stacks/) + scripts/sitzungen.py
 │   ├── sitzung/                           ← SKILL.md + references/ (befehle, umgebung) + scripts/sitzung.py
 │   ├── skill-auswertung/SKILL.md
 │   ├── skill-neu/                         ← SKILL.md + references/ (cowork)

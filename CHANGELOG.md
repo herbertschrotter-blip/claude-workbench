@@ -8,6 +8,15 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.63.0] — 2026-10-29
+
+- **skills/neustart, Feature (neu):** Startet ein gemeinsam genutztes System (z. B. Home Assistant) abgestimmt neu:
+  Konfiguration prüfen, die anderen Claude-Code-Sitzungen des Rechners ansehen und um Pause nach ihrer Aufgabe bitten,
+  höchstens 15 Minuten warten (dann Auswahlfrage), neu starten, kontrollieren, freigeben; dazu die Antwort auf eine
+  Pause-Bitte. References `sitzungen.md` und `stacks/home-assistant.md`, Skript `scripts/sitzungen.py`. Im Plugin
+  `work`; INDEX mit Konfliktpaaren neustart ↔ sitzung und neustart ↔ code-erstellen; fünf neue Eval-Fälle, der echte
+  Fall `sitzung-real-neustart-kein-skill` heißt jetzt `neustart-real-mach-neustart` und erwartet neustart.
+
 ## [v0.62.14] — 2026-10-28
 
 - **skills/code-erstellen, Change:** v0.62.11 zurückgenommen – die Description nennt wieder „mach BSM-002“, „weiter mit

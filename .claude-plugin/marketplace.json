@@ -9,7 +9,7 @@
       "name": "work",
       "source": "./",
       "strict": false,
-      "description": "Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Reviews), dazu Skill-Log und Skill-Wächter als Hooks.",
+      "description": "Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Neustart, Reviews), dazu Skill-Log und Skill-Wächter als Hooks.",
       "skills": [
         "./skills/code-erstellen",
         "./skills/mockup-erstellen",
@@ -21,6 +21,7 @@
         "./skills/audit",
         "./skills/chat-wechsel",
         "./skills/sitzung",
+        "./skills/neustart",
         "./skills/chatgpt-review"
       ],
       "commands": [
