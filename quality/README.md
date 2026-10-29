@@ -103,7 +103,7 @@ Stand 29.10.2026, 122 Fälle.
 | `doc-no-trigger-discussion` | doc-pflege | Was hältst du grundsätzlich davon, Architekturentscheidungen als ADRs festzuhalten? Nur deine Meinung, bitte nichts anlegen. | – | doc-pflege | normal |
 | `doc-session-close` | doc-pflege | Wir hören für heute auf. Mach bitte den Sitzungsabschluss in der Projektdoku: Stand und offene Punkte eintragen. | doc-pflege | – | normal |
 | `doc-pflege-real-uebergabe-bauplan` | doc-pflege | Übergabe „Saugroboter-Karte – Neubau Teil 5“: bisherigen Aufbau zusammenfassen und den neuen Bauplan schreiben, mit Abschnitt 1 anfangen | doc-pflege | chat-wechsel | normal, echt |
-| `doc-pflege-real-konzept` | doc-pflege | Erstelle mir ein komplettes Konzept für eine Companion-App auf Android – eine richtige App, keine Web-App, mit maximaler Sicherheit. | doc-pflege | code-erstellen | normal, echt, Ziel |
+| `doc-pflege-real-konzept` | doc-pflege | Erstelle mir ein komplettes Konzept für eine Companion-App auf Android – eine richtige App, keine Web-App, mit maximaler Sicherheit. | doc-pflege | code-erstellen | normal, echt |
 | `audit-readonly` | audit | Prüfe bitte, ob die INDEX.md und die Beschreibungen der Skills zusammenpassen. Nur prüfen und die Befunde nennen, nichts ändern. | audit | doc-pflege | kritisch, Pilot, Ziel |
 | `audit-code-docs` | audit | Prüf bitte, ob die Doku zum Import-Modul noch zum Code passt. Nur prüfen, nichts ändern – ich will eine Liste der Abweichungen. | audit | doc-pflege, code-erstellen | kritisch |
 | `audit-frontmatter` | audit | Validiere bitte Frontmatter und Quickloads aller Docs. Nur lesen und die Befunde auflisten, nichts korrigieren. | audit | doc-pflege | kritisch |
