@@ -286,7 +286,7 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 | **git-commit-helper** | Fertige Git-Commit-Befehle im Format `[vX.Y.Z] Modul, Typ: Kurztitel` (Skill-Profil). | "commit bitte", "commit-message", "PATCH oder MINOR?" |
 | **chat-wechsel** | Handover-Prompt für die nächste Claude-Session. | "neuer chat", "nächster chat", "übergabe" |
 | **sitzung** | Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü: Projekt → Gespräch → im richtigen Ordner mit Remote Control fortsetzen; Fenster verwalten, nach Neustart wiederherstellen, aufräumen (Skript `scripts/sitzung.py`). | "sitzung", "alte Sitzung öffnen", "Fenster wiederherstellen" |
-| **neustart** | System (z. B. Home Assistant) abgestimmt neu starten: Konfiguration prüfen, andere Claude-Sitzungen um Pause bitten, warten, neu starten, kontrollieren, freigeben (Skript `scripts/sitzungen.py`). | "neustart", "starte HA neu", "mach einen Neustart" |
+| **neustart** | System (z. B. Home Assistant) abgestimmt neu starten: Konfiguration prüfen, still nachsehen, ob in einer anderen Claude-Sitzung etwas läuft, sonst warten, neu starten, kontrollieren (Skript `scripts/sitzungen.py`). | "neustart", "starte HA neu", "mach einen Neustart" |
 
 ### Meta-Skills (ändern andere Skills)
 
@@ -373,7 +373,7 @@ Das Eval-System misst, ob ein Skill bei den richtigen Queries triggert und bei d
 ### Neu: automatische Routing-Tests (`quality/evals/`)
 
 Seit Umbau Phase 1 (24.09.2026) gibt es Testfälle für `claude plugin eval` (Manifest `quality/.claude-plugin/plugin.json`,
-nur für Tests). 119 Fälle, davon 36 kritisch und 19 aus echten Prompts des Skill-Logs (Tag `real`); Tabelle aller Fälle in
+nur für Tests). 118 Fälle, davon 36 kritisch und 19 aus echten Prompts des Skill-Logs (Tag `real`); Tabelle aller Fälle in
 [`quality/README.md`](./quality/README.md). Aufruf und Schwellen: Skill-Profil in [`CLAUDE.md`](./CLAUDE.md) und [`docs/skillsystem-umbau.md`](./docs/skillsystem-umbau.md).
 Die mechanische Prüfung aller Skills macht [`tools/validate-skills.ps1`](./tools/validate-skills.ps1), auf Rechnern ohne
 PowerShell (HA) nach jedem Push per GitHub Actions.
@@ -623,7 +623,7 @@ claude-workbench/
 │   ├── README.md                          ← Regeln und Tabelle aller Fälle
 │   ├── baseline/                          ← Grundmessung vor dem Umbau, Gesamtabnahme nach Phase 7
 │   ├── real-environment/                  ← echte Sitzungen gegen Skills von Anthropic (EXT)
-│   └── evals/                             ← 119 Fälle (prompt.md + graders/), 19 aus echten Prompts
+│   └── evals/                             ← 118 Fälle (prompt.md + graders/), 19 aus echten Prompts
 │
 ├── reference/
 │   └── anthropic-skill-creator/

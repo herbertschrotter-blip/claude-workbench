@@ -1,22 +1,28 @@
-# Sitzungen finden und benachrichtigen
+# Prüfen, ob in einer anderen Sitzung etwas läuft
 
-Gilt für Claude Code. Im Cowork-Chat gibt es keine anderen Sitzungen auf dem Rechner; dort entfallen die Schritte
-„Andere Sitzungen ansehen“ bis „Warten“, und der Nutzer bestätigt vor dem Neustart, dass nichts anderes läuft.
+Gilt für Claude Code. Im Cowork-Chat gibt es keine anderen Sitzungen auf dem Rechner; dort bestätigt der Nutzer vor dem
+Neustart, dass nichts anderes läuft.
 
-## Status holen
+## Frei oder belegt
 
-- **Werkzeug der Umgebung:** `ListAgents` listet die anderen Sitzungen dieses Rechners mit Name, Art und Status
-  (`busy` = arbeitet, `idle` = ruht, `offline`). Sitzungen mit `offline` oder in der Cloud zählen nicht: Sie arbeiten
-  nicht auf diesem Rechner.
-- **Skript:** `python3 <Skill-Ordner>/scripts/sitzungen.py` zeigt dasselbe aus `~/.claude/sessions/` (ohne die eigene
-  Sitzung, nur lebende Prozesse). Exit 0 = keine andere Sitzung arbeitet, 1 = mindestens eine arbeitet.
+Eine andere Sitzung ist **frei**, wenn beides gilt:
 
-## Nachricht schicken
+- Claude ruht dort (Status `idle`). Belegt sind `busy` (Claude arbeitet), `waiting` (wartet auf den Nutzer, etwa
+  eine Freigabe oder Auswahlfrage) und `shell` (ein Befehl läuft).
+- Kein Befehl der Sitzung läuft, auch keiner im Hintergrund: kein Shell-Prozess unter dem Claude-Prozess. Dauerhafte
+  Hilfsprozesse wie MCP-Server zählen nicht.
 
-`SendMessage` an den Namen aus der Sitzungsliste, genau wie er dort steht. Antworten kommen als Benachrichtigung in die
-eigene Sitzung zurück.
+Ein Agent im Hintergrund, der gerade nur liest und keinen Befehl ausführt, ist so nicht sicher zu erkennen; startet er
+Befehle, ist die Sitzung belegt.
 
-## Warten
+## Skript
+
+```
+python3 <Skill-Ordner>/scripts/sitzungen.py
+```
+
+zeigt je anderer Sitzung Status, laufende Befehle und `frei`/`belegt` (Quelle `~/.claude/sessions/`, nur lebende
+Prozesse, ohne die eigene Sitzung). Exit 0 = alle frei, 1 = mindestens eine belegt.
 
 Im Hintergrund warten, ohne den Chat zu blockieren:
 
@@ -24,5 +30,10 @@ Im Hintergrund warten, ohne den Chat zu blockieren:
 python3 <Skill-Ordner>/scripts/sitzungen.py --warten 900
 ```
 
-Das Skript endet, sobald keine andere Sitzung mehr arbeitet (Exit 0), spätestens nach 900 Sekunden (Exit 1, mit der
-Liste der noch arbeitenden). Eine Antwort „bereit“ zählt auch, wenn die Sitzung danach noch kurz als arbeitend gilt.
+Das Skript endet, sobald alle frei sind (Exit 0), spätestens nach 900 Sekunden (Exit 1, mit der Liste der belegten).
+
+## Ohne Skript
+
+Die Sitzungsliste der Umgebung (`ListAgents`) zeigt den Status (`busy`, `idle`, `offline`); Sitzungen mit `offline`
+oder in der Cloud arbeiten nicht auf diesem Rechner und zählen nicht. Laufende Befehle zeigt sie nicht; dann nur nach
+dem Status entscheiden und das dem Nutzer sagen.

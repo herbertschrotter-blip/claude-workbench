@@ -8,6 +8,14 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.63.1] — 2026-10-29
+
+- **skills/neustart, Change (Refactor):** Keine Nachrichten mehr an die anderen Sitzungen (Herbert: flutet deren
+  Verlauf). Der Skill prüft still, ob jede andere Sitzung frei ist – Claude ruht und kein Befehl läuft, auch keiner im
+  Hintergrund –, startet dann sofort neu, sonst wartet er höchstens 15 Minuten und fragt. Abschnitt „Pause-Bitte“,
+  Freigabe-Nachricht und der Eval-Fall `neustart-pause-bitte` entfallen; `scripts/sitzungen.py` zeigt frei/belegt.
+  Inventar: `docs/skill-refactors/2026-10-29-neustart.md`.
+
 ## [v0.63.0] — 2026-10-29
 
 - **skills/neustart, Feature (neu):** Startet ein gemeinsam genutztes System (z. B. Home Assistant) abgestimmt neu:

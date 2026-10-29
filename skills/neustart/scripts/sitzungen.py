@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
-"""Andere laufende Claude-Code-Sitzungen dieses Rechners und ihr Status (busy/idle) – für den Skill neustart.
+"""Andere laufende Claude-Code-Sitzungen dieses Rechners: frei oder belegt – für den Skill neustart.
 
-  python3 sitzungen.py                 Tabelle: name, status, tmux, ordner (ohne die eigene Sitzung)
-  python3 sitzungen.py --warten 900    wartet, bis keine andere Sitzung mehr busy ist (höchstens so viele Sekunden)
+  python3 sitzungen.py                 Tabelle: frei/belegt, status, laufende Befehle, name, ordner (ohne die eigene)
+  python3 sitzungen.py --warten 900    wartet, bis alle anderen frei sind (höchstens so viele Sekunden)
 
+Frei = Status idle und kein Shell-Befehl unter dem Claude-Prozess (Claude Code startet jeden Befehl, auch im
+Hintergrund, über eine Shell mit einem Snapshot unter shell-snapshots/; MCP-Server zählen nicht).
 Quelle: ~/.claude/sessions/<pid>.json (bzw. $CLAUDE_CONFIG_DIR/sessions); Einträge ohne lebenden Prozess zählen nicht.
 Die eigene Sitzung wird über die Prozesskette erkannt (das Skript läuft als Kind von Claude Code).
-Exit 0: keine andere Sitzung busy; 1: nach Ablauf der Wartezeit noch busy; 2: Sitzungsordner nicht lesbar.
+Exit 0: alle anderen frei; 1: nach Ablauf der Wartezeit noch belegt; 2: Sitzungsordner nicht lesbar.
 """
 
 import argparse
@@ -50,7 +52,28 @@ def ancestors():
     return pids
 
 
-def others(directory=None, own=None, is_alive=alive):
+def children(pid):
+    try:
+        with open(f"/proc/{pid}/task/{pid}/children", encoding="utf-8") as fh:
+            return [int(x) for x in fh.read().split()]
+    except (OSError, ValueError):
+        return []
+
+
+def cmdline(pid):
+    try:
+        with open(f"/proc/{pid}/cmdline", "rb") as fh:
+            return fh.read().replace(b"\0", b" ").decode("utf-8", "replace").strip()
+    except OSError:
+        return ""
+
+
+def befehle(pid, kids=children, cmd=cmdline):
+    """Laufende Befehle einer Sitzung: direkte Kind-Prozesse, die eine Shell von Claude Code sind (shell-snapshots)."""
+    return sum(1 for c in kids(pid) if "shell-snapshots" in cmd(c))
+
+
+def others(directory=None, own=None, is_alive=alive, count=befehle):
     own = ancestors() if own is None else own
     result = []
     for path in sorted(glob.glob(os.path.join(directory or sessions_dir(), "*.json"))):
@@ -62,8 +85,11 @@ def others(directory=None, own=None, is_alive=alive):
             continue
         if pid in own or not is_alive(pid):
             continue
-        result.append({"name": data.get("name") or data.get("sessionId"), "status": data.get("status") or "?",
-                       "tmux": data.get("tmux") or "", "ordner": data.get("cwd") or "", "art": data.get("kind") or ""})
+        status = data.get("status") or "?"
+        laufend = count(pid)
+        result.append({"name": data.get("name") or data.get("sessionId"), "status": status, "befehle": laufend,
+                       "frei": status == "idle" and laufend == 0, "tmux": data.get("tmux") or "",
+                       "ordner": data.get("cwd") or "", "art": data.get("kind") or ""})
     return result
 
 
@@ -71,12 +97,13 @@ def show(rows):
     if not rows:
         print("keine andere laufende Sitzung")
     for r in rows:
-        print(f"{r['status']:<6} {r['name']:<40} {r['tmux']:<16} {r['ordner']}")
+        zustand = "frei" if r["frei"] else "belegt"
+        print(f"{zustand:<7} {r['status']:<8} {r['befehle']} Befehle  {r['name']:<40} {r['ordner']}")
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Andere laufende Claude-Code-Sitzungen und ihr Status")
-    parser.add_argument("--warten", type=int, default=0, help="Sekunden warten, bis keine andere Sitzung busy ist")
+    parser = argparse.ArgumentParser(description="Andere laufende Claude-Code-Sitzungen: frei oder belegt")
+    parser.add_argument("--warten", type=int, default=0, help="Sekunden warten, bis alle anderen Sitzungen frei sind")
     parser.add_argument("--takt", type=int, default=10, help="Abstand der Prüfungen in Sekunden")
     args = parser.parse_args()
     if not os.path.isdir(sessions_dir()):
@@ -85,7 +112,7 @@ def main():
     end = time.monotonic() + args.warten
     while True:
         rows = others()
-        busy = [r for r in rows if r["status"] == "busy"]
+        busy = [r for r in rows if not r["frei"]]
         if not busy or time.monotonic() >= end:
             show(rows)
             return 1 if busy else 0
