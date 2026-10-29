@@ -213,11 +213,16 @@ doc-pflege-002, chat-wechsel-003.
 
 ### Phase 7 – Gesamtabnahme
 
-- [ ] alle Fälle und die echten Sitzungen
-- [ ] `skill-creator` auf die kritischen Skills
-- [ ] Prüfskript ohne Fehler
-- [ ] `test-prompts.md`, `references.zip`, `projects/` entfernt (`projects/` am 07.10.2026 mit Schritt 8b)
-- [ ] README und INDEX aktuell; kein Skill mit Werten oder Beispielen einer bestimmten App
+- [x] alle Fälle und die echten Sitzungen: 114 von 114 Fällen, 341 von 342 Läufen, kritisch 34 von 34; echte Sitzungen
+      EXT-01–03 und EXT-05 12 von 12 (28.10.2026, `quality/baseline/abnahme-2026-10.md`)
+- [ ] `skill-creator` auf die kritischen Skills (Herbert entscheidet später)
+- [x] Prüfskript ohne Fehler (CI `validate-skills` grün bis v0.62.14)
+- [x] `test-prompts.md`, `references.zip`, `projects/` entfernt (`projects/` am 07.10.2026 mit Schritt 8b)
+- [x] README und INDEX aktuell (15 Skills, 114 Fälle); kein Skill mit Werten einer bestimmten App im Kern. Herbert hat
+      am 28.10.2026 entschieden, nur die Kerne neutral zu machen: Beispiele aus BPM oder Heidi bleiben als Beispiele
+      erlaubt. Nacharbeit audit v0.62.8, chatgpt-review v0.62.10, mockup-erstellen v0.62.12, sitzung v0.62.13; die
+      Änderung an code-erstellen ist nach der Eval zurückgenommen (v0.62.14). Alle Änderungen sind hochgeladen
+      (29.10.2026).
 
 ### Plan (07.10.2026, von Herbert freigegeben; Schritte 1–6 erledigt) – Plugin-Marketplace
 

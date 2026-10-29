@@ -619,7 +619,7 @@ claude-workbench/
 │   ├── .claude-plugin/plugin.json         ← Eval-Manifest (experimental.evals: evals)
 │   ├── skills → ../skills                 ← Symlink, damit die Evals die Skills laden
 │   ├── README.md                          ← Regeln und Tabelle aller Fälle
-│   ├── baseline/                          ← Grundmessung vor dem Umbau
+│   ├── baseline/                          ← Grundmessung vor dem Umbau, Gesamtabnahme nach Phase 7
 │   ├── real-environment/                  ← echte Sitzungen gegen Skills von Anthropic (EXT)
 │   └── evals/                             ← 114 Fälle (prompt.md + graders/), 19 aus echten Prompts
 │
