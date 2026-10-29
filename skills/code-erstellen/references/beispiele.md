@@ -19,7 +19,7 @@ Home-Assistant-Karte mit Backend (Dreame X60). Die Spalten stammen aus dem älte
 
 | Feld (alt) | Skill-Profil | BPM | Heidi |
 |------|------|-----|-------|
-| Stacks | `Code.Stacks` | `csharp-wpf` | `typescript-lit, home-assistant-yaml, python` |
+| Stacks | `Code.Stacks` | `csharp-wpf` | `typescript-lit, home-assistant, python` |
 | Build/Lint | `Code.Tests` (Checks) | laut INDEX.md | `npm run check`, `npm run lint`, `npm run build` |
 | Pflicht-Docs | `Code.Pflichtkontext` | INDEX.md → Quickload → Invarianten → Pflichtlesen (DOC-STANDARD Kap. 8) | CLAUDE.md, docs/HANDOFF.md, BAUPLAN.md Abschnitt 2 (Regeln) + 4 (Vertrag) |
 | Aufgabenquelle | `Code.Aufgabenquelle` | ClickUp-Task (Description-Template) | BAUPLAN.md Abschnitt 8 Karte + ClickUp DX-Task |

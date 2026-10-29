@@ -1,8 +1,8 @@
-# Stack: home-assistant-yaml — Home Assistant Pakete, Automationen, Skripte, Dashboards
+# Stack: home-assistant — Home Assistant Pakete, Automationen, Skripte, Dashboards
 
 Stack-Referenz für `code-erstellen`. Wird geladen, wenn das Skill-Profil des Projekts
-`Code.Stacks: home-assistant-yaml` enthält. Projektspezifisches (Host, Laufwerk, Deploy-Skript,
-Token-Variable) steht im Skill-Profil bzw. der CLAUDE.md, nicht hier.
+`Code.Stacks: home-assistant` (oder die ältere Bezeichnung `home-assistant-yaml`) enthält.
+Projektspezifisches (Host, Laufwerk, Deploy-Skript, Token-Variable) steht im Skill-Profil bzw. der CLAUDE.md, nicht hier.
 
 ---
 
@@ -12,8 +12,10 @@ Token-Variable) steht im Skill-Profil bzw. der CLAUDE.md, nicht hier.
   Repo → deployen → prüfen.
 - **Pakete** (`packages/*.yaml`): Helfer (`input_*`), Template-Sensoren, `command_line`,
   `shell_command`. Ein Paket je Thema; neue Helfer-Domäne braucht Neustart.
-- **Automationen/Skripte** (`automations.yaml`, `scripts.yaml`): Fachlogik dort, Entscheidungs-
-  werte aus Sensor-Attributen lesen, nicht doppelt rechnen.
+- **Automationen/Skripte** im Paket ihres Themas (`packages/<thema>.yaml`): Fachlogik dort, Entscheidungs-
+  werte aus Sensor-Attributen lesen, nicht doppelt rechnen. `automations.yaml`, `scripts.yaml` und `scenes.yaml`
+  schreibt die HA-Oberfläche: Claude legt dort nichts Neues an; was dort schon steht, wird nur über die Oberfläche
+  oder die Konfigurations-API von HA geändert.
 - **Dashboards** (`dashboards/*.yaml`, `configuration.yaml`): Views `type: panel`, Ressourcen
   über die Lovelace-Ressourcen-API mit `?v=` versionieren.
 - **Vertrag:** Jede Entität, die eine Karte liest oder schreibt, steht in der Vertrags-Doku des
@@ -70,3 +72,4 @@ Token-Variable) steht im Skill-Profil bzw. der CLAUDE.md, nicht hier.
 - Reload statt Neustart bei neuer Helfer-Domäne
 - Ressourcen-`?v=` nicht erhöht → Browser zeigt alte Karte
 - Token oder Anmeldedaten in Datei/Commit/Chat
+- Neue Automation oder neues Skript in `automations.yaml`/`scripts.yaml` statt im Paket des Themas

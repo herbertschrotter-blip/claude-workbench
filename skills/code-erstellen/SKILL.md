@@ -31,7 +31,7 @@ Auslieferungsschritte das sind, steht im **Skill-Profil** des Projekts
 | Fall | Reference |
 |------|-----------|
 | Stack `csharp-wpf` (C# / .NET / WPF) | [references/stacks/csharp-wpf.md](references/stacks/csharp-wpf.md) |
-| Stack `home-assistant-yaml` (Pakete, Automationen, Skripte, Dashboards) | [references/stacks/home-assistant-yaml.md](references/stacks/home-assistant-yaml.md) |
+| Stack `home-assistant`, `home-assistant-yaml` (Pakete, Automationen, Skripte, Dashboards) | [references/stacks/home-assistant.md](references/stacks/home-assistant.md) |
 | Stack `python` | [references/stacks/python.md](references/stacks/python.md) |
 | Stack `typescript-lit` (Lit-Komponenten in Home Assistant) | [references/stacks/typescript-lit.md](references/stacks/typescript-lit.md) |
 | Wie zwei Projekte (BPM, Heidi) die Werte füllen | [references/beispiele.md](references/beispiele.md) |
@@ -154,7 +154,7 @@ lesen, **bevor** Modus, Impact Check oder Blocking beurteilt werden. Sie liefern
 sprachspezifische Lesart der neutralen Regeln unten. Fehlt eine Datei → Auswahlfrage
 „Stack-Referenz aus dem Repo ableiten und anlegen“ / „Ohne Stack-Referenz weiter“; nie stumm
 raten. Neue Sprache = neue Datei, der Skill selbst bleibt unverändert.
-Vorhanden: siehe Tabelle im Abschnitt „Zweck“.
+Vorhanden, auch ältere Bezeichnungen und welche Datei sie laden: siehe Tabelle im Abschnitt „Zweck“.
 
 Werte von BPM und Heidi als Beispiel: [references/beispiele.md](references/beispiele.md#profilwerte-bpm-und-heidi).
 
@@ -345,7 +345,7 @@ Format, Versionsquelle und Bump-Regel kommen aus dem Skill-Profil (`Commit.Forma
 Nur wenn das Profil eine Auslieferung nennt. **Claude Code** führt sie aus und prüft das
 Ergebnis; im Cowork-Chat: [references/cowork.md](references/cowork.md#auslieferung). Die Schritte stehen im Profil
 (`Code.Auslieferung`), die
-Prüfreihenfolge je Stack in der Stack-Referenz (z.B. home-assistant-yaml: Deploy → check_config →
+Prüfreihenfolge je Stack in der Stack-Referenz (z.B. home-assistant: Deploy → check_config →
 reload/restart → Zustand prüfen). Zum Schluss dem User sagen, was er wie sichtprüfen soll.
 
 ### Tracker-Abgleich (optional)

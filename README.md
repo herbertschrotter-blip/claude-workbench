@@ -338,7 +338,7 @@ Der Body enthält je nach Skill: Zweck, Vorrang/Delegation, Kernregeln, Ablauf, 
 
 ### Progressive Disclosure — am Beispiel `tracker`
 
-Der `tracker`-Skill nutzt Progressive Disclosure: Die `SKILL.md` enthält nur Kernregeln und Routing-Tabelle, Details liegen in 16 `references/`-Dateien (anker-system, anti-patterns, batch-protocol, beispiele, chat-url-handling, clickup-fields, clickup-tools, complete-task, cowork, create-task, issue-task, review-workflow, search-and-status, split-and-relations, start-task, update-task). Auch `code-erstellen` hat `references/` (beispiele, cowork, `stacks/`: csharp-wpf, home-assistant-yaml, python, typescript-lit).
+Der `tracker`-Skill nutzt Progressive Disclosure: Die `SKILL.md` enthält nur Kernregeln und Routing-Tabelle, Details liegen in 16 `references/`-Dateien (anker-system, anti-patterns, batch-protocol, beispiele, chat-url-handling, clickup-fields, clickup-tools, complete-task, cowork, create-task, issue-task, review-workflow, search-and-status, split-and-relations, start-task, update-task). Auch `code-erstellen` hat `references/` (beispiele, cowork, `stacks/`: csharp-wpf, home-assistant, python, typescript-lit).
 
 > **Operative Regelquelle:** [`skills/tracker/SKILL.md`](./skills/tracker/SKILL.md).
 

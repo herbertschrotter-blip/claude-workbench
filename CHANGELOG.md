@@ -8,6 +8,16 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.65.1] — 2026-10-29
+
+- **skills/code-erstellen, Fix:** HA-Stack-Referenz an die Profile und an die Paket-Regel angeglichen (Skill-Issues
+  code-erstellen-003, -004).
+  - `references/stacks/home-assistant-yaml.md` → `references/stacks/home-assistant.md`; `Code.Stacks: home-assistant`
+    lädt sie jetzt direkt, die ältere Bezeichnung `home-assistant-yaml` bleibt gültig (Tabelle im Abschnitt „Zweck“).
+  - Automationen und Skripte gehören ins Paket ihres Themas; `automations.yaml`, `scripts.yaml`, `scenes.yaml`
+    schreibt die HA-Oberfläche – dort nichts Neues anlegen, Bestehendes nur über Oberfläche oder Konfigurations-API
+    ändern; neuer typischer Fehler.
+
 ## [v0.65.0] — 2026-10-29
 
 - **skills/audit, skill-auswertung, doc-pflege, skill-pflege, Feature:** Lesen auf Agenten des Plugins `work`

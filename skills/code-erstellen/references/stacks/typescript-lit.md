@@ -42,7 +42,7 @@ sinngemäß über die Prüfungen des Projekts.
 - UI / Lit-Templates / Tokens (Heidi: `--dx-*`)
 - Selektoren / Views (memoisiert? `ids` vollständig?)
 - Domäne (`domain/*`) / Vertrag (`contract.ts`)
-- Backend-Entitäten betroffen (→ Stack home-assistant-yaml)
+- Backend-Entitäten betroffen (→ Stack home-assistant)
 - Verdrahtung: Shell, `ALL_SELECTORS`, `define()`
 - HA-Dienste / WebSocket (`callService`, `callWS`, `subscribeEvents`)
 - Render-Verhalten bei irrelevanten `hass`-Ticks (0 Neuerzeugungen)
