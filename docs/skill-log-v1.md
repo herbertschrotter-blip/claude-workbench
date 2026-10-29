@@ -59,7 +59,7 @@ Zusätzlich je Ereignis:
 
 | `event` | Felder |
 |---|---|
-| `session` | `cwd` – Arbeitsordner; `source` – `startup`, `resume`, `clear` oder `compact` |
+| `session` | `cwd` – Arbeitsordner; `source` – `startup`, `resume`, `clear` oder `compact`; seit 29.10.2026, wenn der Hook aus einem installierten Plugin läuft: `plugin` – Name wie `work@workbench`, `plugin_version` – installierter Stand (Git-Stand des Repos), `plugin_updated` – letztes Update laut `~/.claude/plugins/installed_plugins.json`. Die Auswertung zeigt daraus je Rechner, ab wann welcher Stand lief |
 | `prompt` | `text` – der Prompt, maskiert, höchstens 2000 Zeichen; `slash` – Name nach einem führenden `/`, sonst `null` |
 | `skill` | `skill` – Name wie aufgerufen (z. B. `anthropic-skills:tracker`); `args` – maskiert, höchstens 300 Zeichen, sonst `null`; `ok` – `false`, wenn der Aufruf scheiterte |
 | `turn_end` | – |

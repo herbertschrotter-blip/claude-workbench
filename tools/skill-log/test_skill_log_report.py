@@ -35,6 +35,21 @@ class SlashTest(unittest.TestCase):
         self.assertEqual(len(rounds[0]["skills"]), 1)
 
 
+class PluginStaendeTest(unittest.TestCase):
+    def test_wechsel_des_stands_je_rechner(self):
+        log = [e(1, "session", plugin="work@workbench", plugin_version="aaa", plugin_updated="2026-10-01T09:00:00Z"),
+               e(2, "session", plugin="work@workbench", plugin_version="aaa"),
+               e(3, "session", plugin="work@workbench", plugin_version="bbb"),
+               e(4, "session", host="h2", plugin="work-hooks@workbench", plugin_version="bbb"),
+               e(5, "session"), e(6, "prompt", text="x")]
+        staende = r.plugin_staende(log)
+        self.assertEqual([(s["version"], s["sitzungen"]) for s in staende[("h", "work@workbench")]],
+                         [("aaa", 2), ("bbb", 1)])
+        self.assertEqual(staende[("h", "work@workbench")][0]["bis"], "2026-10-01T10:02:00Z")
+        self.assertEqual(staende[("h2", "work-hooks@workbench")][0]["version"], "bbb")
+        self.assertEqual(len(staende), 2)
+
+
 class ArtTest(unittest.TestCase):
     def test_systemmeldungen_und_leere_prompts(self):
         self.assertEqual(r.prompt_kind("<task-notification> <task-id>x</task-id>"), "system")

@@ -322,6 +322,23 @@ def build_rounds(entries, skill_names=None, transcripts_dir=None):
     return rounds
 
 
+def plugin_staende(entries):
+    """Je Rechner und Plugin die Stände in der Reihenfolge ihres Auftretens: Version, erste und letzte Sitzung."""
+    staende = {}
+    for entry in sorted(entries, key=lambda e: e.get("ts") or ""):
+        if entry.get("event") != "session" or not entry.get("plugin"):
+            continue
+        liste = staende.setdefault((entry.get("host") or "?", entry["plugin"]), [])
+        version = entry.get("plugin_version") or "?"
+        if liste and liste[-1]["version"] == version:
+            liste[-1]["bis"] = entry.get("ts")
+            liste[-1]["sitzungen"] += 1
+        else:
+            liste.append({"version": version, "ab": entry.get("ts"), "bis": entry.get("ts"), "sitzungen": 1,
+                          "geholt": entry.get("plugin_updated")})
+    return staende
+
+
 def report(rounds, limit_without):
     prompts = [r for r in rounds if r["art"] == "prompt"]
     system = sum(1 for r in rounds if r["art"] == "system")
@@ -415,6 +432,14 @@ def main():
         chosen = [e for e in entries if (not args.since or (e.get("ts") or "") >= args.since)
                   and (not args.host or e.get("host") == args.host)
                   and (not args.project or e.get("project") == args.project)]
+        staende = plugin_staende(chosen)
+        if staende:
+            print("\nPlugin-Stände je Rechner (erste bis letzte Sitzung mit diesem Stand; geholt = Update laut Claude Code):")
+            for (host, plugin), liste in sorted(staende.items()):
+                print(f"  {host} – {plugin}")
+                for s in liste:
+                    geholt = f"  geholt {s['geholt'][:16]}" if s["geholt"] else ""
+                    print(f"    {s['version']:<14}{s['ab']} bis {s['bis']}  ({s['sitzungen']} Sitzungen){geholt}")
         times = arbeitszeit(chosen)
         if times:
             total = arbeitszeit(chosen, key=lambda e: "alle")["alle"]

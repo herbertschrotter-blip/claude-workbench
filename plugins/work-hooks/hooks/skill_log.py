@@ -94,6 +94,36 @@ WORKTREES = "/.claude/worktrees/"
 _AGENT_PATH = re.compile(r"/subagents/agent-([^/]+)\.jsonl$")
 
 
+def plugin_info(script=__file__, config_dir=None):
+    """Plugin, aus dem dieses Skript läuft: Name, Version (Git-Stand) und letztes Update laut installed_plugins.json.
+
+    Gesucht wird der Eintrag, dessen installPath das Skript enthält; läuft das Skript nicht aus einem installierten
+    Plugin (z. B. aus einem Klon des Repos), bleibt das Ergebnis leer.
+    """
+    config_dir = config_dir or os.environ.get("CLAUDE_CONFIG_DIR") or os.path.join(os.path.expanduser("~"), ".claude")
+    try:
+        with open(os.path.join(config_dir, "plugins", "installed_plugins.json"), encoding="utf-8") as fh:
+            plugins = json.load(fh).get("plugins") or {}
+    except (OSError, ValueError, AttributeError):
+        return {}
+    if not isinstance(plugins, dict):
+        return {}
+    here = os.path.normcase(os.path.realpath(script))
+    best = None
+    for name, installs in plugins.items():
+        for inst in installs if isinstance(installs, list) else []:
+            root = inst.get("installPath") if isinstance(inst, dict) else None
+            if not root:
+                continue
+            root = os.path.normcase(os.path.realpath(root))
+            if here.startswith(root + os.sep) and (best is None or len(root) > len(best[0])):
+                best = (root, name, inst)
+    if best is None:
+        return {}
+    _, name, inst = best
+    return {"plugin": name, "plugin_version": inst.get("version"), "plugin_updated": inst.get("lastUpdated")}
+
+
 def skill_fields(data):
     tool_input = data.get("tool_input") or {}
     name = tool_input.get("skill") or tool_input.get("command") or tool_input.get("name")
@@ -128,6 +158,7 @@ def build(data):
         entry["agent"] = str(agent) if isinstance(agent, str) else agent.group(1)
     if event == "session":
         entry.update({"cwd": cwd, "source": data.get("source")})
+        entry.update(plugin_info())
     elif event == "prompt":
         prompt = data.get("prompt") or ""
         slash = _SLASH.match(prompt)
