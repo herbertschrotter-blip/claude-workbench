@@ -8,6 +8,14 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.65.2] — 2026-10-29
+
+- **skills/ticket, doc-pflege, mockup-erstellen, Fix:** Auslöser aus der Skill-Log-Auswertung vom 29.10.2026
+  (Skill-Issues ticket-003, doc-pflege-003, mockup-erstellen-004), je eine Stelle in der Description.
+  - ticket: „welche Tickets liegen an“, „tickets lösen“.
+  - doc-pflege: „or concepts („Konzept für X“)“ – Konzept ohne das Wort Dokument (Description 1024 Zeichen).
+  - mockup-erstellen: Abnahme auch in Kurzform („Mockup 3 ist abgenommen“).
+
 ## [v0.65.1] — 2026-10-29
 
 - **skills/code-erstellen, Fix:** HA-Stack-Referenz an die Profile und an die Paket-Regel angeglichen (Skill-Issues

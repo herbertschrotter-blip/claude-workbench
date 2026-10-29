@@ -9,7 +9,8 @@ description: >
   layout drafts, dialog sketches, tab/panel arrangements, and changes to an
   existing project mockup ("erst ins Mockup einbauen", "im Mockup ändern"),
   also in the middle of a ticket or code task, including the mockup's generator
-  sources in the mockup folder and recording its approval (Abnahme). For
+  sources in the mockup folder and recording its approval (Abnahme, also short:
+  „Mockup 3 ist abgenommen“). For
   sequential intents like "mock and then implement": triggers as the first
   step (mockup), then defers to code-erstellen. Do not trigger for direct
   XAML or Lit component implementation, small UI fixes in existing code, or

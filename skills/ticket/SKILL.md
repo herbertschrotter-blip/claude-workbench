@@ -4,7 +4,7 @@ description: >
   Bearbeitet Fehler-Tickets eines Projekts (z.B. FE-0007 aus einem Diagnose-Protokoll) einzeln und
   immer im selben Ablauf: Ticket holen, Befund erklären, mit dem User klären ob es ein echter Fehler ist, Ursache
   finden, Aufgabe im Tracker anlegen, Fix mit Test, einspielen, Ticket auf gelöst setzen – jeder Schritt mit
-  Bestätigung, nichts automatisch. Use when users say "ticket FE-0007", "ticket liste", "offene tickets", "tickets prüfen", "nimm
+  Bestätigung, nichts automatisch. Use when users say "ticket FE-0007", "ticket liste", "offene tickets", "tickets prüfen", "welche Tickets liegen an", "tickets lösen", "nimm
   das nächste ticket", "ticket verwerfen", "ticket notiz", "ticket schließen", or want to work through a
   reported bug or an automatically detected Auffälligkeit from the project's ticket system. Do not trigger for
   ClickUp-Aufgaben ohne Ticket (tracker), allgemeine Bugfixes ohne Ticketnummer (code-erstellen), Skill-Issues

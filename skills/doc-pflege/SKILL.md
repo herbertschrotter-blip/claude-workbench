@@ -8,7 +8,8 @@ description: >
   Übergabe-Dokumente, behebt kaputte Links, veraltete Kapitel und Befunde aus
   einem Audit und macht den Sitzungsabschluss im Repo. Use when users want to
   schreiben, erstellen, pflegen, aktualisieren, draften, anlegen, formulieren,
-  dokumentieren, ergänzen, korrigieren, umbauen, or refactoren documentation —
+  dokumentieren, ergänzen, korrigieren, umbauen, or refactoren documentation
+  or concepts („Konzept für X“) —
   including bug fixes in docs (typos, broken links, outdated chapters),
   fixing audit findings, structural refactoring of existing docs, and the
   Sitzungsabschluss in the project docs. Do not trigger for read-only checks
