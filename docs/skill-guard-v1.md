@@ -50,7 +50,7 @@ Datei `plugins/work-hooks/hooks/regeln.json`, für alle Rechner gleich (kommt mi
 |---|---|
 | `id` | eindeutiger Name |
 | `beschreibung` | Satz, den Claude in der Meldung sieht |
-| `aktion` | `datei` (Edit/Write), `datei:neu` (Write auf eine Datei, die es noch nicht gibt), `bash:schreibt` (Umleitung, `tee`, `sed -i`, Ziel von `cp`/`mv`, Schreiben im Python-Heredoc), `bash:commit` (Text in Heredocs zählt nicht), `bash:merge` (`gh pr merge`, `git merge` außer `--ff-only`/`--abort`; Text in Heredocs und Anführungszeichen zählt nicht), `mcp:clickup-schreibt` |
+| `aktion` | `datei` (Edit/Write), `datei:neu` (Write auf eine Datei, die es noch nicht gibt), `bash:schreibt` (Umleitung, `tee`, `sed -i`, Ziel von `cp`/`mv`, Schreiben im Heredoc an einen Interpreter und in `python -c`), `bash:commit` (Text in Heredocs zählt nicht), `bash:merge` (`gh pr merge`, `git merge` außer `--ff-only`/`--abort`; Text in Heredocs und Anführungszeichen zählt nicht), `mcp:clickup-schreibt` |
 | `pfad` / `ausser` | Muster wie `*.py`, `*/mockups/*` (fnmatch auf den absoluten Pfad, in Arbeitsordnern auf den Pfad im Repo; `*` passt auch über `/`). Dazu gilt `ausser_immer` für alle Regeln (Scratchpad, `/tmp`, `.claude/`, `.git/`) |
 | `projekt` | `*` oder eine Projekt-ID aus dem Skill-Profil der `CLAUDE.md` |
 | `pflicht` | Skills, von denen einer geladen sein muss |
@@ -154,7 +154,15 @@ Tests: `python3 -m unittest plugins/work-hooks/hooks/test_skill_guard.py` (die M
   schreibt. Seit 21.10.2026 (Auswertung: Fehlalarme bei Zip-Skripten und Literalen im geschriebenen Inhalt) zählen im
   Skript nur die Ziele von Schreibaufrufen (`open(…, 'w')`, `Path(…).write_text`, `shutil.copy`/`move`,
   `ZipFile(…, 'w')`), bei einem Namen das ihm zugewiesene Literal; bleibt ein Ziel unbekannt (Ausdruck, Parameter),
-  zählen wie früher alle Dateinamen im Skript.
+  zählen wie früher alle Dateinamen im Skript. Seit 29.10.2026 (Auswertung: Fehlalarme durch gelesene Dateien nach dem
+  Heredoc und durch Text im geschriebenen Inhalt): Shell-Zeilen nach dem Ende eines Heredocs zählen als Shell, Text in
+  Anführungszeichen ist keine Umleitung; der Inhalt von `cat > datei <<EOF` ist kein Code. Python-Heredocs und
+  `python -c` liest der Wächter über den Syntaxbaum: Strings im Inhalt sind nie ein Ziel, ein Name gilt mit allen ihm
+  zugewiesenen Literalen, ein Funktionsparameter mit den Literalen der Aufrufe (`rep('CLAUDE.md', …)`); bleibt ein
+  Ziel unbekannt, zählen alle Strings, die ganz ein Dateiname sind. Nicht lesbarer Python-Code und andere
+  Interpreter laufen weiter über die Muster. Ein Skript, das im selben Befehl per `cat > x.py <<EOF` geschrieben und mit
+  `python3 x.py` ausgeführt wird, liest er wie einen Python-Heredoc. Bekannte Lücke: Ein einzelner Apostroph ohne
+  Anführungszeichen (`echo it\'s > a.yaml 'z'`) paart sich mit einem späteren und blendet die Umleitung dazwischen aus.
 - Ein Skript, das per Write im Scratchpad liegt und dann mit `python3 <datei>` läuft, sieht der Wächter nicht
   (Auswertung 21.10.2026, belegt; Regel dafür vorerst nicht umgesetzt).
 - Hooks lesen ihre Eingabe als UTF-8 (unter Windows sonst cp1252: Umlaute im Log doppelt kodiert, Befund desktop-pc

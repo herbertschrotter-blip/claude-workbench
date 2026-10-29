@@ -20,6 +20,7 @@ Einstellungen (optional) – Umgebungsvariable oder Plugin-Option (/plugin confi
   SKILL_LOG_HOST    / log_host     Name des Rechners im Log (Standard: Hostname)
 """
 
+import ast
 import datetime
 import fnmatch
 import glob
@@ -29,6 +30,7 @@ import re
 import shlex
 import socket
 import sys
+import warnings
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -47,13 +49,19 @@ _CLICKUP_WRITE = re.compile(r"^mcp__.*clickup.*__clickup_(create|update|delete|m
 _GIT_COMMIT = re.compile(r"\bgit\b(?:\s+-C\s+\S+)?\s+commit\b")
 _QUOTED = re.compile(r"'[^']*'|\"[^\"]*\"")  # Text in Anführungszeichen ist kein Befehl
 _MERGE = re.compile(r"\bgh\s+pr\s+merge\b|\bgit\b(?:\s+-C\s+\S+)?\s+merge\b(?!-)(?![^\n;&|]*--(?:ff-only|abort|quit|continue)\b)")
-_HEREDOC = re.compile(r"(?<!<)<<(?!<)(-?)\s*(['\"]?)([A-Za-z_][\w.-]*)\2")
+_HEREDOC = re.compile(r"(?<!<)<<(?!<)(-?)\s*\\?(['\"]?)([A-Za-z_][\w.-]*)\2")
 _REDIRECT = re.compile(r"(?:^|[^0-9&<>])>>?\s*([^\s;|&<>()]+)")
+_TARGET_BEFORE = re.compile(r"(?:>|\btee(?:\s+-a)?)\s*$")
 _TEE = re.compile(r"\btee\s+(?:-a\s+)?([^\s;|&<>()]+)")
 _SED_I = re.compile(r"\bsed\s+(?:-[^i\s]*\s+)*-i\S*\s+(.*)")
 _CP_MV = re.compile(r"^\s*(?:cp|mv|install)\s+(.*)")
 _PY_WRITE = re.compile(r"open\([^)]*['\"][wax]b?['\"]|\.write_text\(|\.write\(|shutil\.(?:copy|move)")
 _QUOTED_FILE = re.compile(r"['\"]([\w./~-]*[\w-]\.[A-Za-z0-9]{1,5}|[\w./~-]*/mockups/[\w./-]+)['\"]")
+_FILE_NAME = re.compile(r"[\w./~-]*[\w-]\.[A-Za-z0-9]{1,5}|[\w./~-]*/mockups/[\w./-]+")
+_OPEN_MODULES = ("io", "os", "tarfile", "gzip", "bz2", "lzma", "codecs", "zipfile", "webbrowser")
+_PY_COMMAND = re.compile(r"(?:^|[\s/(;&|`=])python[\d.]*\b")
+_PY_INLINE = re.compile(r"(?:^|[\s/(;&|`=])python[\d.]*(?:\s+-[XWm]\s+\S+|\s+-[A-Za-z]+)*\s+-c\s*"
+                        r"(?:'([^']*)'|\"((?:[^\"\\]|\\.)*)\")")
 # Schreibaufrufe in Skripten: das Ziel ist ein Literal oder ein Name, der vorher ein Literal bekam
 _ARG = r"\s*(?:(['\"])([^'\"\n]+)\1|([A-Za-z_]\w*))\s*"
 _WRITE_CALLS = [
@@ -363,16 +371,71 @@ def _cd(base, segment):
     return None if base is None else os.path.join(base, target)
 
 
-def bash_targets_at(command):
-    """Dateien, die ein Shell-Befehl schreibt, als (verzeichnis, ziel): Umleitungen, tee, sed -i, Ziel von cp/mv,
-    Schreiben in Python-Heredocs. verzeichnis folgt den cd davor ('' = Ausgangsordner, None = unbekannt)."""
-    found = []
-    heredoc = command.find("<<")
-    shell = command if heredoc < 0 else command[:heredoc] + command[heredoc:].split("\n", 1)[0]
+def heredocs(command):
+    """Heredocs eines Shell-Befehls als (shell_davor, öffnende_zeile, stelle, inhalt); shell_davor ist der Shell-Text
+    ohne Heredoc-Inhalte bis vor die öffnende Zeile, stelle die Spalte des << in der Zeile."""
+    result, kept, ends, open_docs = [], [], [], []
+    for line in command.split("\n"):
+        if ends:
+            dash, end = ends[0]
+            if (line.lstrip("\t") if dash else line) == end:
+                ends.pop(0)
+                result.append(open_docs.pop(0))
+            else:
+                open_docs[0][3].append(line)
+            continue
+        found = list(_HEREDOC.finditer(line))
+        if found:
+            ends = [(m.group(1) == "-", m.group(3)) for m in found]
+            open_docs = [("\n".join(kept), line, m.start(), []) for m in found]
+        kept.append(line)
+    result += open_docs  # Heredoc ohne Ende: Rest gilt als Inhalt
+    return [(before, opener, at, "\n".join(body)) for before, opener, at, body in result]
+
+
+def _interpreter(opener, at):
+    """Wohin der Heredoc an Spalte at geht: 'python', 'skript' (anderer Interpreter) oder 'inhalt' (cat > datei)."""
+    command = _SEGMENT.split(opener[:at])[-1]
+    piped = re.match(r"[^|;&]*\|(?!\|)([^|;&]*)", opener[at:])  # cat <<EOF | python3
+    if _PY_COMMAND.search(command) or (piped and _PY_COMMAND.search(" " + piped.group(1))):
+        return "python"
+    if _REDIRECT.search(command) or re.match(r"\s*(?:cat|tee)\b", command):
+        return "inhalt"
+    return "skript"
+
+
+def _runs_with_python(opener, shell):
+    """Führt der Befehl die Datei, in die der Heredoc geschrieben wird, mit Python aus?"""
+    for target in _REDIRECT.findall(opener) + _TEE.findall(opener):
+        name = re.escape(os.path.basename(target.strip("\"'")))
+        if name and re.search(r"python[\d.]*(?:\s+-\S+)*\s+\S*" + name + r"\b", shell):
+            return True
+    return False
+
+
+def _base_after(shell):
     base = ""
     for segment in _SEGMENT.split(shell):
         base = _cd(base, segment)
-        targets = _REDIRECT.findall(segment) + _TEE.findall(segment)
+    return base
+
+
+def bash_targets_at(command):
+    """Dateien, die ein Shell-Befehl schreibt, als (verzeichnis, ziel): Umleitungen, tee, sed -i, Ziel von cp/mv,
+    Schreiben in Skripten (Heredoc an einen Interpreter, python -c). verzeichnis folgt den cd davor
+    ('' = Ausgangsordner, None = unbekannt).
+
+    Befund Auswertung 29.10.2026: Früher galt alles ab dem ersten << als Skript – auch Shell-Zeilen nach dem Ende des
+    Heredocs (ein gelesenes manifest.json wurde Ziel) und der Inhalt von cat > datei <<EOF (ein open(…, 'w') im Text
+    einer Testdatei wurde Ziel)."""
+    found = []
+    shell = without_heredocs(command)
+    base = ""
+    for segment in _SEGMENT.split(shell):
+        base = _cd(base, segment)
+        # Text in Anführungszeichen ist keine Umleitung (grep -v "528 > 340"), außer er ist selbst das Ziel (> "a b")
+        unquoted = _QUOTED.sub(lambda m: m.group(0) if _TARGET_BEFORE.search(segment[:m.start()]) else "''", segment)
+        targets = _REDIRECT.findall(unquoted) + _TEE.findall(unquoted)
         match = _SED_I.search(segment)
         if match:
             try:
@@ -389,10 +452,23 @@ def bash_targets_at(command):
             if len(args) >= 2:
                 targets.append(args[-1])
         found += [(base, t) for t in targets]
-    if heredoc >= 0 or "python" in command:
-        body = command if heredoc < 0 else command[heredoc:]
-        if _PY_WRITE.search(body):
-            found += [(base, t) for t in script_targets(body)]
+    scripts = False
+    for before, opener, at, body in heredocs(command):
+        kind = _interpreter(opener, at)
+        where = _base_after(before + "\n" + opener[:at])
+        if kind == "inhalt" and _runs_with_python(opener[:at], shell):
+            kind = "python"  # cat > fix.py <<EOF … python3 fix.py
+        if kind == "python":
+            scripts = True
+            found += [(where, t) for t in python_targets(body)]
+        elif kind == "skript" and _PY_WRITE.search(body):
+            found += [(where, t) for t in script_targets(body)]
+    for m in _PY_INLINE.finditer(shell):
+        scripts = True
+        code = m.group(1) if m.group(1) is not None else m.group(2).replace('\\"', '"')
+        found += [(_base_after(shell[:m.start()]), t) for t in python_targets(code)]
+    if not scripts and _PY_COMMAND.search(shell) and _PY_WRITE.search(shell):
+        found += [(base, t) for t in script_targets(shell)]  # echo "…" | python3, python3 <<< "…"
     clean = []
     for where, target in found:
         target = target.strip("\"'")
@@ -432,6 +508,105 @@ def script_targets(body):
             unknown = True
     if unknown:
         found += _QUOTED_FILE.findall(body)
+    return list(dict.fromkeys(found))
+
+
+def _literal(node):
+    """Pfad als Text aus 'x' oder Path('x'); sonst None."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return node.value
+    if (isinstance(node, ast.Call) and len(node.args) == 1 and not node.keywords
+            and _call_name(node) in ("Path", "PurePath")):
+        return _literal(node.args[0])
+    return None
+
+
+def _call_name(call):
+    func = call.func
+    return func.id if isinstance(func, ast.Name) else func.attr if isinstance(func, ast.Attribute) else ""
+
+
+def _mode(call, index):
+    arg = call.args[index] if len(call.args) > index else next(
+        (k.value for k in call.keywords if k.arg == "mode"), None)
+    return arg.value if isinstance(arg, ast.Constant) and isinstance(arg.value, str) else None
+
+
+def python_targets(code):
+    """Ziele der Schreibaufrufe in Python-Code, über den Syntaxbaum: Text im Inhalt (Strings, die geschrieben werden)
+    ist nie ein Ziel. Ein Name gilt mit allen Literalen, die ihm zugewiesen werden; ein Parameter mit den Literalen, mit
+    denen die Funktion aufgerufen wird. Bleibt ein Ziel unbekannt, zählen alle Strings, die ganz ein Dateiname sind –
+    lieber ein Fehlalarm als eine Lücke. Nicht lesbarer Code geht an script_targets."""
+    try:
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")  # ungültige Escapes im Skript (re.compile("\d")) nicht auf stderr
+            tree = ast.parse(code)
+    except (SyntaxError, ValueError):
+        return script_targets(code) if _PY_WRITE.search(code) else []
+    names, params, scope, calls = {}, {}, {}, []
+    for func in [n for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))]:
+        params[func.name] = [a.arg for a in func.args.args]
+        for node in ast.walk(func):
+            scope.setdefault(id(node), func.name)  # innerste Funktion gewinnt nicht, reicht für Patch-Skripte
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign) and len(node.targets) == 1 and isinstance(node.targets[0], ast.Name):
+            value = _literal(node.value)
+            if value is not None:
+                names.setdefault(node.targets[0].id, []).append(value)  # alle Werte: p wird oft neu belegt
+        elif isinstance(node, ast.Call):
+            calls.append(node)
+
+    def resolve(expr, func, depth=0):
+        value = _literal(expr)
+        if value is not None:
+            return [value]
+        if not isinstance(expr, ast.Name) or depth > 3:
+            return None
+        if expr.id in names:
+            return names[expr.id]
+        if func and expr.id in params.get(func, []):
+            index, values = params[func].index(expr.id), []
+            for call in calls:
+                if isinstance(call.func, ast.Name) and call.func.id == func:
+                    arg = call.args[index] if len(call.args) > index else next(
+                        (k.value for k in call.keywords if k.arg == expr.id), None)
+                    got = None if arg is None else resolve(arg, scope.get(id(call)), depth + 1)
+                    if got is None:
+                        return None
+                    values += got
+            return values or None  # nie mit dem Namen aufgerufen: Ziel unbekannt
+        return None
+
+    found, unknown = [], False
+    for call in calls:
+        name, func, dest = _call_name(call), scope.get(id(call)), None
+        owner = call.func.value if isinstance(call.func, ast.Attribute) else None
+        if name == "open" and owner is not None and not (isinstance(owner, ast.Name) and owner.id in _OPEN_MODULES):
+            mode = _mode(call, 0)  # Path('x').open('w'), p.open('w')
+            if mode and any(c in mode for c in "wax+"):
+                dest = owner
+        elif name in ("open", "ZipFile", "TarFile") and call.args:
+            mode = _mode(call, 1)
+            if mode and any(c in mode for c in "wax+"):
+                dest = call.args[0]
+        elif name in ("write_text", "write_bytes") and isinstance(call.func, ast.Attribute):
+            dest = call.func.value
+            if isinstance(dest, ast.Name) and dest.id in ("sys", "self"):
+                continue
+        elif name in ("copy", "copy2", "copyfile", "copytree", "move", "replace", "rename") and len(call.args) >= 2:
+            owner = call.func.value if isinstance(call.func, ast.Attribute) else None
+            if isinstance(owner, ast.Name) and owner.id in ("shutil", "os"):
+                dest = call.args[1]
+        if dest is None:
+            continue
+        got = resolve(dest, func)
+        if got is None:
+            unknown = True
+        else:
+            found += got
+    if unknown:
+        found += [n.value for n in ast.walk(tree) if isinstance(n, ast.Constant) and isinstance(n.value, str)
+                  and _FILE_NAME.fullmatch(n.value)]
     return list(dict.fromkeys(found))
 
 

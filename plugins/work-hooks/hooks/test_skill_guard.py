@@ -567,6 +567,79 @@ class AuswertungOktoberTest(unittest.TestCase):
         command = "python3 - <<'EOF'\ndef patch(p):\n    open(p, 'w').write('x')\npatch('src/b.py')\nEOF"
         self.assertIn("/home/nutzer/projekte/demo/src/b.py", self.ziele(command))
 
+    def test_zeilen_nach_dem_heredoc_sind_shell(self):
+        # Befund 29.10.: das gelesene manifest.json in python -c nach dem Heredoc wurde Ziel, CLAUDE.md nicht
+        command = ("cd /r && python3 - <<'EOF'\np='CLAUDE.md'; t=open(p,encoding='utf-8').read()\n"
+                   "open(p,'w',encoding='utf-8').write(t)\nEOF\ngit status --short && "
+                   "V=$(python3 -c \"import json;print(json.load(open('manifest.json'))['version'])\"); echo $V")
+        self.assertEqual(self.ziele(command), ["/r/CLAUDE.md"])
+        command = "cat > a.txt <<'EOF'\nx\nEOF\necho y > b.txt"
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/a.txt", "/home/nutzer/projekte/demo/b.txt"])
+
+    def test_parameter_der_patch_funktion(self):
+        # Befund 25.10.: tools/tickets-fenster.sh stand nur im Text, der in CLAUDE.md geschrieben wurde
+        command = ("python3 - <<'EOF'\ndef rep(p,a,b):\n    s=open(p).read(); open(p,'w').write(s.replace(a,b))\n"
+                   "rep('CLAUDE.md','''alt''','''neu: `tools/tickets-fenster.sh` bleibt lokal''')\nEOF")
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/CLAUDE.md"])
+
+    def test_inhalt_einer_geschriebenen_datei_ist_kein_code(self):
+        # Befund 21.10.: open('mockups/…', 'w') im Text einer Testdatei wurde Ziel
+        inhalt = "open('mockups/quelle/hochrechnung.js', 'w').write('x')"
+        self.assertEqual(self.ziele(f"cat > tests/t.py <<'EOF'\n{inhalt}\nEOF"),
+                         ["/home/nutzer/projekte/demo/tests/t.py"])
+        command = f"python3 - <<'EOF'\np='tests/t.py'\nopen(p,'w').write('''{inhalt}''')\nEOF"
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/tests/t.py"])
+
+    def test_neu_belegter_name_behaelt_alle_ziele(self):
+        command = ("python3 - <<'EOF'\np='docs/a.md'; s=open(p).read(); open(p,'w').write(s)\n"
+                   "p='README.md'; s=open(p).read(); open(p,'w').write(s)\nEOF")
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/docs/a.md",
+                                               "/home/nutzer/projekte/demo/README.md"])
+
+    def test_spitze_klammer_in_anfuehrungszeichen_ist_keine_umleitung(self):
+        command = "node x.js 2>&1 | grep -v \"528 > 340\" | tail -8; echo a > \"b.txt\""
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/b.txt"])
+
+    def test_befunde_selbst_review(self):
+        demo = "/home/nutzer/projekte/demo/"
+        # Funktion nie mit Namen aufgerufen: Ziel unbekannt, Rückfall auf Dateinamen
+        command = "python3 - <<'EOF'\ndef w(p):\n    open(p, 'w').write('x')\nziele = {'a': w}\nziele['a']('src/e.py')\nEOF"
+        self.assertIn(demo + "src/e.py", self.ziele(command))
+        # Modus an erster Stelle
+        command = "python3 - <<'EOF'\nfrom pathlib import Path\nwith Path('src/f.py').open('w') as f:\n    f.write('x')\nEOF"
+        self.assertEqual(self.ziele(command), [demo + "src/f.py"])
+        command = "python3 - <<'EOF'\nimport io\nio.open('src/g.py', 'w').write('x')\nEOF"
+        self.assertEqual(self.ziele(command), [demo + "src/g.py"])
+        # Heredoc über eine Pipe an Python
+        command = "cat <<'EOF' | python3\nopen('src/h.py', 'w').write('x')\nEOF"
+        self.assertEqual(self.ziele(command), [demo + "src/h.py"])
+
+    def test_befunde_gutachter(self):
+        demo = "/home/nutzer/projekte/demo/"
+        for command in ('echo x | tee "src/a.yaml"', "tee -a 'src/a.yaml' <<'EOF'\nx\nEOF"):
+            self.assertEqual(self.ziele(command), [demo + "src/a.yaml"], command)
+        # Skript per cat geschrieben und gleich ausgeführt
+        command = "cat > /tmp/fix.py <<'EOF'\nopen('src/b.yaml','w').write('x')\nEOF\npython3 /tmp/fix.py"
+        self.assertIn(demo + "src/b.yaml", self.ziele(command))
+        # python -c in $(…), mit Optionen, ohne Leerzeichen
+        for command in ("X=$(python3 -c \"open('src/c.yaml','w').write('x')\")",
+                        "python3 -X utf8 -c \"open('src/c.yaml','w').write('x')\"",
+                        "python3 -c\"open('src/c.yaml','w').write('x')\""):
+            self.assertEqual(self.ziele(command), [demo + "src/c.yaml"], command)
+        # Pipe in Python, <<\EOF, zwei Heredocs in einer Zeile
+        self.assertIn(demo + "src/d.yaml", self.ziele("echo \"open('src/d.yaml','w').write('x')\" | python3"))
+        self.assertEqual(self.ziele("python3 - <<\\EOF\nopen('src/e.yaml','w').write('x')\nEOF"), [demo + "src/e.yaml"])
+        command = "cat <<A > /tmp/n.txt; python3 - <<'B'\nx\nA\nopen('src/f.yaml','w').write('x')\nB"
+        self.assertIn(demo + "src/f.yaml", self.ziele(command))
+
+    def test_python_c_schreibt(self):
+        command = "python3 -c \"open('src/c.py','w').write('x')\""
+        self.assertEqual(self.ziele(command), ["/home/nutzer/projekte/demo/src/c.py"])
+
+    def test_nicht_lesbares_python_faellt_auf_dateinamen_zurueck(self):
+        command = "python3 - <<'EOF'\nopen(p, 'w').write(\nx = 'src/d.py'\nEOF"
+        self.assertIn("/home/nutzer/projekte/demo/src/d.py", self.ziele(command))
+
     def test_merge_ist_commit(self):
         def acts(command):
             return [a for a, _ in g.actions(hook("PostToolUse", "Bash", {"command": command}))]
