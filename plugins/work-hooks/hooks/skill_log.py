@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Skill-Log v1: schreibt Hook-Ereignisse von Claude Code als JSONL (Spezifikation: docs/skill-log-v1.md).
 
-Aufruf als Hook für SessionStart, UserPromptSubmit, PostToolUse (Matcher Skill) und Stop. Liest die Hook-Daten von
+Aufruf als Hook für SessionStart, UserPromptSubmit, PostToolUse (Matcher Skill|Agent) und Stop. Liest die Hook-Daten von
 stdin und hängt eine Zeile an <SKILL_LOG_DIR>/<JJJJ-MM>.jsonl an. Scheitert nie laut: jeder Fehler endet mit Exit 0,
 damit der Chat nie blockiert wird.
 
@@ -136,13 +136,24 @@ def skill_fields(data):
     return {"skill": name, "args": clip(args, ARGS_MAX) if args else None, "ok": ok}
 
 
+def agent_fields(data):
+    """Gestarteter Agent: Typ, Modell und Stufe wie aufgerufen (leer = aus der Definition des Agenten), Auftrag kurz."""
+    tool_input = data.get("tool_input") or {}
+    return {"agent_type": tool_input.get("subagent_type") or "general-purpose", "model": tool_input.get("model"),
+            "effort": tool_input.get("effort"), "text": clip(tool_input.get("description") or "", ARGS_MAX),
+            "background": bool(tool_input.get("run_in_background"))}
+
+
 def build(data):
     hook = data.get("hook_event_name", "")
     event = EVENTS.get(hook)
     if event is None:
         return None
-    if event == "skill" and data.get("tool_name") != "Skill":
-        return None
+    if event == "skill":
+        if data.get("tool_name") == "Agent":
+            event = "agent"
+        elif data.get("tool_name") != "Skill":
+            return None
     cwd = data.get("cwd") or os.getcwd()
     entry = {
         "v": VERSION,
@@ -165,6 +176,8 @@ def build(data):
         entry.update({"text": clip(prompt, PROMPT_MAX), "slash": slash.group(1) if slash else None})
     elif event == "skill":
         entry.update(skill_fields(data))
+    elif event == "agent":
+        entry.update(agent_fields(data))
     return entry
 
 

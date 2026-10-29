@@ -36,6 +36,7 @@ Andere Ablage über die Umgebungsvariable `SKILL_LOG_DIR`.
 | `session` | `SessionStart` | Rechner, Ordner und Projekt der Sitzung; auch nach `/clear` und beim Fortsetzen |
 | `prompt` | `UserPromptSubmit` | Was eingegeben wurde – Maßstab, ob ein Skill hätte zünden müssen |
 | `skill` | `PostToolUse`, Matcher `Skill` | Welcher Skill tatsächlich geladen wurde |
+| `agent` | `PostToolUse`, Matcher `Agent` (seit 29.10.2026) | Welcher Agent mit welchem Modell und welcher Stufe gestartet wurde |
 | `turn_end` | `Stop` | Ende der Runde; danach gehören Skill-Aufrufe nicht mehr zu diesem Prompt |
 | `guard` | `PreToolUse`/`PostToolUse` (Skill-Wächter) | Aktion ohne zuständigen Skill: geblockt oder gewarnt (`docs/skill-guard-v1.md`) |
 
@@ -51,7 +52,7 @@ Alle Zeilen:
 | `ts` | Zeitpunkt in UTC, `JJJJ-MM-TTThh:mm:ssZ` |
 | `host` | Name des Rechners; `SKILL_LOG_HOST`, sonst der Hostname |
 | `session` | Sitzungs-ID von Claude Code |
-| `event` | `session`, `prompt`, `skill` oder `turn_end` |
+| `event` | `session`, `prompt`, `skill`, `agent` oder `turn_end` |
 | `project` | `Projekt-ID` aus dem Skill-Profil der nächsten `CLAUDE.md` ab dem Arbeitsordner nach oben, sonst der Ordnername |
 | `agent` | nur bei Ereignissen aus einem Subagenten: dessen `agent_id` (seit 21.10.2026; der Skill-Wächter zählt Skills nur für den Agenten, der sie geladen hat) |
 
@@ -62,6 +63,7 @@ Zusätzlich je Ereignis:
 | `session` | `cwd` – Arbeitsordner; `source` – `startup`, `resume`, `clear` oder `compact`; seit 29.10.2026, wenn der Hook aus einem installierten Plugin läuft: `plugin` – Name wie `work@workbench`, `plugin_version` – installierter Stand (Git-Stand des Repos), `plugin_updated` – letztes Update laut `~/.claude/plugins/installed_plugins.json`. Die Auswertung zeigt daraus je Rechner, ab wann welcher Stand lief |
 | `prompt` | `text` – der Prompt, maskiert, höchstens 2000 Zeichen; `slash` – Name nach einem führenden `/`, sonst `null` |
 | `skill` | `skill` – Name wie aufgerufen (z. B. `anthropic-skills:tracker`); `args` – maskiert, höchstens 300 Zeichen, sonst `null`; `ok` – `false`, wenn der Aufruf scheiterte |
+| `agent` | `agent_type` – Typ wie aufgerufen (z. B. `work:erkunder`); `model`, `effort` – wie beim Aufruf angegeben, `null` = aus der Definition des Agenten; `text` – Kurzbeschreibung des Auftrags (maskiert, höchstens 300 Zeichen; der Auftrag selbst wird nicht gespeichert); `background` – im Hintergrund gestartet |
 | `turn_end` | – |
 
 Beispiel:

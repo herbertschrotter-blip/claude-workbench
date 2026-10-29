@@ -20,7 +20,7 @@ wiederholt sie nicht.
 | **cc-steuerung** | Desktop Commander im Cowork-Chat (Modalität, WIE statt WAS); nie in Claude Code | im Cowork-Chat: "cc mach", "dc lies", "direkt auf den PC" |
 | **chat-wechsel** | Übergabe an die nächste Sitzung (Handover-Prompt; in Claude Code vorher Sitzungsabschluss über doc-pflege, mit tmux gleich neues Fenster im Projekt mit Remote Control) | "neuer chat", "übergabe", "chat wechsel" |
 | **chatgpt-review** | Review-Gespräch mit ChatGPT: Prompts, Runden selbst über die Codex CLI (sonst Codeblock zum Kopieren), Archiv (CGR) nach der Review-Config des Repos | "besprich mit ChatGPT", "zweite Meinung", "lass Codex das reviewen", "Runde N" |
-| **code-erstellen** | Code planen und ändern nach dem Profil des Repos (Pflichtkontext, Aufgabenquelle, Stack-Referenzen, Tests, Auslieferung) | jede Anfrage, die Code-Erstellung oder -Änderung meint |
+| **code-erstellen** | Code planen und ändern nach dem Profil des Repos (Pflichtkontext, Aufgabenquelle, Stack-Referenzen, Tests, Auslieferung); gibt in Claude Code Lesen, Checks und Gutachten an die Agenten `work:erkunder`, `work:pruefer`, `work:gutachter` | jede Anfrage, die Code-Erstellung oder -Änderung meint |
 | **doc-pflege** | Projektdoku anlegen, pflegen, korrigieren, Audit-Befunde beheben; Sitzungsabschluss | "pflege docs", "schreib ADR", "neues Konzept", "behebe die Audit-Befunde", "Sitzung abschließen" |
 | **git-commit-helper** | Commit-Befehle und -Messages im Format `[vX.Y.Z] Modul, Typ: Kurztitel`, Version-Bump | "commit", "git commit", "PATCH oder MINOR?" |
 | **mockup-erstellen** | HTML-Mockups nach dem Skill-Profil (Bereich Mockup), Token-Abgleich, Abnahme festhalten | "Mockup für", "Screen-Design", "UI-Mockup", "erst ins Mockup einbauen" |

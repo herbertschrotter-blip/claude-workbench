@@ -50,6 +50,15 @@ class PluginStaendeTest(unittest.TestCase):
         self.assertEqual(len(staende), 2)
 
 
+class AgentenTest(unittest.TestCase):
+    def test_zaehlt_je_typ_modell_stufe(self):
+        log = [e(1, "agent", agent_type="work:erkunder", model=None, effort="low"),
+               e(2, "agent", agent_type="work:erkunder", model=None, effort="low"),
+               e(3, "agent", agent_type="work:gutachter", model="fable"), e(4, "skill", skill="tracker")]
+        self.assertEqual(r.agenten(log), {("work:erkunder", "Definition", "low"): 2,
+                                          ("work:gutachter", "fable", "Definition"): 1})
+
+
 class ArtTest(unittest.TestCase):
     def test_systemmeldungen_und_leere_prompts(self):
         self.assertEqual(r.prompt_kind("<task-notification> <task-id>x</task-id>"), "system")

@@ -56,6 +56,17 @@ class PluginInfoTest(unittest.TestCase):
         self.write({"work@workbench": ["kein dict", None]})
         self.assertEqual(skill_log.plugin_info(self.script, self.config), {})
 
+    def test_agent_aufruf(self):
+        entry = skill_log.build({"hook_event_name": "PostToolUse", "tool_name": "Agent", "cwd": self.tmp.name,
+                                 "tool_input": {"subagent_type": "work:erkunder", "description": "Logs durchsehen",
+                                                "prompt": "geheim langer Auftrag", "effort": "low"}})
+        self.assertEqual((entry["event"], entry["agent_type"], entry["model"], entry["effort"], entry["text"]),
+                         ("agent", "work:erkunder", None, "low", "Logs durchsehen"))
+        self.assertNotIn("prompt", entry)
+
+    def test_anderes_werkzeug_wird_nicht_geloggt(self):
+        self.assertIsNone(skill_log.build({"hook_event_name": "PostToolUse", "tool_name": "Bash", "cwd": "."}))
+
     def test_nur_session_bekommt_plugin_felder(self):
         prompt = skill_log.build({"hook_event_name": "UserPromptSubmit", "prompt": "hallo", "cwd": self.tmp.name})
         self.assertNotIn("plugin", prompt)

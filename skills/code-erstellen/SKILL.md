@@ -381,6 +381,17 @@ Chat-Suche noch `[ANKER-LIVE]`-Memory hat. Im Cowork-Chat setzt Claude stattdess
 
 ---
 
+## Arbeit aufteilen
+
+In Claude Code kann die Sitzung Teile der Arbeit an Agenten geben: Lesen und Suchen (`erkunder`), Checks (`pruefer`)
+und ein unabhängiges Gutachten (`gutachter`). Den Code schreibt die Sitzung selbst. Das lohnt sich bei viel Lesen und
+langen Checks; im Modus Lite nicht. Für die schwersten Aufgaben darf die Sitzung Fable nehmen und sagt das dem Nutzer
+in einer Zeile. Was die Agenten liefern, prüft die Sitzung, bevor sie es übernimmt; Commit, Push, Auslieferung und
+Neustart bleiben bei ihr. Wann, welcher Agent, welches Modell:
+[references/agenten.md](references/agenten.md).
+
+---
+
 ## Modus-Übersicht
 
 | Modus | Kopf (Docs) | Langform | Code | Impact | Tests |
@@ -418,5 +429,7 @@ Kopf und Langform zählen nur Docs mit Kopf (Abschnitt „Kopf zuerst lesen“).
 - Optionen im Chat aufzählen und auf getippte Antwort warten
 - Migration / Backward-Compatibility automatisch bauen ohne User-Freigabe (Frühphasen-Prinzip, `Code.Architekturregeln`)
 - **Commit ohne Selbst-Review des Diffs** (Abschnitt „Selbst-Review“) oder mit offenem Befund ohne Begründung
+- **Einen Agenten pushen, einspielen, neu starten oder Aufgaben im Tracker ändern lassen**, oder Ergebnisse eines
+  Agenten ungeprüft übernehmen (Abschnitt „Arbeit aufteilen“)
 - Verbote zum Auto-Anker im Cowork-Chat: [references/cowork.md](references/cowork.md#verboten-im-cowork-chat); in Claude
   Code statt Anker die Auswahlfrage aus „Aufgaben-Stichwörter“

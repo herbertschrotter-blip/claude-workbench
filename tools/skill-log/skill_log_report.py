@@ -339,6 +339,12 @@ def plugin_staende(entries):
     return staende
 
 
+def agenten(entries):
+    """Gestartete Agenten je Typ, Modell und Stufe (leer = aus der Definition): {(typ, modell, stufe): anzahl}."""
+    return collections.Counter((e.get("agent_type") or "?", e.get("model") or "Definition", e.get("effort") or "Definition")
+                               for e in entries if e.get("event") == "agent")
+
+
 def report(rounds, limit_without):
     prompts = [r for r in rounds if r["art"] == "prompt"]
     system = sum(1 for r in rounds if r["art"] == "system")
@@ -440,6 +446,11 @@ def main():
                 for s in liste:
                     geholt = f"  geholt {s['geholt'][:16]}" if s["geholt"] else ""
                     print(f"    {s['version']:<14}{s['ab']} bis {s['bis']}  ({s['sitzungen']} Sitzungen){geholt}")
+        gestartet = agenten(chosen)
+        if gestartet:
+            print("\nAgenten (Typ, Modell, Stufe wie aufgerufen; Definition = aus der Agenten-Datei):")
+            for (typ, modell, stufe), anzahl in gestartet.most_common():
+                print(f"  {typ:<28}{modell:<12}{stufe:<12}{anzahl:>4}")
         times = arbeitszeit(chosen)
         if times:
             total = arbeitszeit(chosen, key=lambda e: "alle")["alle"]

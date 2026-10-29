@@ -8,6 +8,16 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.64.0] — 2026-10-29
+
+- **skills/code-erstellen, Feature:** Neuer Abschnitt „Arbeit aufteilen“ mit Reference `references/agenten.md`: In
+  Claude Code gibt die Sitzung Lesen und Suchen (`work:erkunder`, Haiku/low), Checks (`work:pruefer`, Sonnet/low) und
+  ein unabhängiges Gutachten (`work:gutachter`, Opus/high) an Agenten; den Code schreibt sie selbst. Fable für die
+  schwersten Aufgaben, mit Hinweis an den Nutzer. Agenten pushen, spielen ein und starten nie neu; ihre Ergebnisse
+  prüft die Sitzung vor der Übernahme (neuer VERBOTEN-Punkt). Dazu: Agenten-Definitionen unter `subagents/` im Plugin
+  `work`; das Skill-Log schreibt je gestartetem Agenten Typ, Modell und Stufe mit (Ereignis `agent`), die Auswertung
+  zählt sie.
+
 ## [v0.63.1] — 2026-10-29
 
 - **skills/neustart, Change (Refactor):** Keine Nachrichten mehr an die anderen Sitzungen (Herbert: flutet deren

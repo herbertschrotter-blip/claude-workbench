@@ -27,6 +27,11 @@
       "commands": [
         "./tools/commands/statistik.md"
       ],
+      "agents": [
+        "./subagents/erkunder.md",
+        "./subagents/pruefer.md",
+        "./subagents/gutachter.md"
+      ],
       "userConfig": {
         "log_host": {
           "type": "string",
@@ -107,7 +112,7 @@
         ],
         "PostToolUse": [
           {
-            "matcher": "Skill",
+            "matcher": "Skill|Agent",
             "hooks": [
               {
                 "type": "command",

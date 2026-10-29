@@ -130,7 +130,7 @@ Die Logik steht in [`tools/einrichten.py`](./tools/einrichten.py).
 
 | Plugin | Inhalt | Wann |
 |---|---|---|
-| `work` | 12 Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Neustart, Reviews) + Hooks Skill-Log und Skill-Wächter | Standard |
+| `work` | 12 Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Neustart, Reviews) + Agenten erkunder, pruefer, gutachter + Hooks Skill-Log und Skill-Wächter | Standard |
 | `skill-workshop` | skill-neu, skill-pflege, skill-auswertung | zusätzlich, für die Arbeit an Skills |
 | `work-hooks` | nur Skill-Log und Skill-Wächter, ohne Skills | wenn die Skills schon anders geladen werden (z. B. Upload bei claude.ai). **Nie zusammen mit `work`** – sonst läuft jeder Hook doppelt |
 
@@ -256,6 +256,7 @@ claude-workbench/
 ├── quality/               ← Eval-Plugin: evals/ (Testfälle für claude plugin eval), skills → ../skills
 ├── reference/             ← Externe Referenz-Artefakte
 ├── skills/                ← 16 Skills, je ein Ordner mit SKILL.md
+├── subagents/             ← Agenten des Plugins work (erkunder, pruefer, gutachter): Modell, Stufe, Werkzeuge
 └── tools/                 ← Installation (install.sh/.ps1, einrichten.py), Prüfskript, Auswertung des Skill-Logs, Statuszeile
 ```
 
