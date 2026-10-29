@@ -78,7 +78,7 @@ Grenze sie prüfen.
 
 ## Fälle
 
-Stand 29.10.2026, 118 Fälle.
+Stand 29.10.2026, 122 Fälle.
 
 | Fall | Skill | Testsatz | soll auslösen | darf nicht auslösen | Art |
 |---|---|---|---|---|---|
@@ -103,6 +103,7 @@ Stand 29.10.2026, 118 Fälle.
 | `doc-no-trigger-discussion` | doc-pflege | Was hältst du grundsätzlich davon, Architekturentscheidungen als ADRs festzuhalten? Nur deine Meinung, bitte nichts anlegen. | – | doc-pflege | normal |
 | `doc-session-close` | doc-pflege | Wir hören für heute auf. Mach bitte den Sitzungsabschluss in der Projektdoku: Stand und offene Punkte eintragen. | doc-pflege | – | normal |
 | `doc-pflege-real-uebergabe-bauplan` | doc-pflege | Übergabe „Saugroboter-Karte – Neubau Teil 5“: bisherigen Aufbau zusammenfassen und den neuen Bauplan schreiben, mit Abschnitt 1 anfangen | doc-pflege | chat-wechsel | normal, echt |
+| `doc-pflege-real-konzept` | doc-pflege | Erstelle mir ein komplettes Konzept für eine Companion-App auf Android – eine richtige App, keine Web-App, mit maximaler Sicherheit. | doc-pflege | code-erstellen | normal, echt, Ziel |
 | `audit-readonly` | audit | Prüfe bitte, ob die INDEX.md und die Beschreibungen der Skills zusammenpassen. Nur prüfen und die Befunde nennen, nichts ändern. | audit | doc-pflege | kritisch, Pilot, Ziel |
 | `audit-code-docs` | audit | Prüf bitte, ob die Doku zum Import-Modul noch zum Code passt. Nur prüfen, nichts ändern – ich will eine Liste der Abweichungen. | audit | doc-pflege, code-erstellen | kritisch |
 | `audit-frontmatter` | audit | Validiere bitte Frontmatter und Quickloads aller Docs. Nur lesen und die Befunde auflisten, nichts korrigieren. | audit | doc-pflege | kritisch |
@@ -121,6 +122,7 @@ Stand 29.10.2026, 118 Fälle.
 | `mockup-no-trigger-db-schema` | mockup-erstellen | Entwirf das Datenbankschema für die Zeiterfassung: Tabellen, Schlüssel und Beziehungen. | – | mockup-erstellen | normal |
 | `mockup-erstellen-real-generator-quelle` | mockup-erstellen | Pass im Mockup-Generator mockups/quelle/uebersicht.js die Kartenbreite an und bau das Mockup neu. | mockup-erstellen | code-erstellen | normal, echt |
 | `mockup-erstellen-real-abnahme` | mockup-erstellen | Variante 2 ist abgenommen – trag die Abnahme im README des Mockup-Ordners ein. | mockup-erstellen | doc-pflege | normal, echt, Ziel |
+| `mockup-erstellen-real-abnahme-kurz` | mockup-erstellen | Mockup 12 ist abgenommen. | mockup-erstellen | doc-pflege | normal, echt |
 | `skill-update` | skill-pflege | Ergänze im bestehenden chat-wechsel-Skill eine Regel, dass tote Dateiverweise vor der Übergabe gemeldet werden. | skill-pflege | skill-neu | kritisch, Pilot |
 | `skill-pflege-description` | skill-pflege | Schärf die Description des tracker-Skills, damit „Aufgabe anlegen“ zuverlässig auslöst. | skill-pflege | skill-neu, tracker | kritisch |
 | `skill-pflege-typo` | skill-pflege | In der SKILL.md von git-commit-helper sind zwei Tippfehler. Korrigier die bitte. | skill-pflege | git-commit-helper | normal |
@@ -155,6 +157,8 @@ Stand 29.10.2026, 118 Fälle.
 | `ticket-list` | ticket | Welche Tickets sind noch offen? ticket liste | ticket | tracker | kritisch |
 | `ticket-real-naechstes-ticket` | ticket | Nächstes Ticket bitte. | ticket | tracker | normal, echt |
 | `ticket-real-tickets-pruefen` | ticket | tickets prüfen | ticket | tracker | normal, echt |
+| `ticket-real-welche-tickets` | ticket | Welche neuen Tickets liegen für das Projekt an? | ticket | tracker | normal, echt |
+| `ticket-real-tickets-loesen` | ticket | Tickets lösen – die lokalen und die von GitHub, eins nach dem anderen. | ticket | tracker | normal, echt |
 | `ticket-no-trigger-bug-without-number` | ticket | In der Kartenansicht springt die Roboterposition hin und her. Kannst du das beheben? | code-erstellen | ticket | normal |
 | `ticket-discard` | ticket | ticket verwerfen FE-0002, das war nur ein Test von mir | ticket | tracker | normal |
 | `ticket-close` | ticket | FE-0004 ist behoben, ticket schließen | ticket | tracker | normal |

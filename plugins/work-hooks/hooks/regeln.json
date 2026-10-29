@@ -105,12 +105,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe; Auswertung 11.10.2026: 4 Fehlalarme durch relative Pfade nach cd (behoben in skill_guard.py e6262c3), 4 Testläufe vom 07.10. nicht gezählt; 21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Subagenten erben die Skills der Hauptsitzung nicht mehr (erbt_hauptsitzung fehlt = false), Worktrees unter .claude/worktrees/ werden geprüft (arbeitsordner); Auswertung 21.10.2026: 11.10. ab 19:54Z 1 Treffer/9 Fehlalarme (Subagenten mit eigenem code-erstellen, behoben 56631ab), 12.–21.10. 10/1 (Kopie eines Scratchpad-Skripts, Einzelfall); von den früheren 23 Treffern waren bis zu 9 Blockaden von Subagenten (nicht umgezählt)",
+      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe; Auswertung 11.10.2026: 4 Fehlalarme durch relative Pfade nach cd (behoben in skill_guard.py e6262c3), 4 Testläufe vom 07.10. nicht gezählt; 21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Subagenten erben die Skills der Hauptsitzung nicht mehr (erbt_hauptsitzung fehlt = false), Worktrees unter .claude/worktrees/ werden geprüft (arbeitsordner); Auswertung 21.10.2026: 11.10. ab 19:54Z 1 Treffer/9 Fehlalarme (Subagenten mit eigenem code-erstellen, behoben 56631ab), 12.–21.10. 10/1 (Kopie eines Scratchpad-Skripts, Einzelfall); von den früheren 23 Treffern waren bis zu 9 Blockaden von Subagenten (nicht umgezählt); Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 45/2, 2 Fehlalarme (gelesener Pfad bzw. Pfad im Inhalt eines Heredocs als Ziel; Aufgabe Skill-Wächter · Werkzeug)",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 34,
-        "fehlalarm": 14,
-        "zuletzt": "2026-10-19",
+        "treffer": 79,
+        "fehlalarm": 16,
+        "zuletzt": "2026-10-29",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 316,
@@ -166,12 +166,12 @@
         "task_id",
         "prompt"
       ],
-      "herkunft": "21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Gültigkeit eines geladenen Skills je Nutzer-Prompt; Start warnen, Fehlalarm-Risiko hoch (jedes „weiter“ in derselben Aufgabe), blocken erst nach mindestens 10 Treffern ohne Fehlalarm",
+      "herkunft": "21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Gültigkeit eines geladenen Skills je Nutzer-Prompt; Start warnen, Fehlalarm-Risiko hoch (jedes „weiter“ in derselben Aufgabe), blocken erst nach mindestens 10 Treffern ohne Fehlalarm; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 19/3, mind. 3 Fehlalarme bei reinem „weiter“; bleibt warnen",
       "stand": {
         "seit": "2026-10-21",
-        "treffer": 0,
-        "fehlalarm": 0,
-        "zuletzt": null
+        "treffer": 19,
+        "fehlalarm": 3,
+        "zuletzt": "2026-10-28"
       }
     },
     {
@@ -196,12 +196,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Skill-Auswertung 04.10.2026 (mockup-erstellen-002) und 06.10.2026 (Zustandsvarianten); Auswertung 21.10.2026: 12.–21.10. 1/0",
+      "herkunft": "Skill-Auswertung 04.10.2026 (mockup-erstellen-002) und 06.10.2026 (Zustandsvarianten); Auswertung 21.10.2026: 12.–21.10. 1/0; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 9/1, 1 Fehlalarm (Pfad im Inhalt einer Testdatei); berechtigt: Subagent schreibt Mockup",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 2,
-        "fehlalarm": 0,
-        "zuletzt": "2026-10-14",
+        "treffer": 11,
+        "fehlalarm": 1,
+        "zuletzt": "2026-10-29",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 31,
@@ -231,12 +231,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Startregel 07.10.2026; Auswertung 21.10.2026: 3 Fehlalarme durch Zip-Skripte (Dateinamen im Skript als Ziel, behoben: nur Ziele von Schreibaufrufen); Lücke: Änderungen am Skill-Repo aus fremden Sitzungen (projekt: claude-workbench) – nicht übernommen (Herbert)",
+      "herkunft": "Startregel 07.10.2026; Auswertung 21.10.2026: 3 Fehlalarme durch Zip-Skripte (Dateinamen im Skript als Ziel, behoben: nur Ziele von Schreibaufrufen); Lücke: Änderungen am Skill-Repo aus fremden Sitzungen (projekt: claude-workbench) – nicht übernommen (Herbert); Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 5/0, 0 Fehlalarme; bleibt warnen (5 von 10)",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 5,
+        "treffer": 10,
         "fehlalarm": 3,
-        "zuletzt": "2026-10-20",
+        "zuletzt": "2026-10-28",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 0,
@@ -282,12 +282,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Startregel 07.10.2026; 07.10.2026: auf blocken hochgestuft (Rückblick 29.09.–07.10.: 89 Treffer, 0 Fehlalarme; Heidi-Neubau, ha-baustelle Teil 3); 08.10.2026: neue Docs unter docs/ verlangt die Regel doku-neu (doc-pflege); Auswertung 11.10.2026 (Herbert): Mockup-Ablage ausgenommen – dort gilt die Regel mockup (4 Blockaden an mockups/README.md unter mockup-erstellen); Auswertung 21.10.2026: 11.10. ab 19:54Z 2/1, 12.–21.10. 4/0",
+      "herkunft": "Startregel 07.10.2026; 07.10.2026: auf blocken hochgestuft (Rückblick 29.09.–07.10.: 89 Treffer, 0 Fehlalarme; Heidi-Neubau, ha-baustelle Teil 3); 08.10.2026: neue Docs unter docs/ verlangt die Regel doku-neu (doc-pflege); Auswertung 11.10.2026 (Herbert): Mockup-Ablage ausgenommen – dort gilt die Regel mockup (4 Blockaden an mockups/README.md unter mockup-erstellen); Auswertung 21.10.2026: 11.10. ab 19:54Z 2/1, 12.–21.10. 4/0; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 32/0, 0 Fehlalarme",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 16,
+        "treffer": 48,
         "fehlalarm": 5,
-        "zuletzt": "2026-10-20",
+        "zuletzt": "2026-10-29",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 89,
@@ -320,12 +320,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "08.10.2026 (Herbert): Befund ha-baustelle bc267f1c – neue docs/betrieb.md und docs/api-datenbank.md ohne doc-pflege; Auswertung 21.10.2026: erster Treffer 13.10.",
+      "herkunft": "08.10.2026 (Herbert): Befund ha-baustelle bc267f1c – neue docs/betrieb.md und docs/api-datenbank.md ohne doc-pflege; Auswertung 21.10.2026: erster Treffer 13.10.; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 4/0, 0 Fehlalarme",
       "stand": {
         "seit": "2026-10-08",
-        "treffer": 1,
+        "treffer": 5,
         "fehlalarm": 0,
-        "zuletzt": "2026-10-13"
+        "zuletzt": "2026-10-26"
       }
     },
     {
@@ -387,12 +387,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Startregel 07.10.2026; 08.10.2026 (Herbert): nur noch git-commit-helper oder ticket (dazu skill-pflege, skill-neu, skill-auswertung, die selbst committen), blocken – Befund ha-baustelle bc267f1c: alle Commits ohne git-commit-helper; 10.10.2026 (Herbert): projekt-anlegen ergänzt – Fehlalarm beim ersten Commit von ha-rasenmaeher (Praxistest projekt-anlegen); zweiter Fehlalarm am selben Tag (Text „git commit“ in einem Python-Heredoc) behebt die Erkennung in skill_guard.py; 11.10.2026 (Herbert): doc-pflege ergänzt – Fehlalarm beim Doku-Commit von docs/offene-uploads.md (doc-pflege committet im Sitzungsabschluss selbst); Auswertung 11.10.2026 (Herbert): chatgpt-review ergänzt – committet die Archivdateien jeder Runde selbst (3 Blockaden in ha-baustelle, CGR-2026-10-11-hochrechnung); Auswertung 21.10.2026: 11.10. ab 19:54Z 2/1 (chatgpt-review mit altem Plugin-Cache), 12.–21.10. 7/0; Merges siehe Regel merge",
+      "herkunft": "Startregel 07.10.2026; 08.10.2026 (Herbert): nur noch git-commit-helper oder ticket (dazu skill-pflege, skill-neu, skill-auswertung, die selbst committen), blocken – Befund ha-baustelle bc267f1c: alle Commits ohne git-commit-helper; 10.10.2026 (Herbert): projekt-anlegen ergänzt – Fehlalarm beim ersten Commit von ha-rasenmaeher (Praxistest projekt-anlegen); zweiter Fehlalarm am selben Tag (Text „git commit“ in einem Python-Heredoc) behebt die Erkennung in skill_guard.py; 11.10.2026 (Herbert): doc-pflege ergänzt – Fehlalarm beim Doku-Commit von docs/offene-uploads.md (doc-pflege committet im Sitzungsabschluss selbst); Auswertung 11.10.2026 (Herbert): chatgpt-review ergänzt – committet die Archivdateien jeder Runde selbst (3 Blockaden in ha-baustelle, CGR-2026-10-11-hochrechnung); Auswertung 21.10.2026: 11.10. ab 19:54Z 2/1 (chatgpt-review mit altem Plugin-Cache), 12.–21.10. 7/0; Merges siehe Regel merge; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 32/0, 0 Fehlalarme",
       "stand": {
         "seit": "2026-10-07",
-        "treffer": 26,
+        "treffer": 58,
         "fehlalarm": 9,
-        "zuletzt": "2026-10-19",
+        "zuletzt": "2026-10-29",
         "rueckblick": {
           "bis": "2026-10-07T12:56:13Z",
           "treffer": 5,
@@ -425,12 +425,12 @@
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Skill-Auswertung 21.10.2026 (Herbert): Lücke – gh pr merge erzeugte am 11.10. zwei Commits auf main ohne Skill, der committen darf (claude-workbench, Sitzung 075ac6af); Start warnen",
+      "herkunft": "Skill-Auswertung 21.10.2026 (Herbert): Lücke – gh pr merge erzeugte am 11.10. zwei Commits auf main ohne Skill, der committen darf (claude-workbench, Sitzung 075ac6af); Start warnen; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 2/0, 0 Fehlalarme; bleibt warnen",
       "stand": {
         "seit": "2026-10-21",
-        "treffer": 0,
+        "treffer": 2,
         "fehlalarm": 0,
-        "zuletzt": null
+        "zuletzt": "2026-10-22"
       }
     }
   ]
