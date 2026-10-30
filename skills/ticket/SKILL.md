@@ -1,9 +1,9 @@
 ---
 name: ticket
 description: >
-  Bearbeitet Fehler-Tickets eines Projekts (z.B. FE-0007 aus einem Diagnose-Protokoll) einzeln und
+  Bearbeitet Tickets eines Projekts (Fehler wie FE-0007 aus einem Diagnose-Protokoll, Wünsche, Anregungen) einzeln und
   immer im selben Ablauf: Ticket holen, Befund erklären, mit dem User klären ob es ein echter Fehler ist, Ursache
-  finden, Aufgabe im Tracker anlegen, Fix mit Test, einspielen, Ticket auf gelöst setzen – jeder Schritt mit
+  finden (bei Wünschen und Anregungen: umsetzen oder ablehnen), Aufgabe im Tracker anlegen, Fix mit Test, einspielen, Ticket auf gelöst setzen – jeder Schritt mit
   Bestätigung, nichts automatisch. Use when users say "ticket FE-0007", "ticket liste", "offene tickets", "tickets prüfen", "welche Tickets liegen an", "tickets lösen", "nimm
   das nächste ticket", "ticket verwerfen", "ticket notiz", "ticket schließen", or want to work through a
   reported bug or an automatically detected Auffälligkeit from the project's ticket system. Do not trigger for
@@ -11,12 +11,13 @@ description: >
   (tracker issue), Support-Tickets anderer Systeme, or general talk about errors without a ticket command.
 ---
 
-# ticket — Fehler-Tickets einzeln und immer gleich bearbeiten
+# ticket — Tickets einzeln und immer gleich bearbeiten
 
 ## Zweck
 
 Ein Projekt sammelt Fehler als **Tickets**: Meldungen des Users („Fehler melden“) und Auffälligkeiten, die eine
-Auswertung selbst findet. Dieser Skill sorgt dafür, dass jedes Ticket **gleich** bearbeitet wird – ein Ticket zur Zeit,
+Auswertung selbst findet. Manche Projekte führen daneben Wünsche und Anregungen als Tickets; sie laufen über einen
+verkürzten Ablauf (Abschnitt „Verkürzter Ablauf für Wünsche und Anregungen“). Dieser Skill sorgt dafür, dass jedes Ticket **gleich** bearbeitet wird – ein Ticket zur Zeit,
 gemeinsam mit dem User, jeder Übergang mit Bestätigung. Er ist die Klammer um die Nachbarskills: **tracker** (Aufgabe),
 **code-erstellen** (Fix + Test + Auslieferung), **git-commit-helper** (Commit), **doc-pflege** (Befund in die Doku).
 
@@ -70,7 +71,8 @@ Was der Skill aus der Config braucht (Abschnitt der `ticket.md`, in Klammern der
 
 | Abschnitt | Inhalt |
 |-----------|--------|
-| Quelle (Präfix) | Ablage und Nummernschema der Tickets |
+| Quelle (Präfix) | Ablage und Nummernschema der Tickets, je Art ein Präfix |
+| Arten (Präfix → Ablauf) | welche Art welchen Ablauf bekommt: `voll` (die acht Schritte) oder `verkürzt`; fehlt die Zeile, gilt: Fehler voll, Wunsch und Anregung verkürzt |
 | Lese- und Schreibweg (Befehle) | Liste, Ticket als Text, Status, Notiz, Verwerfen; Auswertung anstoßen, falls es eine gibt |
 | Statusmodell (Status) | Werte und Reihenfolge |
 | Pflichtangaben je Status (Pflichtangaben) | was ein Status braucht, z. B. Aufgaben-Nummer, Commit, Version, Notiz, Grund |
@@ -91,7 +93,7 @@ Fix, Test, Auslieferung und Mockup-Pflicht lesen die Nachbarskills aus ihren Fel
 | Kommando | Was passiert |
 |----------|--------------|
 | `ticket liste` / „offene tickets“ | Liste holen (Profil-Befehl), als kurze Tabelle zeigen: Nummer, Status, Anzahl, Titel. Danach Auswahlfrage „Welches Ticket?“ (höchstens 4 Optionen: die wichtigsten offenen + „Keines“) |
-| `ticket <Nr>` / „nimm das nächste ticket“ | **ABLAUF** unten (alle acht Schritte). „Das nächste“ = ältestes offenes Ticket mit der höchsten Schwere; vor dem Start bestätigen lassen |
+| `ticket <Nr>` / „nimm das nächste ticket“ | **ABLAUF** unten (alle acht Schritte; Wunsch und Anregung: verkürzter Ablauf laut Arten der Config). „Das nächste“ = ältestes offenes Ticket mit der höchsten Schwere; vor dem Start bestätigen lassen |
 | `ticket notiz <Nr> <Text>` | Notiz anhängen (Profil-Befehl), Quittung |
 | `ticket verwerfen <Nr>` | Grund erfragen, wenn keiner genannt ist (Freitext), dann verwerfen, Quittung |
 | `ticket schließen <Nr>` | Nur wenn Status `geloest`: Auswahlfrage „Hast du geprüft, dass es behoben ist?“ → `geschlossen` |
@@ -101,7 +103,7 @@ Quittung nach jeder Änderung: `🎫 <Nr> — <alter Status> → <neuer Status> 
 
 ---
 
-## ABLAUF für `ticket <Nr>` (immer diese acht Schritte)
+## ABLAUF für `ticket <Nr>` (immer diese acht Schritte; Arten mit verkürztem Ablauf: Abschnitt unten)
 
 ### Schritt 1 — Ticket holen und einfach erklären
 Ticket als Text holen (Profil-Befehl „zeige“). Dann in zwei bis vier Sätzen sagen: **Was ist passiert? Woran sieht
@@ -155,6 +157,26 @@ dann beginnt der Ablauf bei „Ticket holen und einfach erklären“ mit dem Hin
 
 Zum Schluss Auswahlfrage „Nächstes Ticket / Liste zeigen / Schluss für heute“.
 
+## Verkürzter Ablauf für Wünsche und Anregungen
+
+Gilt für jede Art, die laut Config (`Arten`) `verkürzt` läuft. Ein Wunsch ist kein Fehler: „Echter Fehler?“ und
+„Ursache suchen“ entfallen. Alle Kernregeln gelten unverändert.
+
+1. **Ticket holen und einfach erklären** wie in Schritt 1: Was wird gewünscht oder angeregt, wozu, an welcher Stelle?
+   Den Text des Users wörtlich zitieren.
+2. **Entscheiden (Auswahlfrage):** „Umsetzen“ · „Ablehnen“ · „Nur beantworten“ · „Später“.
+   - **Ablehnen:** Grund in einem Satz → verwerfen (Profil-Befehl) → Ende.
+   - **Nur beantworten** (Frage oder Hinweis, keine Änderung nötig): Antwort in zwei Sätzen zeigen und bestätigen
+     lassen, dann verwerfen mit der Antwort als Grund → Ende.
+   - **Später:** Notiz ans Ticket (was offen ist), Status bleibt → Ende.
+3. **Umsetzung klären:** was genau, welche Dateien, grober Aufwand; bei mehreren Wegen Auswahlfrage mit Empfehlung.
+   Bei größeren Änderungen an der Oberfläche gilt die Mockup-Pflicht des Projekts (`Code.Mockup-Policy`).
+4. **Aufgabe anlegen** wie in Schritt 4; Akzeptanz = „das Gewünschte ist da“ + der neue Test.
+5. **Umsetzen mit Test, einspielen** wie in Schritt 5 und 6; der Test prüft die gewünschte Funktion.
+6. **Ticket lösen** wie in Schritt 7, Notiz mit dem, was umgesetzt wurde. Schließen wie bei Fehlern (Kernregel 6 und
+   „Schließen und Prüfen“ der Config).
+7. **Prüfung durch den User** wie in Schritt 8, Frage „Passt es so?“.
+
 ---
 
 ## VERBOTEN
@@ -166,7 +188,7 @@ Zum Schluss Auswahlfrage „Nächstes Ticket / Liste zeigen / Schluss für heute
 - Aufgaben direkt im Tracker-System anlegen (nur über tracker) oder Code ohne code-erstellen ändern
 - `geschlossen` setzen, ohne dass der User geprüft hat – außer die Ticket-Config legt fest, dass Claude bei Erfolg
   schließt
-- Einen Fix ohne Test, der den Fall aus dem Ticket abdeckt
+- Einen Fix oder eine Umsetzung ohne Test, der den Fall oder den Wunsch aus dem Ticket abdeckt
 - Tickets verwerfen ohne Grund, oder weil die Ursache unbequem ist
 - Profilwerte eines Projekts (Präfix, Befehle, Pfade) für ein anderes annehmen
 - Fachwörter ohne Erklärung beim Befund und bei der Ursache

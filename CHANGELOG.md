@@ -8,6 +8,15 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.67.0] — 2026-10-30
+
+- **skills/ticket, Feature:** Wünsche und Anregungen (WU/AN) bekommen einen verkürzten Ablauf (Skill-Issue
+  ticket-001): Ticket erklären → Umsetzen / Ablehnen / Nur beantworten / Später → Umsetzung klären, Aufgabe, Umsetzung
+  mit Test, einspielen, lösen, Prüfung. „Echter Fehler?“ und „Ursache suchen“ entfallen; „Nur beantworten“ verwirft
+  mit der Antwort als Grund; Schließen wie bei Fehlern. Neue Config-Zeile `Arten (Präfix → Ablauf)`, Rückfall ohne
+  Zeile: Fehler voll, Wunsch und Anregung verkürzt – bestehende Projekte brauchen keine Änderung. Description nennt
+  Wünsche und Anregungen (988 Zeichen); `docs/skill-profile-v1.md` Gliederung `ticket.md` um „Arten“ ergänzt.
+
 ## [v0.66.0] — 2026-10-30
 
 - **skills/skill-pflege, skill-neu, tracker, Feature:** Upload-Runde (Skill-Issue skill-pflege-009). Nennt das

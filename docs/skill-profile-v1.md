@@ -193,7 +193,7 @@ Es gibt nur die Dateien, die ein Projekt braucht.
 | Datei | Gliederung |
 |---|---|
 | `tracker.md` | Provider · Nummernschema · Nächste freie Nummer · Listen und Routing · Statusmodell · Felder und Option-IDs · Titel- und Beschreibungsformat · Quittungsformat · Sonderfälle |
-| `ticket.md` | Quelle · Lese- und Schreibweg · Statusmodell · Pflichtangaben je Status · Tracker-Kopplung · Beweisquellen · Doku-Kopplung · Schließen und Prüfen |
+| `ticket.md` | Quelle · Arten · Lese- und Schreibweg · Statusmodell · Pflichtangaben je Status · Tracker-Kopplung · Beweisquellen · Doku-Kopplung · Schließen und Prüfen |
 | `review.md` | Allgemein (Ablage, Serienformat, Übersicht) · je Thema: Reviewer-Rolle, Repos, Kontextquelle, Pflicht-Block, Ergebnis-Ort |
 | `skill-log.md` | Log-Ordner je Rechner · Ausgewertet bis · Ablage der Befunde |
 
