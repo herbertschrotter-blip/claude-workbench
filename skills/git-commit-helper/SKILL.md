@@ -59,7 +59,8 @@ wenn code-erstellen an ihn delegiert hat.
   - `required-after-commit`: `git push origin <branch>` als Glied der Sequenz
   - `required-at-session-end`: kein Push in der Sequenz; gepusht wird am Ende der Sitzung
 
-  Ohne Push-Policy (kein Skill-Profil): `git push origin <branch>` bleibt als Glied in der Sequenz.
+  Ohne Push-Policy (kein Skill-Profil): erst committen, dann Auswahlfrage (pushen / nicht pushen); `git push origin <branch>`
+  nur bei „pushen“.
 
 ## Voraussetzung: Skill-Profil
 
@@ -196,7 +197,7 @@ können. Führt Claude die Befehle selbst aus (Claude Code), gilt dieselbe
 Sequenz als ein Aufruf.
 
 Das Glied `git push origin <branch>` steht nur in der Sequenz, wenn die Push-Policy es verlangt oder erlaubt
-(Grundsätze); sonst entfällt es. Die Vorlage richtet sich nach der Shell, in der die Sequenz läuft.
+(Grundsätze), ohne Push-Policy nach der Auswahlfrage; sonst entfällt es. Die Vorlage richtet sich nach der Shell, in der die Sequenz läuft.
 
 #### PowerShell (Windows)
 

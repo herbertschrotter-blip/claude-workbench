@@ -84,7 +84,7 @@ welcher zuerst dran ist.
   - `required-after-commit`: Push direkt nach dem Commit des Sitzungsabschlusses
   - `required-at-session-end`: alle Commits der Sitzung pushen, bevor der Handover-Prompt ausgegeben wird
 
-  Ohne Push-Policy (kein Skill-Profil): Commit + Push im Sitzungsabschluss.
+  Ohne Push-Policy (kein Skill-Profil): Commit im Sitzungsabschluss, Push nur nach Auswahlfrage (pushen / nicht pushen).
 
   Bleiben Commits ungepusht (`user-only`, `allowed`), nennt der Übergabe-Prompt sie unter „Sonstige offene Punkte“
   (Hash und Titel, „Push durch den Nutzer“).

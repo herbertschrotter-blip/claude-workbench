@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.65.3] — 2026-10-30
+
+- **skills/doc-pflege, chat-wechsel, git-commit-helper, tracker, cc-steuerung, Fix:** Einheitlicher Rückfall ohne
+  Push-Policy (kein Skill-Profil): Commit ja, Push nur nach Auswahlfrage (pushen / nicht pushen). Vorher pushten
+  doc-pflege, chat-wechsel und git-commit-helper still, tracker und cc-steuerung nie (Skill-Issues doc-pflege-002,
+  chat-wechsel-003). chatgpt-review fragte schon so.
+
 ## [v0.65.2] — 2026-10-29
 
 - **skills/ticket, doc-pflege, mockup-erstellen, Fix:** Auslöser aus der Skill-Log-Auswertung vom 29.10.2026

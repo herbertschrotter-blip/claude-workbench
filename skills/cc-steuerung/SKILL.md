@@ -38,7 +38,7 @@ SUCHE/ERSETZE im Chat oder als Code-Block), nicht **was** getan wird.
 - **Branch** nach der Branch-Policy im Skill-Profil der `CLAUDE.md`. Ohne Profil: einen in der Sitzung schon gewählten
   Branch verwenden; sonst mit `git branch -a` auflisten, per Auswahlfrage wählen lassen und für die Sitzung merken. Nie
   einen Branch annehmen, auch nicht `main`.
-- **Push** nach der Push-Policy im Skill-Profil. Ohne Profil pusht der Nutzer selbst.
+- **Push** nach der Push-Policy im Skill-Profil. Ohne Profil: Commit ja, Push nur nach Auswahlfrage (pushen / nicht pushen).
 - **Arbeitsstand von der Platte lesen**, nicht über GitHub: Dort liegt nur der letzte Push.
 
 ## Wann ausführen
@@ -85,7 +85,7 @@ Beim ersten DC-Aufruf der Sitzung:
 | Dateien erstellen oder ändern | nach Freigabe eines konkreten Vorschlags |
 | `git commit` | nach Freigabe, Format nach git-commit-helper |
 | Dateien löschen | nur nach Auswahlfrage (löschen / abbrechen / andere Datei) |
-| `git push` | nach der Push-Policy des Skill-Profils; ohne Profil nie |
+| `git push` | nach der Push-Policy des Skill-Profils; ohne Profil nur nach Auswahlfrage |
 | Pakete installieren | nie ohne Freigabe |
 | Dateien außerhalb des Repos | nie; einzige Ausnahme ist eine temporäre Skriptdatei (`references/desktop-commander.md`) |
 

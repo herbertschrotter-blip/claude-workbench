@@ -78,7 +78,7 @@ Im Cowork-Chat kommen Projektkennung, Zähler und Listen aus dem Memory: `refere
   - `required-after-commit`: Claude pusht nach jedem Commit ohne Rückfrage – ✅; fehlt der Push noch, jetzt pushen
   - `required-at-session-end`: Claude pusht am Ende der Sitzung – bis dahin ⏳ Sitzungsende
 
-  Ohne Push-Policy (kein Skill-Profil): wie bisher Push-Pending, der Nutzer pusht (⏳ User).
+  Ohne Push-Policy (kein Skill-Profil): Auswahlfrage (pushen / nicht pushen); bei „nicht pushen“ ⏳ User.
 
 ---
 
