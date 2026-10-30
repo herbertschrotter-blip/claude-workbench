@@ -1,7 +1,8 @@
 # Offene Uploads bei claude.ai
 
 Skill-Lieferungen, die Herbert noch bei claude.ai hochladen muss (Two-Place-Pflege: in Claude Code kommen die Skills
-aus dem Plugin, im Chat bei claude.ai erst nach dem Upload). Seit 11.10.2026 geführt, weil Herbert gerade nur am
+aus dem Plugin, im Chat bei claude.ai erst nach dem Upload). Skill-Profil `Doku.Upload-Liste`; Ablauf:
+`skills/skill-pflege/references/delivery.md#Upload-Runde`. Seit 11.10.2026 geführt, weil Herbert gerade nur am
 Smartphone arbeitet und dort nicht hochladen kann.
 
 - **Eintragen:** nach jeder Skill-Lieferung (skill-pflege, Abschluss → Lieferung) eine Zeile; ist der Skill schon

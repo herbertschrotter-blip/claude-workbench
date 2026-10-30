@@ -49,6 +49,7 @@ HA. Das Skill-Log dieses Rechners liegt unter `/data/home/.claude/skill-log/` (`
 - Validierungsregeln: ref:docs/skill-quality.md#skill-prüfung
 - Sitzungsabschluss: none
 - Entscheidungs-Ort: docs/chatgpt-reviews/
+- Upload-Liste: docs/offene-uploads.md
 
 ### Tracker
 - Provider: clickup

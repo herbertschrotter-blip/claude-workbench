@@ -146,7 +146,7 @@ Offene Punkte: Auswahlfrage jetzt beheben / bewusst so lassen (Begründung in de
   (Skill-Tabelle und Zuständigkeiten) und die Eval-Fälle, alles im selben Commit. Format, Version (neuer Skill: MINOR)
   und Push-Policy stehen im Skill-Profil.
 - Danach liefern, wie skill-pflege es vorgibt (`skills/skill-pflege/references/delivery.md`): erst das Repo, dann die
-  Lieferung; die vollständige SKILL.md, bei references eine Zip; ein Skill je Antwort; keine Auswahlfrage im selben
+  Lieferung; die vollständige SKILL.md, bei references eine Zip; ein Skill je Antwort, außer in einer Upload-Runde; keine Auswahlfrage im selben
   Antwortblock wie die Lieferung. Der Nutzer lädt bei claude.ai hoch und bestätigt „gespeichert“. Das Repo ist die
   Wahrheit.
 - Jede weitere Änderung am neuen Skill, auch das Nachschärfen, läuft über skill-pflege.

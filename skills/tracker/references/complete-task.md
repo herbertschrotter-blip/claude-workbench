@@ -159,7 +159,9 @@ geändert hat – `SKILL.md` oder eine Reference.
   einem Skill-Issue“).
 - **Ausnahmen (keine Lieferung):** Zero-Change-Tasks; Commits, die keinen Skill-Inhalt ändern.
 - **Mehrere Skill-Issues in einer Batch-Session:** pro geändertem Skill EINE Lieferung in SEPARATEM Antwort-Block;
-  der User bestätigt „gespeichert“ zwischen den Skills (`delivery.md`, Abschnitt „Ein Skill je Antwort“).
+  der User bestätigt „gespeichert“ zwischen den Skills (`delivery.md`, Abschnitt „Ein Skill je Antwort“). Nennt das
+  Skill-Profil eine Upload-Liste, gilt stattdessen die gesammelte Upload-Runde (`delivery.md`, Abschnitt
+  „Upload-Runde“).
 
 ### Ausnahmen
 

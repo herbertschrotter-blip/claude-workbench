@@ -72,6 +72,7 @@ Review-Serie [CGR-2026-09-24-skillsystem](./chatgpt-reviews/CGR-2026-09-24-skill
 - Validierungsregeln: none | ref:<pfad>#<überschrift>
 - Sitzungsabschluss: none | ref:<pfad>#<überschrift>
 - Entscheidungs-Ort: none | <pfad/ref>
+- Upload-Liste: none | <pfad>
 
 ### Tracker
 - Provider: none | clickup
@@ -114,6 +115,9 @@ Bedeutung einzelner Felder:
   - `allowed` – Claude pusht auf Anweisung.
   - `required-after-commit` – Claude pusht nach jedem Commit ohne Rückfrage.
   - `required-at-session-end` – Claude pusht am Ende der Sitzung.
+  - ohne Skill-Profil: Commit ja, Push nur nach Auswahlfrage (pushen / nicht pushen).
+- **Upload-Liste:** nur im Skill-Repo – die Datei mit den Skill-Lieferungen, die der Nutzer noch bei claude.ai
+  hochladen muss (skill-pflege, `references/delivery.md#Upload-Runde`). Optional; fehlt sie, gilt `none`.
 - **Projekte:** gilt für das Repo, in dem neue Projekte angelegt werden (z. B. den Konfigurationsordner von Home
   Assistant). `Ablage` ist der Ordner für neue Projekt-Repos, `Übersicht` die Datei mit einer Zeile je Projekt,
   `Geschützt` die Bereiche, die Claude dort nie ändert.

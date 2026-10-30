@@ -8,6 +8,18 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.66.0] — 2026-10-30
+
+- **skills/skill-pflege, skill-neu, tracker, Feature:** Upload-Runde (Skill-Issue skill-pflege-009). Nennt das
+  Skill-Profil des Skill-Repos eine Upload-Liste (neues optionales Feld `Doku.Upload-Liste`, hier
+  `docs/offene-uploads.md`), trägt skill-pflege jede fertige Lieferung dort ein, sammelt die Lieferungen einer
+  Arbeitsphase und liefert sie in **einer** Runde (alle Skills in einer Antwort, ohne „gespeichert“ zwischen den
+  Skills); nach „gespeichert“ austragen. Die Regel stand bisher nur im Memory.
+  - skill-pflege: `references/delivery.md` neuer Abschnitt „Upload-Runde“; Grundsatz „Ein Skill nach dem anderen“
+    und VERBOTEN mit Ausnahme.
+  - skill-neu, tracker (`complete-task.md`, `cowork.md`): Verweis auf die Upload-Runde.
+  - `docs/skill-profile-v1.md`: Feld `Doku.Upload-Liste`; Push ohne Skill-Profil (v0.65.3) nachgetragen.
+
 ## [v0.65.5] — 2026-10-30
 
 - **skills/projekt-anlegen, Fix:** `scripts/versionen.py` vergleicht Versionen nach PEP 440 (Epoche, Vorab-Stufen

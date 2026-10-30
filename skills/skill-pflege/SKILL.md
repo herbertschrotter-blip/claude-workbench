@@ -47,7 +47,9 @@ anders ist, steht in `references/delivery.md` im Abschnitt Cowork.
   - Description über 1024 Zeichen
   - ein echter Tippfehler im Original
 - **Ein Skill nach dem anderen.** Bei mehreren Skills gilt je Skill: ändern, abschließen, liefern. Vor dem nächsten die
-  Bestätigung „gespeichert“ abwarten und per Auswahlfrage fragen, ob er drankommt.
+  Bestätigung „gespeichert“ abwarten und per Auswahlfrage fragen, ob er drankommt. Nennt das Skill-Profil eine
+  Upload-Liste, werden die Lieferungen gesammelt und in einer Upload-Runde geliefert
+  (`references/delivery.md#Upload-Runde`).
 - **Eigenständig, aber nicht kopiert.** Jeder Skill macht Zweck, Grenzen, benötigte Werte und Kernregeln selbst klar.
   Detailabläufe darf er verlinken.
 - **Verweise über Datei und Überschrift**, z. B. `skills/<skill>/SKILL.md#<Überschrift>`, nie über Nummern wie Regel,
@@ -190,7 +192,7 @@ erst dann entfernen. Das ist kein eigener Auslöser, nur der Nachgang einer Änd
 - Skill-Commit ohne Lieferung an den Nutzer; Lieferung ohne CHANGELOG-Eintrag und Commit
 - Skill mit references nur als SKILL.md liefern
 - mehrere Skills in einer Antwort liefern oder zum nächsten wechseln, bevor „gespeichert“ bestätigt und per
-  Auswahlfrage geklärt ist
+  Auswahlfrage geklärt ist – außer in einer Upload-Runde
 - Auswahlfrage im selben Antwortblock wie eine Lieferung
 - Memory-Einträge ohne Bestätigung entfernen
 - einen Agenten Skill-Dateien ändern lassen oder seine Befunde ungeprüft übernehmen

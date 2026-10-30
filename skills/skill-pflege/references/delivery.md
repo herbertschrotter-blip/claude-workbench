@@ -10,6 +10,7 @@ neu ist. Deshalb endet jede Skill-Änderung mit einer Lieferung, in derselben od
 - Was geliefert wird
 - Claude Code
 - Ein Skill je Antwort
+- Upload-Runde
 - Cowork
 
 ## Reihenfolge
@@ -47,10 +48,29 @@ Zuerst kommt das Repo: Die Lieferung wird aus dem Repo-Stand nach dem Commit geb
 
 ## Ein Skill je Antwort
 
-- Je Antwort höchstens eine Skill-Lieferung. Den Kontext trennt der Antworttext, nicht ein anderer Dateiname.
-- Nach jeder Lieferung auf „gespeichert“ warten. Erst dann per Auswahlfrage klären, wie es weitergeht: nächster Skill
+- Je Antwort höchstens eine Skill-Lieferung, außer in einer Upload-Runde (Abschnitt „Upload-Runde“). Den Kontext
+  trennt der Antworttext, nicht ein anderer Dateiname.
+- Ohne Upload-Liste nach jeder Lieferung auf „gespeichert“ warten. Erst dann per Auswahlfrage klären, wie es weitergeht: nächster Skill
   (Name) / Pause / anderer Skill / fertig.
 - Repo-Änderungen an mehreren Skills in einer Antwort sind in Ordnung. Nur die Lieferungen laufen nacheinander.
+
+## Upload-Runde
+
+Gilt, wenn das Skill-Profil des Skill-Repos eine Upload-Liste nennt (`Doku.Upload-Liste`). Die Liste führt die
+Lieferungen, die der Nutzer noch bei claude.ai hochladen muss, eine Zeile je Skill: Version, Commit, Art der Lieferung,
+offen seit. Mit `none` gibt es keine Liste; dann gilt „Ein Skill je Antwort“ unverändert.
+
+- **Eintragen:** Nach jeder fertigen Skill-Änderung (Commit, Push, Routing-Eval) die Zeile des Skills eintragen oder
+  auf die neue Version und den neuen Commit setzen. Hochgeladen wird immer der aktuelle Stand aus dem Repo.
+- **Sammeln:** Nicht nach jeder Änderung liefern. Erst alle Skill-Änderungen einer Arbeitsphase fertig machen, dann
+  **eine** Upload-Runde: jeder Skill der Liste genau einmal, alle in derselben Antwort, vorher die Zahl der Uploads
+  nennen. Zwischen den Skills einer Runde nicht auf „gespeichert“ warten.
+- **Austragen:** Meldet der Nutzer „gespeichert“, die Zeilen der gespeicherten Skills entfernen. Eintragen und
+  Austragen sind Doku-Commits und behalten die Version.
+- In der Übergabe an die nächste Sitzung die offenen Uploads nennen.
+- Keine Auswahlfrage im selben Antwortblock wie die Runde (Abschnitt „Claude Code“).
+- Im Cowork-Chat ist `/home/claude/SKILL.md` ein einziger Platz (Abschnitt „Cowork“): Dort bleibt es bei einer
+  Lieferung je Antwort, die Liste gilt trotzdem.
 
 ## Cowork
 
