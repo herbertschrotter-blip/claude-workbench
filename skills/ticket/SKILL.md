@@ -72,7 +72,7 @@ Was der Skill aus der Config braucht (Abschnitt der `ticket.md`, in Klammern der
 | Abschnitt | Inhalt |
 |-----------|--------|
 | Quelle (Präfix) | Ablage und Nummernschema der Tickets, je Art ein Präfix |
-| Arten (Präfix → Ablauf) | welche Art welchen Ablauf bekommt: `voll` (die acht Schritte) oder `verkürzt`; fehlt die Zeile, gilt: Fehler voll, Wunsch und Anregung verkürzt |
+| Arten (Präfix → Ablauf) | welche Art welchen Ablauf bekommt: `voll` (die acht Schritte) oder `verkürzt`; fehlt die Zeile, gilt: Fehler voll, Wunsch und Anregung verkürzt, ein Präfix ohne erkennbare Art voll |
 | Lese- und Schreibweg (Befehle) | Liste, Ticket als Text, Status, Notiz, Verwerfen; Auswertung anstoßen, falls es eine gibt |
 | Statusmodell (Status) | Werte und Reihenfolge |
 | Pflichtangaben je Status (Pflichtangaben) | was ein Status braucht, z. B. Aufgaben-Nummer, Commit, Version, Notiz, Grund |
@@ -163,7 +163,7 @@ Gilt für jede Art, die laut Config (`Arten`) `verkürzt` läuft. Ein Wunsch ist
 „Ursache suchen“ entfallen. Alle Kernregeln gelten unverändert.
 
 1. **Ticket holen und einfach erklären** wie in Schritt 1: Was wird gewünscht oder angeregt, wozu, an welcher Stelle?
-   Den Text des Users wörtlich zitieren.
+   Den Text des Users wörtlich zitieren. Keine Lösung vorschlagen, bevor „Entscheiden“ geklärt ist.
 2. **Entscheiden (Auswahlfrage):** „Umsetzen“ · „Ablehnen“ · „Nur beantworten“ · „Später“.
    - **Ablehnen:** Grund in einem Satz → verwerfen (Profil-Befehl) → Ende.
    - **Nur beantworten** (Frage oder Hinweis, keine Änderung nötig): Antwort in zwei Sätzen zeigen und bestätigen
@@ -175,7 +175,8 @@ Gilt für jede Art, die laut Config (`Arten`) `verkürzt` läuft. Ein Wunsch ist
 5. **Umsetzen mit Test, einspielen** wie in Schritt 5 und 6; der Test prüft die gewünschte Funktion.
 6. **Ticket lösen** wie in Schritt 7, Notiz mit dem, was umgesetzt wurde. Schließen wie bei Fehlern (Kernregel 6 und
    „Schließen und Prüfen“ der Config).
-7. **Prüfung durch den User** wie in Schritt 8, Frage „Passt es so?“.
+7. **Prüfung durch den User** wie in Schritt 8, Frage „Passt es so?“; bei „Nein – fehlt noch etwas“ zurück auf
+   `in_arbeit` und weiter bei „Umsetzung klären“.
 
 ---
 

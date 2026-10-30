@@ -189,7 +189,8 @@ erst dann entfernen. Das ist kein eigener Auslöser, nur der Nachgang einer Änd
 - Refactor ohne Regel-Inventar oder ohne Prüfung in beide Richtungen
 - Querverweise über Nummern (Regel, Kapitel, Modus, Schritt)
 - eine Description über 1024 Zeichen liefern oder sie ohne Routing-Eval ändern
-- Skill-Commit ohne Lieferung an den Nutzer; Lieferung ohne CHANGELOG-Eintrag und Commit
+- Skill-Commit ohne Lieferung an den Nutzer (mit Upload-Liste: ohne Eintrag dort); Lieferung ohne CHANGELOG-Eintrag
+  und Commit
 - Skill mit references nur als SKILL.md liefern
 - mehrere Skills in einer Antwort liefern oder zum nächsten wechseln, bevor „gespeichert“ bestätigt und per
   Auswahlfrage geklärt ist – außer in einer Upload-Runde

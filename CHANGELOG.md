@@ -8,6 +8,19 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.67.1] — 2026-10-30
+
+- **skills/skill-pflege, ticket, chat-wechsel, doc-pflege, tracker, projekt-anlegen, Fix:** Nachbesserungen aus dem
+  Gutachten zu v0.65.3–v0.67.0.
+  - skill-pflege: Mit Upload-Liste ersetzt der Eintrag die sofortige Lieferung (Einleitung, Reihenfolge, VERBOTEN);
+    Cowork wartet in einer Runde nicht auf „gespeichert“ (auch tracker `cowork.md`).
+  - ticket: verkürzter Ablauf – keine Lösung vor „Entscheiden“, bei „Nein“ zurück zu „Umsetzung klären“; Präfix ohne
+    erkennbare Art läuft voll.
+  - chat-wechsel: ungepushte Commits auch nach „nicht pushen“ und offene Uploads in die Übergabe; doc-pflege:
+    Push-Rückfall nur ohne Skill-Profil (wie `docs/skill-profile-v1.md`: fehlt nur die Push-Policy, gilt „Fehlende Werte“).
+  - projekt-anlegen: `versionen.py` nur ASCII-Ziffern, lokaler Teil wird geprüft; Tests für Schreibweisen und „unklar“.
+  - Eval-Fall `ticket-wunsch`.
+
 ## [v0.67.0] — 2026-10-30
 
 - **skills/ticket, Feature:** Wünsche und Anregungen (WU/AN) bekommen einen verkürzten Ablauf (Skill-Issue

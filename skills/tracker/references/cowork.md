@@ -81,5 +81,6 @@ Schritt B: present_files
 ```
 
 Skills mit references: eine Zip statt des Artifacts (`delivery.md`, Abschnitt „Cowork“). Pro geändertem Skill ein
-Artifact in separatem Antwort-Block; der User bestätigt „gespeichert“ zwischen den Skills. Eine Upload-Liste im
-Skill-Profil gilt auch hier (`delivery.md`, Abschnitt „Upload-Runde“).
+Artifact in separatem Antwort-Block; der User bestätigt „gespeichert“ zwischen den Skills. Nennt das Skill-Profil eine
+Upload-Liste, bleibt es bei einem Artifact je Antwort, aber ohne Warten auf „gespeichert“ (`delivery.md`, Abschnitt
+„Upload-Runde“).

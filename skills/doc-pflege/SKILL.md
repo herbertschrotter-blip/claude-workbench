@@ -91,7 +91,7 @@ jetzt die Doku" bevor doc-pflege selbst übernimmt.
   - `allowed`: Push nur, wenn der User es ausdrücklich will
   - `required-after-commit` oder `required-at-session-end`: Push nach dem Commit
 
-  Ohne Push-Policy: Commit ja, Push nur nach Auswahlfrage (pushen / nicht pushen).
+  Ohne Push-Policy (kein Skill-Profil): Commit ja, Push nur nach Auswahlfrage (pushen / nicht pushen).
 
 ---
 

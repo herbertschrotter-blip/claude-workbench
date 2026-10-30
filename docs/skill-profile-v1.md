@@ -115,7 +115,8 @@ Bedeutung einzelner Felder:
   - `allowed` – Claude pusht auf Anweisung.
   - `required-after-commit` – Claude pusht nach jedem Commit ohne Rückfrage.
   - `required-at-session-end` – Claude pusht am Ende der Sitzung.
-  - ohne Skill-Profil: Commit ja, Push nur nach Auswahlfrage (pushen / nicht pushen).
+  - ohne Skill-Profil (und der Nutzer will keins anlegen): Commit ja, Push nur nach Auswahlfrage (pushen / nicht
+    pushen). Fehlt in einem vorhandenen Profil nur die Push-Policy, gilt „Fehlende Werte“.
 - **Upload-Liste:** nur im Skill-Repo – die Datei mit den Skill-Lieferungen, die der Nutzer noch bei claude.ai
   hochladen muss (skill-pflege, `references/delivery.md#Upload-Runde`). Optional; fehlt sie, gilt `none`.
 - **Projekte:** gilt für das Repo, in dem neue Projekte angelegt werden (z. B. den Konfigurationsordner von Home

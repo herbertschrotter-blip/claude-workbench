@@ -36,6 +36,18 @@ class VergleichTest(unittest.TestCase):
     def test_nicht_lesbar_ist_unklar(self):
         self.assertEqual(v.vergleichen({"x": "1.0-foo"}, {"x": "1.1"}.get)[0]["stand"], "unklar")
         self.assertEqual(v.vergleichen({"x": "1.0"}, {"x": "xyz"}.get)[0]["stand"], "unklar")
+        for kaputt in ("1.0 rc1", "1.0+", "1.0+a..b", "\u0663.0"):
+            self.assertIsNone(v.schluessel(kaputt), kaputt)
+
+    def test_schreibweisen(self):
+        for a, b in (("v1.0", "1.0"), ("1.0RC1", "1.0rc1"), (" 1.0 ", "1.0"), ("1.0r1", "1.0.post1"),
+                     ("1.0-rev2", "1.0.post2"), ("1.0-1", "1.0.post1")):
+            self.assertEqual(v.schluessel(a), v.schluessel(b), a)
+
+    def test_unklar_ohne_kopplungshinweis(self):
+        text = v.tabelle(v.vergleichen({"homeassistant": "2026.9.4"}, {"homeassistant": "xyz"}.get))
+        self.assertIn("unklar", text)
+        self.assertNotIn("nur zusammen mit", text)
 
     def test_endnullen_lokal_und_epoche(self):
         self.assertEqual(v.vergleichen({"x": "1.0"}, {"x": "1.0.0"}.get)[0]["stand"], "aktuell")

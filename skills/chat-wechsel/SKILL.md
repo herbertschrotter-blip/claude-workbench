@@ -86,8 +86,9 @@ welcher zuerst dran ist.
 
   Ohne Push-Policy (kein Skill-Profil): Commit im Sitzungsabschluss, Push nur nach Auswahlfrage (pushen / nicht pushen).
 
-  Bleiben Commits ungepusht (`user-only`, `allowed`), nennt der Übergabe-Prompt sie unter „Sonstige offene Punkte“
-  (Hash und Titel, „Push durch den Nutzer“).
+  Bleiben Commits ungepusht (`user-only`, `allowed`, ohne Profil nach „nicht pushen“), nennt der Übergabe-Prompt sie
+  unter „Sonstige offene Punkte“ (Hash und Titel, „Push durch den Nutzer“). Nennt das Profil eine Upload-Liste
+  (`Doku.Upload-Liste`), stehen deren offene Zeilen ebenfalls dort.
 
 ---
 

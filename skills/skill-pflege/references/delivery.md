@@ -2,7 +2,9 @@
 
 Jede Skill-Änderung lebt an zwei Orten. Im Skill-Repo ist sie versioniert, das Repo ist die Wahrheit. Bei claude.ai
 lädt Claude den Skill tatsächlich. Ohne Lieferung arbeitet Claude weiter mit dem alten Stand, obwohl das Repo längst
-neu ist. Deshalb endet jede Skill-Änderung mit einer Lieferung, in derselben oder der direkt folgenden Antwort.
+neu ist. Deshalb endet jede Skill-Änderung mit einer Lieferung, in derselben oder der direkt folgenden Antwort. Nennt
+das Skill-Profil eine Upload-Liste, ersetzt der Eintrag dort die sofortige Lieferung; geliefert wird in der
+Upload-Runde (Abschnitt „Upload-Runde“).
 
 ## Inhalt
 
@@ -18,7 +20,8 @@ neu ist. Deshalb endet jede Skill-Änderung mit einer Lieferung, in derselben od
 1. Im Repo ändern, Prüfskript laufen lassen, CHANGELOG und INDEX nachziehen, Commit und Push. Der Abschluss steht in
    `SKILL.md`.
 2. Die Routing-Eval der betroffenen Fälle laufen lassen, vor dem Upload.
-3. An den Nutzer liefern. Er lädt bei claude.ai hoch und bestätigt mit „gespeichert“.
+3. An den Nutzer liefern. Er lädt bei claude.ai hoch und bestätigt mit „gespeichert“. Mit Upload-Liste: eintragen,
+   geliefert wird gesammelt in der Upload-Runde.
 4. Die Antwort mit der Lieferung beenden.
 
 Zuerst kommt das Repo: Die Lieferung wird aus dem Repo-Stand nach dem Commit gebaut, nie aus einem Zwischenstand.
@@ -70,7 +73,8 @@ offen seit. Mit `none` gibt es keine Liste; dann gilt „Ein Skill je Antwort“
 - In der Übergabe an die nächste Sitzung die offenen Uploads nennen.
 - Keine Auswahlfrage im selben Antwortblock wie die Runde (Abschnitt „Claude Code“).
 - Im Cowork-Chat ist `/home/claude/SKILL.md` ein einziger Platz (Abschnitt „Cowork“): Dort bleibt es bei einer
-  Lieferung je Antwort, die Liste gilt trotzdem.
+  Lieferung je Antwort, die Liste gilt trotzdem; zwischen den Antworten einer Runde wird nicht auf „gespeichert“
+  gewartet.
 
 ## Cowork
 

@@ -42,15 +42,17 @@ _PEP440 = re.compile(
     r"(?:[-_.]?(?P<pre>alpha|beta|preview|pre|rc|a|b|c)[-_.]?(?P<pre_n>\d+)?)?"
     r"(?P<post>-\d+|[-_.]?(?:post|rev|r)[-_.]?\d*)?"
     r"(?:[-_.]?(?P<dev>dev)[-_.]?(?P<dev_n>\d+)?)?",
-    re.IGNORECASE,
+    re.IGNORECASE | re.ASCII,
 )
+_LOKAL = re.compile(r"[a-z0-9]+(?:[-_.][a-z0-9]+)*", re.IGNORECASE | re.ASCII)
 _PRE_RANG = {"a": 0, "alpha": 0, "b": 1, "beta": 1, "c": 2, "rc": 2, "pre": 2, "preview": 2}
 
 
 def schluessel(version):
     """Sortierschlüssel nach PEP 440 (Epoche, Release, a/b/rc, post, dev) oder None; lokaler Teil (+…) zählt nicht."""
-    m = _PEP440.fullmatch(str(version).strip().split("+", 1)[0])
-    if not m:
+    oeffentlich, plus, lokal = str(version).strip().partition("+")
+    m = _PEP440.fullmatch(oeffentlich)
+    if not m or (plus and not _LOKAL.fullmatch(lokal)):
         return None
     release = [int(t) for t in m["release"].split(".")]
     while len(release) > 1 and release[-1] == 0:  # 1.0 == 1.0.0

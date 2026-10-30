@@ -59,13 +59,13 @@ Grenze sie prüfen.
 | chatgpt-review | 7 | 0 |
 | tracker | 4 | 3 |
 | git-commit-helper | 3 | 2 |
-| ticket | 8 | 2 |
+| ticket | 9 | 2 |
 | cc-steuerung | 3 | 2 |
 | projekt-anlegen | 21 | 5 |
 | skill-auswertung | 6 | 3 |
 | sitzung | 6 | 3 |
 | neustart | 5 | 2 |
-| **gesamt** | **118** | **36** |
+| **gesamt** | **119** | **36** |
 
 ## Nicht abgedeckt
 
@@ -78,7 +78,7 @@ Grenze sie prüfen.
 
 ## Fälle
 
-Stand 29.10.2026, 122 Fälle.
+Stand 30.10.2026, 123 Fälle.
 
 | Fall | Skill | Testsatz | soll auslösen | darf nicht auslösen | Art |
 |---|---|---|---|---|---|
@@ -154,6 +154,7 @@ Stand 29.10.2026, 122 Fälle.
 | `commit-version-bump` | git-commit-helper | Ist das PATCH oder MINOR? Ich habe im Export eine neue Option ergänzt. | git-commit-helper | – | normal |
 | `commit-no-trigger-push` | git-commit-helper | Push bitte den aktuellen Stand nach GitHub. | – | git-commit-helper | kritisch |
 | `ticket-number` | ticket | ticket HT-0007 | ticket | tracker, code-erstellen | kritisch |
+| `ticket-wunsch` | ticket | ticket WU-0003 – der Wunsch nach einer Nachtansicht | ticket | tracker, code-erstellen | normal |
 | `ticket-list` | ticket | Welche Tickets sind noch offen? ticket liste | ticket | tracker | kritisch |
 | `ticket-real-naechstes-ticket` | ticket | Nächstes Ticket bitte. | ticket | tracker | normal, echt |
 | `ticket-real-tickets-pruefen` | ticket | tickets prüfen | ticket | tracker | normal, echt |
