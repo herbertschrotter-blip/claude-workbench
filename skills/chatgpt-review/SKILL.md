@@ -6,7 +6,9 @@ description: >
   Runden in Claude Code selbst über die Codex CLI und archiviert jede Runde im Repo
   (CGR-System) – projektneutral nach dem Review-Profil des Repos. Use
   when users want a ChatGPT review prompt, a second opinion from ChatGPT or Codex, a
-  reply prompt to ChatGPT feedback, the next review round, or a structured cross-LLM critique. Do not
+  reply prompt to ChatGPT feedback, the next review round, or a structured cross-LLM critique, or
+  when they paste or attach ChatGPT's answer to a review round (e.g. Review_Runde_5.md) to archive and
+  evaluate it. Do not
   trigger for normal chat handovers, prompts for the next Claude session, or
   vague replies without explicit ChatGPT review context.
 ---

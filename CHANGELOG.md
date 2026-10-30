@@ -8,6 +8,14 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.65.4] — 2026-10-30
+
+- **skills/chatgpt-review, doc-pflege, Fix:** Eingefügte oder angehängte ChatGPT-Antwort einer Review-Runde
+  (z. B. `Review_Runde_5.md`) löst chatgpt-review aus (Skill-Issue chatgpt-review-002).
+  - chatgpt-review: Use-when um „paste or attach ChatGPT's answer to a review round“ ergänzt (740 Zeichen).
+  - doc-pflege: Do-not um „ChatGPT review rounds (chatgpt-review)“ ergänzt; dafür Beispiele „Modul-Doc,
+    Architektur“, „draften“ und „project“ gestrichen (1023 Zeichen).
+
 ## [v0.65.3] — 2026-10-30
 
 - **skills/doc-pflege, chat-wechsel, git-commit-helper, tracker, cc-steuerung, Fix:** Einheitlicher Rückfall ohne

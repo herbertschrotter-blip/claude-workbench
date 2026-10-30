@@ -3,18 +3,19 @@ name: doc-pflege
 description: >
   Schreibt, ändert und korrigiert Projektdokumentation nach dem Skill-Profil
   des Repos: legt neue Docs nach der Vorlage des Projekts an (z. B. ADR,
-  Konzept, Modul-Doc, Architektur, README, CHANGELOG, BACKLOG), aktualisiert
+  Konzept, README, CHANGELOG, BACKLOG), aktualisiert
   Frontmatter, Quickload, Router-Einträge, Statuslisten und
   Übergabe-Dokumente, behebt kaputte Links, veraltete Kapitel und Befunde aus
   einem Audit und macht den Sitzungsabschluss im Repo. Use when users want to
-  schreiben, erstellen, pflegen, aktualisieren, draften, anlegen, formulieren,
+  schreiben, erstellen, pflegen, aktualisieren, anlegen, formulieren,
   dokumentieren, ergänzen, korrigieren, umbauen, or refactoren documentation
   or concepts („Konzept für X“) —
   including bug fixes in docs (typos, broken links, outdated chapters),
   fixing audit findings, structural refactoring of existing docs, and the
-  Sitzungsabschluss in the project docs. Do not trigger for read-only checks
+  Sitzungsabschluss in the docs. Do not trigger for read-only checks
   or validation without changes (audit), code implementation, automatic
-  post-change doc hints, mockup approvals (mockup-erstellen), or generic
+  post-change doc hints, mockup approvals (mockup-erstellen), ChatGPT review
+  rounds (chatgpt-review), or generic
   project discussion without an explicit doc request.
 ---
 
