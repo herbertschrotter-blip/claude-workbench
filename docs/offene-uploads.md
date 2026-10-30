@@ -12,7 +12,3 @@ Smartphone arbeitet und dort nicht hochladen kann.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|
-| code-erstellen | v0.65.1 | bcb6b93 | Zip (SKILL.md + references/; `stacks/home-assistant-yaml.md` heißt jetzt `stacks/home-assistant.md` – die alte Datei bei claude.ai löschen) | 29.10.2026 |
-| ticket | v0.65.2 | 4029c36 | Zip (SKILL.md + references/) | 29.10.2026 |
-| doc-pflege | v0.65.2 | 4029c36 | Zip (SKILL.md + references/) | 29.10.2026 |
-| mockup-erstellen | v0.65.2 | 4029c36 | Zip (SKILL.md + references/) | 29.10.2026 |
