@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.65.5] — 2026-10-30
+
+- **skills/projekt-anlegen, Fix:** `scripts/versionen.py` vergleicht Versionen nach PEP 440 (Epoche, Vorab-Stufen
+  a/b/rc, post, dev; lokaler Teil zählt nicht). Vorher galt bei Versionen mit Buchstaben (`1.2.0rc1`,
+  `2026.10.0b3`) jede Abweichung als „neuer“; nicht lesbare Versionen melden jetzt „unklar“ (Skill-Issue
+  projekt-anlegen-001). Fünf neue Tests.
+
 ## [v0.65.4] — 2026-10-30
 
 - **skills/chatgpt-review, doc-pflege, Fix:** Eingefügte oder angehängte ChatGPT-Antwort einer Review-Runde

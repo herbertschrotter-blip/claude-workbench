@@ -6,11 +6,13 @@ wird erst nach grüner CI des Generators (references/generator.md, Pflege der Vo
 
     python3 versionen.py [--json]
 
-Exit immer 0; ohne Netz steht beim Paket „nicht prüfbar“.
+Exit immer 0; ohne Netz steht beim Paket „nicht prüfbar“, bei einer Version, die nicht nach PEP 440 lesbar ist,
+„unklar“.
 """
 
 import argparse
 import json
+import re
 import sys
 import urllib.error
 import urllib.request
@@ -35,23 +37,48 @@ def neueste(name):
         return None
 
 
-def _teile(version):
-    try:
-        return tuple(int(t) for t in version.split("."))
-    except ValueError:
+_PEP440 = re.compile(
+    r"v?(?:(?P<epoch>\d+)!)?(?P<release>\d+(?:\.\d+)*)"
+    r"(?:[-_.]?(?P<pre>alpha|beta|preview|pre|rc|a|b|c)[-_.]?(?P<pre_n>\d+)?)?"
+    r"(?P<post>-\d+|[-_.]?(?:post|rev|r)[-_.]?\d*)?"
+    r"(?:[-_.]?(?P<dev>dev)[-_.]?(?P<dev_n>\d+)?)?",
+    re.IGNORECASE,
+)
+_PRE_RANG = {"a": 0, "alpha": 0, "b": 1, "beta": 1, "c": 2, "rc": 2, "pre": 2, "preview": 2}
+
+
+def schluessel(version):
+    """Sortierschlüssel nach PEP 440 (Epoche, Release, a/b/rc, post, dev) oder None; lokaler Teil (+…) zählt nicht."""
+    m = _PEP440.fullmatch(str(version).strip().split("+", 1)[0])
+    if not m:
         return None
+    release = [int(t) for t in m["release"].split(".")]
+    while len(release) > 1 and release[-1] == 0:  # 1.0 == 1.0.0
+        release.pop()
+    if m["pre"]:
+        pre = (1, _PRE_RANG[m["pre"].lower()], int(m["pre_n"] or 0))
+    elif m["dev"] and not m["post"]:  # 1.0.dev1 liegt vor 1.0a1
+        pre = (0, 0, 0)
+    else:
+        pre = (2, 0, 0)
+    post = (1, int(re.search(r"\d*$", m["post"]).group() or 0)) if m["post"] else (0, 0)
+    dev = (0, int(m["dev_n"] or 0)) if m["dev"] else (1, 0)
+    return int(m["epoch"] or 0), tuple(release), pre, post, dev
 
 
 def vergleichen(angeheftet, abfrage=neueste):
-    """[{paket, angeheftet, neueste, stand}] mit stand: aktuell, neuer, nicht prüfbar."""
+    """[{paket, angeheftet, neueste, stand}] mit stand: aktuell, neuer, unklar, nicht prüfbar."""
     zeilen = []
     for name, version in sorted(angeheftet.items()):
         neu = abfrage(name)
         if neu is None:
             stand = "nicht prüfbar"
         else:
-            alt_t, neu_t = _teile(str(version)), _teile(neu)
-            stand = "neuer" if (neu_t > alt_t if alt_t and neu_t else neu != str(version)) else "aktuell"
+            alt_k, neu_k = schluessel(version), schluessel(neu)
+            if alt_k is None or neu_k is None:
+                stand = "unklar"  # nicht nach PEP 440 lesbar: nichts Neueres behaupten
+            else:
+                stand = "neuer" if neu_k > alt_k else "aktuell"
         zeilen.append({"paket": name, "angeheftet": str(version), "neueste": neu or "–", "stand": stand})
     return zeilen
 

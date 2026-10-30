@@ -24,6 +24,29 @@ class VergleichTest(unittest.TestCase):
         # 0.16.10 ist neuer als 0.16.9 – als Text wäre es umgekehrt
         self.assertEqual(v.vergleichen({"ruff": "0.16.10"}, {"ruff": "0.16.9"}.get)[0]["stand"], "aktuell")
 
+    def test_vorabversion_gegen_aelteren_stand(self):
+        # 1.2.0rc1 ist neuer als 1.1.9: kein „neuer“, nur weil sich der Text unterscheidet
+        self.assertEqual(v.vergleichen({"x": "1.2.0rc1"}, {"x": "1.1.9"}.get)[0]["stand"], "aktuell")
+        self.assertEqual(v.vergleichen({"x": "1.2.0rc1"}, {"x": "1.2.0"}.get)[0]["stand"], "neuer")
+
+    def test_calver_mit_beta(self):
+        self.assertEqual(v.vergleichen({"x": "2026.10.0b3"}, {"x": "2026.10.0"}.get)[0]["stand"], "neuer")
+        self.assertEqual(v.vergleichen({"x": "2026.10.0"}, {"x": "2026.10.0b3"}.get)[0]["stand"], "aktuell")
+
+    def test_nicht_lesbar_ist_unklar(self):
+        self.assertEqual(v.vergleichen({"x": "1.0-foo"}, {"x": "1.1"}.get)[0]["stand"], "unklar")
+        self.assertEqual(v.vergleichen({"x": "1.0"}, {"x": "xyz"}.get)[0]["stand"], "unklar")
+
+    def test_endnullen_lokal_und_epoche(self):
+        self.assertEqual(v.vergleichen({"x": "1.0"}, {"x": "1.0.0"}.get)[0]["stand"], "aktuell")
+        self.assertEqual(v.vergleichen({"x": "1.0+local"}, {"x": "1.0"}.get)[0]["stand"], "aktuell")
+        self.assertEqual(v.vergleichen({"x": "1!1.0"}, {"x": "2.0"}.get)[0]["stand"], "aktuell")
+
+    def test_reihenfolge_der_vorstufen(self):
+        reihe = ["1.0.dev1", "1.0a1.dev1", "1.0a1", "1.0b2", "1.0rc1", "1.0", "1.0.post1.dev1", "1.0.post1", "1.0-2",
+                 "1.1.dev0"]
+        self.assertEqual(sorted(reihe, key=v.schluessel), reihe)
+
     def test_gekoppelte_pakete_im_hinweis(self):
         text = v.tabelle(v.vergleichen({"homeassistant": "2026.9.4"}, PYPI.get))
         self.assertIn("nur zusammen mit pytest-homeassistant-custom-component", text)

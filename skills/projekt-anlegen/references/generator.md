@@ -136,8 +136,8 @@ behaupten.
   bei jeder erlaubten Länge gleich formatiert; `scripts/validate.py --erzeugen` prüft das nicht für jede Länge.
 - Prüfschritte stehen im Manifest der Projektart; ein Schritt mit `plattform` (z. B. `["linux"]`) läuft nur dort.
 - Versionen der Werkzeuge stehen nur in `templates/versions.json`; neue Versionen erst nach grüner CI des Generators
-  übernehmen. `scripts/versionen.py` vergleicht sie mit PyPI (Tabelle, ohne Netz „nicht prüfbar“, Exit immer 0);
-  `homeassistant` und `pytest-homeassistant-custom-component` nur gemeinsam anheben, das Testpaket gehört zu genau
+  übernehmen. `scripts/versionen.py` vergleicht sie mit PyPI nach PEP 440 (Tabelle, ohne Netz „nicht prüfbar“, nicht
+  lesbare Version „unklar“, Exit immer 0); `homeassistant` und `pytest-homeassistant-custom-component` nur gemeinsam anheben, das Testpaket gehört zu genau
   einer HA-Version.
 - Vor jedem Commit: `python3 scripts/validate.py` (Katalog) und die Tests unter `scripts/tests/`; jede Kombination echt
   prüft `scripts/validate.py --erzeugen <ordner>` bzw. der Workflow `test-project-generator.yml` auf Linux und Windows.
