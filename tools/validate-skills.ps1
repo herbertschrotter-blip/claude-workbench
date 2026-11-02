@@ -168,7 +168,7 @@ function Get-DeadLinks([string]$File, [string[]]$Lines, [string]$SkillDir, [stri
         foreach ($m in [regex]::Matches($Lines[$i], '`(skills/[a-z0-9-]+/[^`\s]+?)`')) {
             $target = $m.Groups[1].Value
             if ($target -match '[<>*{}$]') { continue }
-            if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot $target))) { $dead.Add(@{ Line = $i + 1; Text = $target }) }
+            if (-not (Test-Path -LiteralPath (Join-Path $RepoRoot ($target -split '#')[0]))) { $dead.Add(@{ Line = $i + 1; Text = $target }) }
         }
     }
     return ,$dead
