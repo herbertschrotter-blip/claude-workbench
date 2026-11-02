@@ -8,6 +8,19 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.68.0] — 2026-11-02
+
+- **skills/mockup-erstellen, code-erstellen, audit, doc-pflege, projekt-anlegen, Feature:** zweite Arbeitsweise für
+  Mockups: je Seite oder Formular eine Datei, mit gemeinsamem Theme und einer Seitenliste mit Version und Verlauf. Neue
+  optionale Profilfelder `Mockup.Theme` und `Mockup.Seitenliste` (`docs/skill-profile-v1.md`); bei `none` oder ohne Feld
+  ändert sich nichts.
+  - mockup-erstellen: neue Reference `seiten-theme.md`; „Standalone-fähig“, Vorschau und Token-Abgleich mit Ausnahmen für
+    Seiten mit Theme; neuer VERBOTEN-Eintrag; Beispiel ha-hausbau.
+  - code-erstellen: Seitenliste vor UI-Änderungen lesen, Theme-Befehl, Verlaufseintrag nach der Auslieferung, Zeile im
+    Impact Check.
+  - audit: neues „Modul 9 — Seitenliste“ (nur lesend). doc-pflege: erzeugte Doku nie von Hand, Sitzungsabschluss prüft
+    offene Einträge. projekt-anlegen: bietet die Felder bei Projekten mit Oberfläche an.
+
 ## [v0.67.1] — 2026-10-30
 
 - **skills/skill-pflege, ticket, chat-wechsel, doc-pflege, tracker, projekt-anlegen, Fix:** Nachbesserungen aus dem

@@ -130,6 +130,7 @@ Die Werte kommen aus dem Skill-Profil der `CLAUDE.md` im Repo (`docs/skill-profi
 | `Code.Auslieferung` | Schritte nach dem Commit |
 | `Code.Mockup-Policy` | wann ein UI-Umbau zuerst als Mockup kommt (`required:<bedingung>`); `none` = nie Pflicht |
 | `Code.Befund-Ort` | wo Befunde und Ideen ohne Aufgabe landen |
+| `Mockup.Theme`, `Mockup.Seitenliste` | optional, nur gemeinsam wirksam: gemeinsames Theme und Seitenliste der Mockups (Dateien und Befehle); `none` oder ohne Feld = entfällt |
 | `Doku.Router`, `Doku.Entscheidungs-Ort` | Routing zu den Docs; Grundentscheidungen des Projekts |
 | `Commit.Format`, `Commit.Versionsquelle`, `Commit.Versionsregel`, `Commit.Doku-Check` | Commit-Zeile, Version, Doku-Hinweise |
 | `Tracker.Provider`, `Tracker.Config` | Tracker-Abgleich und Präfix der Aufgaben |
@@ -205,6 +206,9 @@ Eskalation auf Deep:
    Grundentscheidungen (Zweck, Grenzen, Datenhaltung, Auslieferung) vor der ersten fachlichen
    Erweiterung lesen. Sie sind Projektkontext, keine unveränderliche Architektur; eine Änderung
    daran wird dort nachgetragen.
+4. **Seitenliste** (nur, wenn `Mockup.Theme` und `Mockup.Seitenliste` gesetzt sind): Bei UI-Änderungen vor dem Code die Quelldatei lesen: betroffene
+   Seiten, ihre Version, ihr Mockup. Zeigt das Mockup die Änderung nicht und greift `Code.Mockup-Policy`, an
+   **mockup-erstellen** geben (Mockup-Hook).
 
 ### Kopf zuerst lesen
 
@@ -245,6 +249,7 @@ heißt) steht in `references/stacks/<key>.md`, Abschnitt „Impact-Check-Zeilen�
 - Lebenszyklus / Render-Verhalten: [Ja/Nein]
 - Logging / Fehlerbehandlung: [Ja/Nein]
 - Bestehende Daten/Configs betroffen?: [Ja/Nein] (Frühphasen-Prinzip)
+- Seitenliste / Mockup betroffen: [Seiten oder Nein] (nur, wenn `Mockup.Theme` und `Mockup.Seitenliste` gesetzt sind)
 - Referenzimplementierung: [Name oder Nein]
 - Fachliche Invarianten verletzt?: [Liste oder Nein] (Regeln des Projekts, „Nicht ändern“ der Aufgabe)
 - Akzeptanzkriterien der Aufgabenquelle: [Liste → werden Testfälle]
@@ -274,6 +279,9 @@ Blockiere Code-Erstellung wenn:
 
 Standards aus den Architekturregeln und dem Pflichtkontext des Projekts, Referenzimplementierungen als Muster. Nichts fest
 verdrahten, was das Profil als dynamisch nennt.
+
+Ändert der Code Stile oder Bausteine und sind `Mockup.Theme` und `Mockup.Seitenliste` gesetzt: den Befehl aus
+`Mockup.Theme` ausführen, die erzeugten Dateien kommen in denselben Commit.
 
 ### Tests (Pflicht, Checks aus `Code.Tests`)
 
@@ -347,6 +355,13 @@ Ergebnis; im Cowork-Chat: [references/cowork.md](references/cowork.md#auslieferu
 (`Code.Auslieferung`), die
 Prüfreihenfolge je Stack in der Stack-Referenz (z.B. home-assistant: Deploy → check_config →
 reload/restart → Zustand prüfen). Zum Schluss dem User sagen, was er wie sichtprüfen soll.
+
+**Seitenliste** (nur, wenn `Mockup.Theme` und `Mockup.Seitenliste` gesetzt sind; läuft auch ohne `Code.Auslieferung`, dann direkt nach dem Commit): Nach der Auslieferung je
+betroffene Seite einen Verlaufseintrag und die Version in der Quelldatei setzen, den Befehl aus `Mockup.Seitenliste`
+ausführen und das Ergebnis committen. Nur abgenommene Änderungen zählen die Version hoch; eine Fehlerbehebung ohne
+Änderung des Aussehens bekommt nur den Verlaufseintrag, keine neue Version. Hat die Abnahme in mockup-erstellen Eintrag
+und Version schon gesetzt, kommt für dieselbe Änderung kein zweiter dazu. Gibt es eine veröffentlichte Seitenliste, sie
+neu veröffentlichen.
 
 ### Tracker-Abgleich (optional)
 

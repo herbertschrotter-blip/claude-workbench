@@ -4,8 +4,8 @@ description: >
   Prüft read-only, ob Code, Projektdoku und Skills zueinander passen, nach dem
   Skill-Profil des Repos: Doku gegen Code, Doku-Validierung (z. B. Frontmatter,
   Quickload, Router, Statuslisten), Aufgaben im Tracker gegen die
-  Aufgabenquelle, Grundsatzregeln eines Stacks, im Skill-Repo die Skills gegen
-  INDEX und Qualitätsregeln; ändert selbst nichts. Use when users want to
+  Aufgabenquelle, Grundsatzregeln eines Stacks, Seitenliste gegen Code und Mockups,
+  im Skill-Repo die Skills gegen INDEX und Qualitätsregeln; ändert selbst nichts. Use when users want to
   prüfen, checken, auditieren, or validieren without changes — a consistency
   audit, a documentation-vs-code check, a Frontmatter or Quickload
   validation, a check of a project against its ground rules (Grundsatzregeln,
@@ -111,6 +111,7 @@ läuft, das sie braucht.
 | `Modul.Manifest` | Pfad oder Muster der Modul-Manifeste |
 | `Modul.Prüfumfang` | Positivliste der lesbaren Bereiche |
 | `Modul.Nachweise` | optional: Zuordnung Check/Testfall → Teilnachweis |
+| `Mockup.Seitenliste`, `Mockup.Theme` | optional, nur gemeinsam wirksam: Quelldatei, Erzeuger und erzeugte Dateien; `none` oder ohne Feld → „Modul 9 — Seitenliste“ entfällt |
 
 1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Prüfpunkt oder das Modul entfällt.
 2. **Rückfall:** die älteren Abschnitte `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router) und `## Code-Profil`
@@ -151,8 +152,8 @@ Beispiele zweier Projekte: `references/beispiele.md`, Abschnitt „Doc-Laderegel
 ## 2 Modi
 
 ### Modus A — Vollaudit
-Alle 8 Module („Modul 7 — Grundsatzregeln“ nur, wenn das Profil Grundsatzregeln nennt; „Modul 8 — Skills (im
-Skill-Repo)“ nur im Skill-Repo). Token-intensiv — vor
+Alle 9 Module („Modul 7 — Grundsatzregeln“ nur, wenn das Profil Grundsatzregeln nennt; „Modul 8 — Skills (im
+Skill-Repo)“ nur im Skill-Repo; „Modul 9 — Seitenliste“ nur mit `Mockup.Theme` und `Mockup.Seitenliste`). Token-intensiv — vor
 Start per Auswahlfrage bestätigen lassen.
 
 ### Modus B — Teilaudit
@@ -268,6 +269,20 @@ Nur im Skill-Repo (Repo mit `skills/<name>/SKILL.md` und `docs/skill-quality.md`
 - **INDEX ↔ Descriptions:** Skill-Tabelle der `INDEX.md` gegen die Descriptions – jeder Ordner unter `skills/` hat eine
   Zeile und umgekehrt; Zuständigkeit und Auslöser der Zeile decken sich mit der Description.
 - **Befunde** → skill-pflege bzw. `tracker issue <skill>` (Abschnitt „Nach dem Report“).
+
+### Modul 9 — Seitenliste
+
+Neutral: Stimmen Seitenliste, Code, Mockups und erzeugte Dateien überein?
+
+Nur, wenn das Profil `Mockup.Theme` und `Mockup.Seitenliste` nennt; sonst entfällt das Modul.
+
+- Jede Seite der Quelldatei nennt eine vorhandene Code-Datei und ein vorhandenes Mockup.
+- Jede Ansicht und jedes Formular im Code steht in der Liste, soweit das Projekt sie aufzählen kann; sonst „Nachweis
+  offen“.
+- Keine toten Links in Seitenliste und Seiten.
+- Erzeugte Dateien stimmen mit ihren Quellen überein (Befehle aus `Mockup.Seitenliste` und `Mockup.Theme`): Befehl
+  ausführen und vergleichen, ohne zu speichern, also in einer Kopie außerhalb des Repos oder über einen Prüfmodus des
+  Befehls. Geht beides nicht: nur melden („Nachweis offen“), nie im Repo erzeugen.
 
 ---
 
@@ -387,7 +402,7 @@ Beispiel: `references/beispiele.md`, Abschnitt „Nach dem Report“.
 - Teilaudit „nur Grundsatz“ („Modul 7 — Grundsatzregeln“): max 30 Tool-Calls je Modul-Manifest; Suchen mehrerer Regeln in
   einem Lauf bündeln
 - Vollaudit: max 35 Tool-Calls; das Ergebnis der Tests (`Code.Tests`) vorher vom Nutzer erfragen statt selbst zu bauen
-  (read-only)
+  (read-only); Ausnahme sind die Erzeuger in „Modul 9 — Seitenliste“, nie im Repo
 
 ### Arbeit aufteilen (Claude Code)
 

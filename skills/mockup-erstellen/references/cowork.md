@@ -19,6 +19,8 @@ Shell laufen über cc-steuerung (Abschnitt „Arbeitsverzeichnis“ dort).
 
 - Mockup als **Visualizer** (show_widget) im Chat anzeigen.
 - User bestätigt oder gibt Änderungswünsche; iterieren bis der User zufrieden ist.
+- Seiten mit Theme zeigt der Visualizer nicht richtig: die Seitenliste samt Seiten und Theme veröffentlichen, wenn die
+  Umgebung das kann, sonst sagen, dass die Vorschau in Claude Code läuft (`seiten-theme.md#Vorschau`).
 
 ## Speichern
 

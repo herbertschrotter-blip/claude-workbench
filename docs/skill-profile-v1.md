@@ -86,6 +86,8 @@ Review-Serie [CGR-2026-09-24-skillsystem](./chatgpt-reviews/CGR-2026-09-24-skill
 - Designquelle: none | <pfad/ref>
 - Ansichten: none | <ansicht>; <ansicht>
 - Abnahme-Ort: none | <pfad/ref>
+- Theme: none | <dateien des Themes, erzeugte Teile, befehl>
+- Seitenliste: none | <quelldatei, befehl, erzeugte dateien>
 
 ### Review
 - Config: none | .claude/skill-config/review.md
@@ -119,6 +121,12 @@ Bedeutung einzelner Felder:
     pushen). Fehlt in einem vorhandenen Profil nur die Push-Policy, gilt „Fehlende Werte“.
 - **Upload-Liste:** nur im Skill-Repo – die Datei mit den Skill-Lieferungen, die der Nutzer noch bei claude.ai
   hochladen muss (skill-pflege, `references/delivery.md#Upload-Runde`). Optional; fehlt sie, gilt `none`.
+- **Mockup.Theme, Mockup.Seitenliste:** optional und nur gemeinsam wirksam: Fehlt eines oder steht es auf `none`, gilt für
+  alle Skills die bisherige Arbeitsweise. Sind beide gesetzt, gibt es je Seite oder Formular eine Mockup-Datei mit gemeinsamem Theme (mockup-erstellen, `references/seiten-theme.md`). `Theme` nennt die
+  Dateien des Themes, welche davon erzeugt sind, und den Befehl dazu. `Seitenliste` nennt die Quelldatei mit Version,
+  Code-Datei, Mockup und Verlauf je Seite und den Befehl, der Liste und Doku erzeugt. Der Wert ist Freitext, Pfade stehen relativ
+  zur Repo-Wurzel; der Skill-Wächter liest sie daraus. Es nutzen sie auch code-erstellen, audit und doc-pflege;
+  projekt-anlegen bietet sie an.
 - **Projekte:** gilt für das Repo, in dem neue Projekte angelegt werden (z. B. den Konfigurationsordner von Home
   Assistant). `Ablage` ist der Ordner für neue Projekt-Repos, `Übersicht` die Datei mit einer Zeile je Projekt,
   `Geschützt` die Bereiche, die Claude dort nie ändert.

@@ -16,14 +16,14 @@ wiederholt sie nicht.
 
 | Skill | Zuständig für | Löst aus bei |
 |-------|---------------|--------------|
-| **audit** | Konsistenz zwischen Code und Doku prüfen, Doku-Validierung (Frontmatter, Quickload, Router, Statuslisten), Prüfung gegen Grundsatzregeln (Modul 7, z. B. HA), im Skill-Repo die Skills gegen INDEX und Qualitätsregeln (Modul 8), read-only; Befunde → tracker oder Fix-Skill | "audit", "prüfe alles", "konsistenzcheck", "prüfe die Doku", "prüfe frontmatter", "passt die Doku noch zum Code", "hält das Projekt die Grundsatzregeln ein", "passen INDEX und Skill-Beschreibungen zusammen" |
+| **audit** | Konsistenz zwischen Code und Doku prüfen, Doku-Validierung (Frontmatter, Quickload, Router, Statuslisten), Prüfung gegen Grundsatzregeln (Modul 7, z. B. HA), im Skill-Repo die Skills gegen INDEX und Qualitätsregeln (Modul 8), Seitenliste gegen Code und Mockups (Modul 9), read-only; Befunde → tracker oder Fix-Skill | "audit", "prüfe alles", "konsistenzcheck", "prüfe die Doku", "prüfe frontmatter", "passt die Doku noch zum Code", "hält das Projekt die Grundsatzregeln ein", "passen INDEX und Skill-Beschreibungen zusammen" |
 | **cc-steuerung** | Desktop Commander im Cowork-Chat (Modalität, WIE statt WAS); nie in Claude Code | im Cowork-Chat: "cc mach", "dc lies", "direkt auf den PC" |
 | **chat-wechsel** | Übergabe an die nächste Sitzung (Handover-Prompt; in Claude Code vorher Sitzungsabschluss über doc-pflege, mit tmux gleich neues Fenster im Projekt mit Remote Control) | "neuer chat", "übergabe", "chat wechsel" |
 | **chatgpt-review** | Review-Gespräch mit ChatGPT: Prompts, Runden selbst über die Codex CLI (sonst Codeblock zum Kopieren), Archiv (CGR) nach der Review-Config des Repos | "besprich mit ChatGPT", "zweite Meinung", "lass Codex das reviewen", "Runde N", eingefügte oder angehängte Antwort einer Runde |
 | **code-erstellen** | Code planen und ändern nach dem Profil des Repos (Pflichtkontext, Aufgabenquelle, Stack-Referenzen, Tests, Auslieferung); gibt in Claude Code Lesen, Checks und Gutachten an die Agenten `work:erkunder`, `work:pruefer`, `work:gutachter` | jede Anfrage, die Code-Erstellung oder -Änderung meint |
 | **doc-pflege** | Projektdoku anlegen, pflegen, korrigieren, Audit-Befunde beheben; Sitzungsabschluss | "pflege docs", "schreib ADR", "neues Konzept", "Konzept für X", "behebe die Audit-Befunde", "Sitzung abschließen" |
 | **git-commit-helper** | Commit-Befehle und -Messages im Format `[vX.Y.Z] Modul, Typ: Kurztitel`, Version-Bump | "commit", "git commit", "PATCH oder MINOR?" |
-| **mockup-erstellen** | HTML-Mockups nach dem Skill-Profil (Bereich Mockup), Token-Abgleich, Abnahme festhalten | "Mockup für", "Screen-Design", "UI-Mockup", "erst ins Mockup einbauen", "Mockup 3 ist abgenommen" |
+| **mockup-erstellen** | HTML-Mockups nach dem Skill-Profil (Bereich Mockup): je Thema oder je Seite mit Theme und Seitenliste; Token-Abgleich, Abnahme festhalten | "Mockup für", "Screen-Design", "UI-Mockup", "erst ins Mockup einbauen", "Mockup 3 ist abgenommen" |
 | **neustart** | System (z. B. Home Assistant) abgestimmt neu starten: Konfiguration prüfen, still nachsehen, ob in einer anderen Claude-Sitzung des Rechners etwas läuft (ohne Nachrichten), sonst warten (höchstens 15 Minuten, dann Auswahlfrage), neu starten, kontrollieren | "neustart", "starte HA neu", "mach einen Neustart", Einspielen mit Neustart |
 | **projekt-anlegen** | Neue Projekte anlegen und einrichten, nach Stack: für unterstützte Stacks ein lauffähiges, geprüftes Grundgerüst ohne Fachlogik (Generator); bestehendes Repo für die Skills einrichten (Skill-Profil, Configs); Übergabe an mockup-erstellen, code-erstellen oder tracker | "neues Projekt", "leg mir ein Projekt an", "ich will X bauen, weiß aber nicht wie", "Repo holen und einrichten", "richte die Skills hier ein", "X überarbeiten" (Altbestand ohne Projekt) |
 | **sitzung** | Claude-Code-Gespräche und tmux-Fenster per Auswahlmenü: Projekt → Gespräch → fortsetzen im richtigen Ordner mit Remote Control; Fenster verwalten, wiederherstellen, aufräumen | "sitzung", "alte Sitzung öffnen", "wo sind meine Sitzungen", "Fenster wiederherstellen" |
@@ -50,10 +50,10 @@ Abschnitt „Vorrang / Delegation“.
 
 | Paar | Entscheidung |
 |---|---|
-| code-erstellen ↔ mockup-erstellen | Code → code-erstellen; HTML-Mockup → mockup-erstellen, auch eine Änderung am bestehenden Projekt-Mockup mitten in einem Ticket- oder Code-Ablauf; Quellen und Generator-Skripte des Mockups → mockup-erstellen |
+| code-erstellen ↔ mockup-erstellen | Code → code-erstellen; HTML-Mockup → mockup-erstellen, auch eine Änderung am bestehenden Projekt-Mockup mitten in einem Ticket- oder Code-Ablauf; Quellen und Generator-Skripte des Mockups (auch laut `Mockup.Theme` und `Mockup.Seitenliste`) → mockup-erstellen; Verlaufseintrag nach der Auslieferung → code-erstellen |
 | code-erstellen ↔ git-commit-helper | Code-Änderung samt Commit-Vorschlag → code-erstellen; ausdrücklicher Commit-Wunsch → git-commit-helper |
 | code-erstellen ↔ doc-pflege | Doku-Hinweise aus code-erstellen lösen doc-pflege nicht aus; ausdrücklicher Doku-Auftrag → doc-pflege |
-| doc-pflege ↔ mockup-erstellen | Abnahme eines Mockups festhalten, auch in einer README → mockup-erstellen; sonstige Doku → doc-pflege |
+| doc-pflege ↔ mockup-erstellen | Abnahme eines Mockups festhalten, auch in einer README → mockup-erstellen; aus der Seitenliste erzeugte Doku → doc-pflege über Quelldatei und Befehl, nie von Hand; sonstige Doku → doc-pflege |
 | code-erstellen ↔ tracker | Code, auch mit Aufgabenbezug („mach BSM-002“, „weiter mit BSM-014“) → code-erstellen, tracker setzt nur den Status; ausdrücklicher Tracker-Befehl → tracker |
 | ticket ↔ tracker / code-erstellen | Ticketnummer oder Ticket-Befehl → ticket (ruft tracker und code-erstellen selbst auf); Aufgabe ohne Ticket → tracker; Bugfix ohne Ticket → code-erstellen |
 | audit ↔ code-erstellen | read-only Prüfung → audit; Fixes → code-erstellen (nach Auswahlfrage) |

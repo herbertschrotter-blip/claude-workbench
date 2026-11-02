@@ -10,6 +10,7 @@ eigenes Profil.
 - Docs laden BPM und Heidi
 - Abnahme-Ort
 - Commit
+- Seiten mit Theme (ha-hausbau)
 
 ## Profilwerte BPM und Heidi
 
@@ -57,3 +58,13 @@ Token-Abgleich gegen Colors.xaml.
 
 - Format: `[vX.Y.Z] <Commit-Modul>, Docs: Mockup <Datei> – <Kurztitel>` (BPM: `Docs`, Heidi: `Doku`)
 - Version: BPM PATCH; Heidi: reine Doku-Commits behalten die Kartenversion
+
+## Seiten mit Theme (ha-hausbau)
+
+Zweite Arbeitsweise (`seiten-theme.md`), Stand der Felder im Projekt ha-hausbau:
+
+| Feld | Wert |
+|------|------|
+| Ablage der Seiten | `mockups/seiten/`, eine Datei je Seite oder Formular |
+| `Mockup.Theme` | `mockups/theme.js` (von Hand), dazu erzeugte Dateien wie `mockups/theme-app.css`; Befehl `tools/mockup_theme.mjs` |
+| `Mockup.Seitenliste` | Quelle `mockups/seiten.json`; Befehl `python3 tools/seitenliste.py` erzeugt `docs/seiten.md` und `mockups/index.html` |
