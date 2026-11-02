@@ -202,5 +202,140 @@ class DatenlisteTest(SeitenlisteTest):
         self.assertIn("Seite gibt es nicht: 9.9", self.lauf("seitenliste_check.py").stdout)
 
 
+class AktualisierenTest(SeitenlisteTest):
+    """Dieselben Prüfungen in einem Git-Repo, dazu der Lauf „aktualisiere Seitenliste“."""
+
+    def setUp(self):
+        super().setUp()
+        shutil.copy(ASSETS / "themeabgleich.py", self.w / "tools")
+        self.git("init", "-q")
+        self.git("config", "user.email", "t@t")
+        self.git("config", "user.name", "t")
+        self.commit("start")
+        self.lauf("seitenliste.py", "--start")
+        self.commit("[v1] Doku, Docs: Seitenliste aktualisiert")
+
+    def git(self, *args):
+        subprocess.run(["git", *args], cwd=self.w, capture_output=True, check=True)
+
+    def commit(self, titel):
+        self.git("add", "-A")
+        self.git("commit", "-q", "--allow-empty", "-m", titel)
+
+    def offen(self):
+        r = self.lauf("seitenliste.py", "--offen")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        return json.loads(r.stdout)
+
+    def eintragen(self, liste):
+        d = self.w / "eintraege.json"
+        d.write_text(json.dumps(liste), encoding="utf8")
+        r = self.lauf("seitenliste.py", "--eintragen", str(d))
+        self.assertEqual(r.returncode, 0, r.stderr)
+        d.unlink()
+
+    def test_start_setzt_stand_und_abnahme(self):
+        s = self.daten()[0]["seiten"]
+        self.assertTrue(s[0]["stand_commit"])
+        self.assertEqual(s[0]["version_abgenommen"], "1.0")
+        self.assertEqual(self.offen()["seiten"], [])
+
+    def test_offen_zeigt_commits_und_gemeinsame_dateien(self):
+        with open(self.w / "src/app.js", "a", encoding="utf8") as fh:
+            fh.write("// a\n")
+        self.commit("erste Änderung")
+        with open(self.w / "src/app.js", "a", encoding="utf8") as fh:
+            fh.write("// b\n")
+        self.commit("zweite Änderung")
+        o = self.offen()
+        self.assertEqual([x["nr"] for x in o["seiten"]], ["1.1", "1.2"])
+        self.assertEqual([c["titel"] for c in o["seiten"][0]["code"]], ["erste Änderung", "zweite Änderung"])
+        self.assertEqual(o["seiten"][0]["gemeinsam"], ["app.js"])
+
+    def test_nicht_committete_aenderung_wird_genannt(self):
+        with open(self.w / "src/app.js", "a", encoding="utf8") as fh:
+            fh.write("// a\n")
+        self.assertTrue(self.offen()["nicht_committet"])
+
+    def test_version_fuer_version(self):
+        with open(self.w / "src/app.js", "a", encoding="utf8") as fh:
+            fh.write("// a\n")
+        self.commit("Änderung")
+        self.eintragen([
+            {"nr": "1.1", "art": "code", "was": "Knopf ergänzt", "commit": "abc", "datum": "01.11.2026"},
+            {"nr": "1.1", "art": "code", "was": "Text korrigiert", "ticket": "FE-1"},
+        ])  # fmt: skip
+        s = self.daten()[0]["seiten"]
+        self.assertEqual(s[0]["version_code"], "0.3")
+        self.assertEqual(s[0]["version_mockup"], "1.0")
+        self.assertEqual(s[0]["verlauf"][-2]["commit"], "abc")
+        self.assertEqual(s[0]["verlauf"][-1]["ticket"], "FE-1")
+        self.assertEqual(s[1]["version_code"], "0.1")
+        self.assertEqual(self.lauf("seitenliste_check.py").returncode, 0)
+        self.commit("[v1] Doku, Docs: Seitenliste aktualisiert")
+        self.assertEqual(self.offen()["seiten"], [])
+
+    def test_0_9_wird_0_10_und_nie_1_0(self):
+        self.aendern(lambda s: s[1].update(version_code="0.9"))
+        self.eintragen([{"nr": "1.2", "art": "code", "was": "Fix"}])
+        self.assertEqual(self.daten()[0]["seiten"][1]["version_code"], "0.10")
+
+    def test_mockup_aenderung_gilt_nicht_als_abgenommen(self):
+        self.eintragen([{"nr": "1.1", "art": "mockup", "was": "Entwurf"}])
+        s = self.daten()[0]["seiten"][0]
+        self.assertEqual((s["version_mockup"], s["version_abgenommen"]), ("1.1", "1.0"))
+        self.assertIn("version: '1.1'", (self.w / "mockups/seiten/start.html").read_text(encoding="utf8"))
+        self.assertEqual(self.lauf("seitenliste_check.py").returncode, 0)
+        self.lauf("seitenliste.py", "--abgenommen", "1.1")
+        self.assertEqual(self.daten()[0]["seiten"][0]["version_abgenommen"], "1.1")
+
+    def test_gebaut_zieht_code_auf_die_abnahme(self):
+        self.eintragen([{"nr": "1.1", "art": "code", "was": "gebaut", "gebaut": True}])
+        self.assertEqual(self.daten()[0]["seiten"][0]["version_code"], "1.0")
+
+    def test_gebaut_geht_nie_zurueck(self):
+        self.aendern(lambda s: s[0].update(version_code="1.3"))
+        self.eintragen([{"nr": "1.1", "art": "code", "was": "gebaut", "gebaut": True}])
+        self.assertEqual(self.daten()[0]["seiten"][0]["version_code"], "1.3")
+
+    def test_abgenommen_ueber_mockup_ist_rot(self):
+        self.aendern(lambda s: s[0].update(version_abgenommen="2.0"))
+        self.lauf("seitenliste.py")
+        self.assertIn("abgenommen 2.0", self.lauf("seitenliste_check.py").stdout)
+
+    def themecfg(self):
+        self.cfg.pop("theme")
+        self.cfg["themeabgleich"] = {"ziel": "mockups/theme-hinweise.json", "token": ["mockups/theme-app.css"],
+                                     "eigenschaften": ["padding"], "ausnahmen": ["0"]}  # fmt: skip
+        (self.w / "tools/seitenliste.config.json").write_text(json.dumps(self.cfg), encoding="utf8")
+        (self.w / "mockups/theme-app.css").write_text(":root { --akzent:#1a73e8; --luft:8px; }", encoding="utf8")
+
+    def test_theme_treffer_mit_und_ohne_token(self):
+        self.themecfg()
+        (self.w / "src/app.js").write_text(
+            "const ANSICHT = { start: a, detail: b }\n"
+            "// color:#1a73e8; background:#123456; padding:8px; padding:14px; padding:0\n"
+            "// color:var(--akzent)\n--eigen:#ffffff;\nhref=\"#abc\"\n", encoding="utf8")  # fmt: skip
+        r = self.lauf("themeabgleich.py")
+        self.assertEqual(r.returncode, 0, r.stderr)
+        t = json.loads(r.stdout)["1.1"]
+        self.assertEqual([(x["wert"], x["token"]) for x in t], [
+            ("#1a73e8", "akzent"), ("#123456", None), ("padding: 8px", "luft"), ("padding: 14px", None)])  # fmt: skip
+        self.assertEqual(t[0]["zeile"], 2)
+
+    def test_theme_hinweise_in_der_seite_und_nur_hinweis(self):
+        self.themecfg()
+        d = self.w / "bewertet.json"
+        d.write_text(json.dumps({"1.1": [{"datei": "src/app.js", "zeile": 2, "wert": "#123456", "token": None}]}), encoding="utf8")
+        self.assertEqual(self.lauf("themeabgleich.py", "--uebernehmen", str(d)).returncode, 0)
+        self.lauf("seitenliste.py")
+        html = (self.w / "mockups/index.html").read_text(encoding="utf8")
+        self.assertIn('"wert":"#123456"', html)
+        self.assertNotIn("@@", html)
+        r = self.lauf("seitenliste_check.py")
+        self.assertEqual(r.returncode, 0, r.stdout)
+        self.assertIn("Theme-Abgleich: 1 feste Werte auf 1 Seiten", r.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

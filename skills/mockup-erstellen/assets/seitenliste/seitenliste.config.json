@@ -9,6 +9,12 @@
   "start": "1.1",
   "link": "",
   "theme": { "befehl": ["node", "tools/mockup_theme.mjs"], "dateien": ["mockups/theme-app.css"] },
+  "themeabgleich": {
+    "ziel": "mockups/theme-hinweise.json",
+    "token": ["mockups/theme-app.css"],
+    "eigenschaften": ["padding", "margin", "gap", "border-radius", "font-size", "box-shadow"],
+    "ausnahmen": ["0", "0px", "1px", "2px"]
+  },
   "seiten_im_code": [
     { "praefix": "ansicht", "datei": "src/app.js", "block": "const ANSICHT = \\{([^}]*)\\}", "eintrag": "(?:^|,)\\s*(\\w+)" }
   ],

@@ -3,16 +3,26 @@ references/seitenliste.md).
 
 Aufruf: python3 tools/seitenliste.py [--abnahme <nr> ... | --abnahme alle]
 Alle Projektwerte stehen in tools/seitenliste.config.json. --abnahme setzt den Fingerabdruck der Code-Dateien neu.
+
+Aktualisieren (references/seitenliste.md#Aktualisieren), jeweils mit anschließendem Erzeugen:
+  --start                einmalig: stand_commit auf HEAD, version_abgenommen aus version_mockup
+  --offen                gibt je Seite die Commits seit stand_commit als JSON aus, ändert nichts
+  --eintragen <datei>    trägt die bewerteten Versionen ein und setzt stand_commit aller Seiten auf HEAD
+  --abgenommen <nr> ...  setzt version_abgenommen auf version_mockup
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import re
+import subprocess
 import sys
+from datetime import date
 from pathlib import Path
 
 WURZEL = Path(__file__).resolve().parent.parent
+MARKE = "Seitenliste aktualisiert"  # steht im Commit-Titel des Laufs; der Lauf selbst zählt nicht als Änderung
 
 
 def config() -> dict:
@@ -59,8 +69,15 @@ def html(cfg: dict, gruppen: list[dict]) -> str:
     tabellen_text = json.dumps(tabellen, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     return (
         vorlage.replace("@@TITEL@@", cfg["titel"]).replace("@@START@@", cfg["start"])
-        .replace("@@DATEN@@", daten).replace("@@TABELLEN@@", tabellen_text)
+        .replace("@@DATEN@@", daten).replace("@@TABELLEN@@", tabellen_text).replace("@@THEME@@", theme_text(cfg))
     )  # fmt: skip
+
+
+def theme_text(cfg: dict) -> str:
+    """Bewertete Theme-Hinweise je Seite; ohne Abgleich leer."""
+    ziel = (cfg.get("themeabgleich") or {}).get("ziel")
+    befunde = json.loads((WURZEL / ziel).read_text(encoding="utf8")) if ziel and (WURZEL / ziel).exists() else {}
+    return json.dumps(befunde, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
 def dateien(s: dict) -> list[str]:
@@ -75,10 +92,112 @@ def stand(cfg: dict, s: dict) -> str:
     return h.hexdigest()[:10]
 
 
+def git(*args: str) -> str:
+    return subprocess.run(["git", *args], cwd=WURZEL, capture_output=True, text=True, check=True).stdout.strip()
+
+
+def naechste(v: str | None) -> str:
+    """+0.1 ohne Überlauf: Aus 0.9 wird 0.10, denn 1.0 entsteht nur durch die Abnahme."""
+    haupt, neben = (v or "0.0").split(".")
+    return f"{haupt}.{int(neben) + 1}"
+
+
+def code_pfade(cfg: dict, s: dict) -> list[str]:
+    return [str(Path(cfg["code_wurzel"]) / d) for d in dateien(s)]
+
+
+def mockup_pfad(cfg: dict, s: dict) -> list[str]:
+    return [str(Path(cfg["mockup_ablage"]) / s["mockup"])] if s.get("mockup") else []
+
+
+def commits(ref: str, pfade: list[str]) -> list[dict]:
+    if not pfade:
+        return []
+    zeilen = git("log", "--reverse", "--format=%h%x09%ad%x09%s", "--date=format:%d.%m.%Y", f"{ref}..HEAD", "--", *pfade)
+    aus = []
+    for z in zeilen.splitlines():
+        h, datum, titel = z.split("\t", 2)
+        if MARKE not in titel:
+            aus.append({"commit": h, "datum": datum, "titel": titel})
+    return aus
+
+
+def offen(cfg: dict, gruppen: list[dict]) -> dict:
+    seiten = [s for g in gruppen for s in g["seiten"]]
+    anzahl: dict[str, int] = {}
+    for s in seiten:
+        for d in dateien(s):
+            anzahl[d] = anzahl.get(d, 0) + 1
+    aus = {"kopf": git("rev-parse", "--short", "HEAD"), "ohne_stand": [], "seiten": []}
+    for s in seiten:
+        ref = s.get("stand_commit")
+        if not ref:
+            aus["ohne_stand"].append(s["nr"])
+            continue
+        code, mockup = commits(ref, code_pfade(cfg, s)), commits(ref, mockup_pfad(cfg, s))
+        if code or mockup:
+            aus["seiten"].append({
+                "nr": s["nr"], "name": s["name"], "code": code, "mockup": mockup,
+                "gemeinsam": [d for d in dateien(s) if anzahl[d] > 1],
+            })  # fmt: skip
+    pfade = sorted({p for s in seiten for p in code_pfade(cfg, s) + mockup_pfad(cfg, s)})
+    aus["nicht_committet"] = git("status", "--porcelain", "--", *pfade).splitlines() if pfade else []
+    return aus
+
+
+def mockup_version(cfg: dict, s: dict) -> None:
+    """Die Version steht auch in der Mockup-Datei; der Abgleich prüft das."""
+    pfad = WURZEL / cfg["mockup_ablage"] / s["mockup"]
+    alt = pfad.read_text(encoding="utf8")
+    pfad.write_text(re.sub(r"version: '[^']*'", f"version: '{s['version_mockup']}'", alt, count=1), encoding="utf8")
+
+
+def eintragen(cfg: dict, gruppen: list[dict], liste: list[dict]) -> None:
+    """Je Eintrag eine Version. `art` ist code oder mockup, `gebaut: true` zieht den Code auf die Abnahme nach."""
+    seiten = {s["nr"]: s for g in gruppen for s in g["seiten"]}
+    for e in liste:
+        s = seiten[e["nr"]]
+        if e["art"] not in ("code", "mockup"):
+            raise ValueError(f"{e['nr']}: art muss code oder mockup sein")
+        s.setdefault("version_abgenommen", s.get("version_mockup"))
+        feld = f"version_{e['art']}"
+        if e.get("gebaut"):
+            s[feld] = max(s.get(feld), s["version_abgenommen"], key=lambda v: tuple(map(int, (v or "0.0").split("."))))
+        else:
+            s[feld] = naechste(s.get(feld))
+        punkt = {"v": s[feld], "datum": e.get("datum") or date.today().strftime("%d.%m.%Y"), "was": e["was"], "art": e["art"]}
+        punkt.update({k: e[k] for k in ("ticket", "commit") if e.get(k)})
+        s.setdefault("verlauf", []).append(punkt)
+        if e["art"] == "mockup":
+            mockup_version(cfg, s)
+        else:
+            s["code_stand"] = stand(cfg, s)
+    kopf = git("rev-parse", "--short", "HEAD")
+    for s in seiten.values():
+        s["stand_commit"] = kopf
+
+
 def main() -> None:
     cfg = config()
     gruppen = lesen(cfg)
-    abnahme = sys.argv[sys.argv.index("--abnahme") + 1 :] if "--abnahme" in sys.argv else []
+    if "--offen" in sys.argv:
+        print(json.dumps(offen(cfg, gruppen), ensure_ascii=False, indent=1))
+        return
+    abnahme = []
+    if "--abnahme" in sys.argv:
+        abnahme = sys.argv[sys.argv.index("--abnahme") + 1 :]
+    if "--eintragen" in sys.argv:
+        datei = Path(sys.argv[sys.argv.index("--eintragen") + 1])
+        eintragen(cfg, gruppen, json.loads(datei.read_text(encoding="utf8")))
+    if "--abgenommen" in sys.argv:
+        nummern = sys.argv[sys.argv.index("--abgenommen") + 1 :]
+        for s in (s for g in gruppen for s in g["seiten"] if s["nr"] in nummern):
+            s["version_abgenommen"] = s.get("version_mockup")
+    if "--start" in sys.argv:
+        kopf = git("rev-parse", "--short", "HEAD")
+        for s in (s for g in gruppen for s in g["seiten"]):
+            s.setdefault("stand_commit", kopf)
+            s.setdefault("version_abgenommen", s.get("version_mockup"))
     for g in gruppen:
         for s in g["seiten"]:
             s.setdefault("zu", [])

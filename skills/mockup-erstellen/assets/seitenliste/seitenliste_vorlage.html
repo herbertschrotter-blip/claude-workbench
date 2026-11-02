@@ -48,17 +48,22 @@ svg.pf { position:absolute; inset:0; width:100%; height:100%; pointer-events:non
 }
 .sprung { font:inherit; font-size:12px; font-weight:400; color:var(--ink); background:none; border:1px solid var(--linie); border-radius:12px; padding:4px 8px; cursor:pointer; }
 .sprungz { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+.v.t { background:none; color:var(--amber); border:1px solid var(--amber); }
+.thema { margin-top:10px; font-size:13px; font-weight:400; } .thema summary { cursor:pointer; color:var(--amber); font-weight:600; }
+.thema ul { margin:6px 0; } .thema ul > li { padding:2px 0; } .thema ul > li::before, .thema ul > li::after { display:none; } .thema code { font-size:12px; overflow-wrap:anywhere; }
+.thema textarea { width:100%; height:110px; font:12px/1.35 ui-monospace,monospace; color:var(--ink); background:var(--bg); border:1px solid var(--linie); border-radius:8px; padding:6px; }
 .felder { margin-top:10px; font-size:12px; font-weight:400; max-height:260px; overflow:auto; } .felder div { display:flex; justify-content:space-between; gap:10px; padding:2px 0; border-top:1px solid var(--linie); } .felder i { color:var(--leise); font-style:normal; }
 </style>
 <div class="geruest" id="g">
  <div class="liste"><div><h1>@@TITEL@@</h1><div class="stand" id="st"></div><div class="stand" style="margin-top:2px">M Mockup · C Code</div><div class="balken"><i id="bk"></i></div></div>
-  <div class="filter" id="re"></div><input class="suche" id="su" placeholder="Nummer, Name oder Baustein" aria-label="Seite suchen"><div class="filter" id="fi"></div><div id="li" style="display:flex;flex-direction:column;gap:14px"></div></div>
+  <div class="filter" id="re"></div><input class="suche" id="su" placeholder="Nummer, Name oder Baustein" aria-label="Seite suchen"><div class="filter" id="fi"></div><div id="tg"></div><div id="li" style="display:flex;flex-direction:column;gap:14px"></div></div>
  <div class="fokus"><button class="zurueck" id="zur">‹ Seitenliste</button><div class="pfad" id="pfad"></div><div class="feld" id="feld"></div><div class="bau" id="bau"></div></div>
 </div>
 <div id="fenster" hidden><div class="leiste"><button id="fzu">‹ Seitenliste</button><span id="ftitel"></span></div><iframe id="frahmen" title="Mockup"></iframe><p id="ffehler" hidden></p></div>
 <script>
 const SD=@@DATEN@@;
 const TD=@@TABELLEN@@;
+const TH=@@THEME@@;
 const TG=TD.gruppen.map((g)=>({nr:g.nr,bereich:g.bereich,ref:g.seiten,seiten:g.seiten_liste.map((s)=>({...s,nutzt:[]}))}));
 function baue(D){ const A={}; D.forEach((g)=>g.seiten.forEach((s)=>{A[s.nr]=s;}));
  const V=[]; Object.values(A).forEach((s)=>s.zu.forEach((z)=>V.push([s.nr,z])));
@@ -67,7 +72,8 @@ const MODI={seiten:baue(SD),daten:baue(TG)};
 let modus='seiten', {D,A,V,B}=MODI.seiten;
 const ver=(v)=>(v||'0.0').split('.').map(Number), kleiner=(a,b)=>{const[x,y]=ver(a),[u,w]=ver(b);return x<u||(x===u&&y<w);};
 const fertig=(s)=>[s.version_mockup,s.version_code].some((v)=>!kleiner(v,'1.0'));
-const ungebaut=(s)=>kleiner(s.version_code,s.version_mockup);
+const ungebaut=(s)=>kleiner(s.version_code,s.version_abgenommen??s.version_mockup);
+const thema=(s)=>TH[s.nr]||[];
 const alle=Object.values(MODI.seiten.A), fe=alle.filter(fertig).length;
 const start=(()=>{try{const h=decodeURIComponent(location.hash.slice(1));return A[h]?h:"@@START@@";}catch{return "@@START@@";}})();
 let akt=start, weg=[start], bau=null, q='', filter='alle', auf=new Set(), merk={seiten:start,daten:TG[0]?.seiten[0]?.nr};
@@ -78,12 +84,19 @@ function liste(){ const n=new Set(nachbarn());
  st.textContent=modus==='seiten'?`${fe} von ${alle.length} überarbeitet · M Mockup · C Code`:`${TG.filter((x)=>x.nr[0]==='D').flatMap((x)=>x.seiten).length} Tabellen · Schema ${TD.schema} · nur Aufbau, keine Inhalte`;
  bk.style.width=modus==='seiten'?`${fe/alle.length*100}%`:'100%';
  re.innerHTML=!TG.length?'':[['seiten','Seiten'],['daten','Daten']].map(([k,t])=>`<button class="${modus===k?'on':''}" data-m="${k}">${t}</button>`).join('');
- fi.innerHTML=modus==='daten'?'':[['alle',`Alle ${alle.length}`],['offen',`Offen ${alle.length-fe}`],['fertig',`Fertig ${fe}`],['neu',`Nicht gebaut ${alle.filter(ungebaut).length}`]].map(([k,t])=>`<button class="${filter===k?'on':''}" data-f="${k}">${t}</button>`).join('');
- li.innerHTML=D.map((g)=>{const z=g.seiten.filter((s)=>(!q||s.name.toLowerCase().includes(q)||s.nr===q||s.nr.startsWith(q+'.')||s.nutzt.some((k)=>k.toLowerCase().includes(q)))&&(modus==='daten'||filter==='alle'||(filter==='neu'?ungebaut(s):(filter==='fertig')===fertig(s)))); if(!z.length)return '';
+ fi.innerHTML=modus==='daten'?'':[['alle',`Alle ${alle.length}`],['offen',`Offen ${alle.length-fe}`],['fertig',`Fertig ${fe}`],['neu',`Nicht gebaut ${alle.filter(ungebaut).length}`],...(Object.keys(TH).length?[['theme',`Theme ${alle.filter((s)=>thema(s).length).length}`]]:[])].map(([k,t])=>`<button class="${filter===k?'on':''}" data-f="${k}">${t}</button>`).join('');
+ tg.innerHTML=modus==='seiten'&&Object.keys(TH).length?`<details class="thema"><summary>Alle Theme-Hinweise</summary>${kopie(promptAlle(),'Prompt für alle kopieren')}</details>`:'';
+ li.innerHTML=D.map((g)=>{const z=g.seiten.filter((s)=>(!q||s.name.toLowerCase().includes(q)||s.nr===q||s.nr.startsWith(q+'.')||s.nutzt.some((k)=>k.toLowerCase().includes(q)))&&(modus==='daten'||filter==='alle'||(filter==='theme'?thema(s).length:filter==='neu'?ungebaut(s):(filter==='fertig')===fertig(s)))); if(!z.length)return '';
   return `<section><h2><span class="nr">${g.nr}</span>${esc(g.bereich)}</h2><ul>${z.map((s)=>`<li><button class="z ${s.nr===akt?'on':''} ${n.has(s.nr)||q?'':'dim'}" data-n="${s.nr}"><span><span class="nr">${s.nr}</span>${esc(s.name)}</span><span class="vs">${modus==='daten'?`<span class="v l">${s.felder.length?s.felder.length+' Felder':esc(s.art)}</span>`:chips(s)}</span></button></li>`).join('')}</ul></section>`;}).join('');
  const e=li.querySelector('.z.on'); if(e&&document.activeElement!==su) e.scrollIntoView({block:'nearest'}); }
 const chip=(b,v,t)=>`<span class="v ${v==null?'l':kleiner(v,'1.0')?'':'f'}" title="${t}">${b} ${v==null?'–':v}</span>`;
-const chips=(s)=>chip('M',s.version_mockup,'Mockup')+chip('C',s.version_code,'Code');
+const chips=(s)=>chip('M',s.version_mockup,'Mockup')+chip('C',s.version_code,'Code')+(thema(s).length?`<span class="v t" title="Feste Werte statt Theme">T ${thema(s).length}</span>`:'');
+const zeile=(b)=>`- ${b.datei}:${b.zeile}  ${b.wert} → ${b.token?`var(--${b.token})`:'kein Token vorhanden'}`;
+const ENDE='Ersetze die Werte mit Token. Für Werte ohne Token frag mich: neuer Token oder begründet lassen.\nCode mit code-erstellen, Mockup mit mockup-erstellen. Danach aktualisiere die Seitenliste.';
+const promptSeite=(s)=>`Seite ${s.nr} ${s.name}: ${thema(s).length} feste Werte weichen vom Theme ab.\n${thema(s).map(zeile).join('\n')}`;
+const promptAlle=()=>{const l=alle.filter((s)=>thema(s).length); return `${l.length} Seiten mit festen Werten statt Theme.\n\n${l.map(promptSeite).join('\n\n')}\n\n${ENDE}`;};
+const kopie=(p,t)=>`<button class="mk" data-kopie>${t}</button><textarea readonly aria-label="Prompt">${esc(p)}</textarea>`;
+const themaSeite=(s)=>thema(s).length?`<details class="thema"><summary>Theme: ${thema(s).length} feste Werte</summary><ul>${thema(s).map((b)=>`<li><code>${esc(zeile(b).slice(2))}</code>${b.grund?` <small>${esc(b.grund)}</small>`:''}</li>`).join('')}</ul>${kopie(`${promptSeite(s)}\n${ENDE}`,'Prompt kopieren')}</details>`:'';
 const sprung=(n,t)=>`<button class="sprung" data-sprung="${n}"><span class="nr">${n}</span>${esc(t)}</button>`;
 const karte=(n)=>`<button class="karte" data-n="${n}"><span class="nr">${n}</span>${esc(A[n].name)}</button>`;
 const reihe=(k,l)=>{const zeig=auf.has(k)||l.length<=MAX?l:l.slice(0,MAX); return zeig.map(karte).join('')+(zeig.length<l.length?`<button class="mehr" data-mehr="${k}">+ ${l.length-zeig.length} weitere</button>`:'');};
@@ -97,7 +110,7 @@ function fokus(){ const s=A[akt];
  pfad.innerHTML=weg.map((n,i)=>`<button data-i="${i}">${n}</button>`).join(' › ');
  const von=bau?[]:V.filter((x)=>x[1]===akt).map((x)=>x[0]), zu=bau?B[bau].filter((n)=>n!==akt):V.filter((x)=>x[0]===akt).map((x)=>x[1]);
  feld.innerHTML=`<div class="spalte k" id="sv"><h3>${bau?'':modus==='daten'?'Verwiesen von':'Kommt von'}</h3>${reihe('von',von)||(bau?'':`<div class="leer">${modus==='daten'?'Keine Tabelle verweist hierher':'Keine Seite führt direkt hierher'}</div>`)}</div>
- <div class="spalte mitte">${modus==='daten'?mitteDaten(s):`<div class="karte" id="mi"><span class="nr">${akt}</span>${esc(s.name)}<small><span class="vs">${chip('Mockup',s.version_mockup,'Mockup')}${chip('Code',s.version_code,'Code')}</span> ${s.art}</small>${s.mockup||s.mockup_alt?`<button class="mk ${s.mockup?'':'alt'}" data-url="${s.mockup||s.mockup_alt}">${s.mockup?'Mockup':'Altes Mockup'}</button>`:'<span class="mk kein">kein Mockup</span>'}<div class="verl">${[...s.verlauf].reverse().map((v)=>`${v.v} · ${v.datum} · ${esc(v.was)}`).join('<br>')}</div>${datenLinks(akt)}</div>`}</div>
+ <div class="spalte mitte">${modus==='daten'?mitteDaten(s):`<div class="karte" id="mi"><span class="nr">${akt}</span>${esc(s.name)}<small><span class="vs">${chip('Mockup',s.version_mockup,'Mockup')}${chip('Code',s.version_code,'Code')}</span> ${s.art}</small>${s.mockup||s.mockup_alt?`<button class="mk ${s.mockup?'':'alt'}" data-url="${s.mockup||s.mockup_alt}">${s.mockup?'Mockup':'Altes Mockup'}</button>`:'<span class="mk kein">kein Mockup</span>'}${themaSeite(s)}<div class="verl">${[...s.verlauf].reverse().map((v)=>`${v.v} · ${v.datum} · ${esc(v.was)}`).join('<br>')}</div>${datenLinks(akt)}</div>`}</div>
  <div class="spalte k" id="sz"><h3>${bau?'Nutzen '+bau:modus==='daten'?'Verweist auf':'Geht zu'}</h3>${reihe('zu',zu)||`<div class="leer">${modus==='daten'?'Verweist auf nichts':'Führt zu keiner weiteren Seite'}</div>`}</div>
  <svg class="pf" id="sv2"><defs><marker id="sp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" style="color:var(--gruen)"></path></marker></defs></svg>`;
  const b=Object.keys(B).filter((k)=>B[k].includes(akt)); document.getElementById('bau').innerHTML=b.length?`<span>Bausteine:</span>${b.map((k)=>`<button class="${bau===k?'on':''}" data-b="${k}">${k}</button>`).join('')}`:'';
@@ -113,9 +126,10 @@ function wahl(n){akt=n;weg=[...weg.slice(-5),n];bau=null;auf=new Set();g.classLi
 async function mockupAuf(url){ const f=fenster,r=frahmen,e=ffehler; f.hidden=false;r.hidden=false;e.hidden=true;ftitel.textContent=url;
  try{const a=await fetch(url); if(!a.ok)throw new Error(`Antwort ${a.status}`); const b=new URL(url,location.href).href; r.srcdoc=(await a.text()).replace(/<head>/i,`<head><base href="${b}">`);}
  catch(err){r.hidden=true;e.hidden=false;e.textContent=`Das Mockup ${url} lässt sich nicht laden (${err.message}).`;} }
+async function kopieren(k){const f=k.nextElementSibling,alt=k.textContent; try{await navigator.clipboard.writeText(f.value);k.textContent='Kopiert';}catch{f.focus();f.select();k.textContent='Bitte von Hand kopieren';} setTimeout(()=>{k.textContent=alt;},2000);}
 fzu.onclick=()=>{fenster.hidden=true;frahmen.removeAttribute('srcdoc');};
 addEventListener('message',(e)=>{if(e.source!==frahmen.contentWindow||!e.data)return; if(e.data.mockup)mockupAuf(e.data.mockup);});
-document.addEventListener('click',(e)=>{const t=e.target; const mo=t.closest('[data-m]'),sp=t.closest('[data-sprung]'); if(mo){modusAuf(mo.dataset.m);return;} if(sp){const x=sp.dataset.sprung; modusAuf(/^[DS]/.test(x)?'daten':'seiten',x);return;}
+document.addEventListener('click',(e)=>{const t=e.target; const ko=t.closest('[data-kopie]'); if(ko){kopieren(ko);return;} const mo=t.closest('[data-m]'),sp=t.closest('[data-sprung]'); if(mo){modusAuf(mo.dataset.m);return;} if(sp){const x=sp.dataset.sprung; modusAuf(/^[DS]/.test(x)?'daten':'seiten',x);return;}
  const n=t.closest('[data-n]'),p=t.closest('.pfad button'),b=t.closest('.bau button'),u=t.closest('[data-url]'),fb=t.closest('[data-f]'),m=t.closest('[data-mehr]');
  if(u)mockupAuf(u.dataset.url); else if(m){auf.add(m.dataset.mehr);fokus();} else if(fb){filter=fb.dataset.f;liste();} else if(n)wahl(n.dataset.n); else if(p){weg=weg.slice(0,+p.dataset.i+1);akt=weg.at(-1);bau=null;alles();} else if(b){bau=bau===b.dataset.b?null:b.dataset.b;alles();} else if(t.id==='zur'){g.classList.remove('auf');}});
 su.oninput=(e)=>{q=e.target.value.toLowerCase().trim();liste();}; addEventListener('resize',pfeile); alles();

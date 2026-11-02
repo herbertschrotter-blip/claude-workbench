@@ -126,7 +126,7 @@ Bedeutung einzelner Felder:
   hochladen muss (skill-pflege, `references/delivery.md#Upload-Runde`). Optional; fehlt sie, gilt `none`.
 - **Mockup.Seitenliste, Mockup.Theme, Mockup.Beziehungen, Mockup.Pruefung:** bei Projekten mit Oberfläche Pflicht, ohne
   Oberfläche `none`; `Seitenliste: none` nimmt ein Projekt mit Oberfläche bewusst aus. Standard: mockup-erstellen,
-  `references/seitenliste.md`. `Seitenliste` nennt Quelldatei, Befehl, dazu Vorlage, Config und Skript des Checks; `Theme` die
+  `references/seitenliste.md`. `Seitenliste` nennt Quelldatei, Befehl, dazu Vorlage, Config, Theme-Abgleich und Skript des Checks; `Theme` die
   Dateien und den Befehl (ohne Befehl: von Hand gepflegt); `Beziehungen` den Befehl, der die Verbindungen aus dem Code liest;
   `Pruefung` den Namen des Checks, der auch in `Code.Tests` und `Commit.Pre-Commit-Checks` steht. Pfade stehen relativ zur
   Repo-Wurzel; der Skill-Wächter liest sie daraus. Fehlen die Felder, gilt statt „Fehlende Werte“ die Frage aus

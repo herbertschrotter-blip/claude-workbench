@@ -89,7 +89,7 @@ welcher zuerst dran ist.
   Bleiben Commits ungepusht (`user-only`, `allowed`, ohne Profil nach „nicht pushen“), nennt der Übergabe-Prompt sie
   unter „Sonstige offene Punkte“ (Hash und Titel, „Push durch den Nutzer“). Nennt das Profil eine Upload-Liste
   (`Doku.Upload-Liste`), stehen deren offene Zeilen ebenfalls dort. Nennt es `Mockup.Seitenliste`, stehen dort auch Link
-  und Quelldatei der Seitenliste und die Seiten mit Mockup weiter als Code; fehlt sie bei einem Projekt mit Oberfläche, steht
+  und Quelldatei der Seitenliste und die Seiten mit abgenommenem Mockup weiter als Code; fehlt sie bei einem Projekt mit Oberfläche, steht
   das dort.
 
 ---

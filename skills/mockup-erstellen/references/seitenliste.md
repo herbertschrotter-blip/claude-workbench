@@ -10,6 +10,8 @@ daraus erzeugt eine Doku und eine veröffentlichte Seite. Dateien und Befehle ko
 - Prüfen und nachträglich anlegen
 - Quelldatei
 - Versionen
+- Aktualisieren
+- Theme-Abgleich
 - Veröffentlichte Seitenliste
 - Mockups und Theme
 - Altes Mockup übernehmen
@@ -42,7 +44,7 @@ Oberfläche arbeiten. audit meldet Fehlendes nur.
      ohne Datenspeicher `Mockup.Datenliste: none`
    - Check in `Code.Tests` und `Commit.Pre-Commit-Checks`, `Commit.Doku-Check` um „Seite geändert →
      Quelldatei; Schema oder Speicherort geändert → Datenliste“ ergänzen
-   - Seitenliste veröffentlichen (Abschnitt „Vorschau“)
+   - nach dem ersten Commit Listen-Befehl mit `--start`, Seitenliste veröffentlichen (Abschnitt „Vorschau“)
 
 Nichts ohne Bestätigung am Code der App ändern.
 
@@ -56,16 +58,69 @@ Eine Liste von Bereichen (`nr`, `bereich`, `seiten`). Je Seite:
 | `name`, `art` | Name; Seite, Blatt, Formular oder Vollbild |
 | `code` | Dateien, mit Komma getrennt, relativ zu `code_wurzel` der Config |
 | `schluessel` | Bezug auf das Code-Element, z. B. `blatt:rechnung`; Variante mit `#` |
-| `version_mockup`, `version_code` | getrennt geführt; Mockup weiter als Code = abgenommen, aber noch nicht gebaut |
+| `version_mockup`, `version_code` | getrennt geführt, jede Änderung zählt hoch (Abschnitt „Versionen“) |
+| `version_abgenommen` | letzte abgenommene Mockup-Version; weiter als `version_code` = abgenommen, aber noch nicht gebaut. Fehlt das Feld, gilt `version_mockup` |
 | `mockup`, `mockup_alt` | Mockup je Seite bzw. älteres Mockup je Thema, relativ zur Ablage |
-| `verlauf` | je Version `v`, `datum`, `was`, `ticket` |
+| `verlauf` | je Version `v`, `datum`, `was`, `ticket`, dazu `art` (code oder mockup) und `commit` |
 | `zu` | Verbindungen zu anderen Seiten; „Kommt von“ wird daraus berechnet |
 | `nutzt` | gemeinsame Bausteine |
 | `code_stand` | Fingerabdruck der Code-Dateien, gesetzt mit `--abnahme <nr>` des Listen-Befehls, wenn der Code gebaut ist |
+| `stand_commit` | Commit, bis zu dem die Seite abgeglichen ist |
 
 ## Versionen
 
 1.0 = überarbeitet und abgenommen, 0.1 = noch nicht durchgegangen. Kleine Änderung +0.1, Neugestaltung +1.0.
+
+Jede Änderung an einer Seite ist eine neue Version: `version_code` oder `version_mockup` zählt für sich +0.1 hoch. Die
+Nummer läuft ohne Überlauf weiter (0.9, 0.10), denn eine neue Hauptnummer entsteht nur durch die Abnahme oder durch die
+Entscheidung „Neugestaltung“. Eine Mockup-Version gilt erst mit `version_abgenommen` als abgenommen; gebaut werden nur
+abgenommene Stände.
+
+## Aktualisieren
+
+Auslöser: „aktualisiere Seitenliste“ (auch „Seitenleiste“), dazu automatisch nach der Auslieferung in code-erstellen und
+beim Schließen eines Tickets. Die Liste wird abgeglichen, nicht neu aufgebaut: Seiten ohne Änderung bleiben unberührt.
+Das Skript liefert Fakten und schreibt, Claude liest und bewertet.
+
+1. Erster Lauf eines Projekts: Listen-Befehl mit `--start`. Das setzt `stand_commit` und `version_abgenommen`. Commits davor
+   werden nicht nachgeholt; meldet der Check einen geänderten Fingerabdruck, gibt es dafür einmalig eine Sammelversion.
+2. Listen-Befehl mit `--offen`: je Seite die Commits seit `stand_commit`, getrennt nach Code und Mockup, dazu `gemeinsam`
+   (Dateien mehrerer Seiten) und `nicht_committet`. Nicht Committetes zählt nicht: zuerst committen. Bei vielen Commits
+   vorher die Zahl nennen.
+3. Je Commit den Diff lesen und entscheiden:
+   - **Eine echte Änderung ist eine Version.** Ein Commit und seine Nachbesserung ergeben zusammen eine Version; reine
+     Formatierung und Commits, die schon im Verlauf stehen (Abnahme), ergeben keine.
+   - **Gemeinsame Dateien:** Nur Seiten, deren Teil der Diff wirklich ändert, bekommen eine Version. Bleibt das unklar,
+     bekommen alle eine, mit „gemeinsame Datei“ im Text.
+   - **Theme und Bausteine:** Eine Änderung dort zählt nicht je Seite; sie steht im Verlauf der betroffenen Seite nur, wenn
+     sich deren eigene Datei ändert.
+   - **Text:** `was` beschreibt die Änderung in Klartext aus Sicht der Seite, nicht den Commit-Titel.
+   - **Gebaut:** Setzt der Commit einen abgenommenen Stand um, trägt der Eintrag `"gebaut": true`; dann zieht `version_code`
+     auf `version_abgenommen` nach, statt +0.1 zu zählen.
+4. Die Einträge als JSON-Liste in eine Datei im Scratchpad schreiben, in der Reihenfolge der Commits, und mit `--eintragen
+   <datei>` übernehmen. Je Eintrag `nr`, `art`, `was`, dazu `datum` und `commit` aus Schritt 2, wo vorhanden `ticket`. Der Befehl
+   zählt die Versionen, schreibt die Mockup-Version in die Datei, setzt `code_stand` und `stand_commit` aller Seiten.
+   Versionsnummern, Hashes und erzeugte Dateien nie von Hand ändern.
+5. Theme-Abgleich (nächster Abschnitt) und Befehl aus `Mockup.Beziehungen`.
+6. Check aus `Mockup.Pruefung`, Commit mit `Seitenliste aktualisiert` im Kurztitel (diese Commits zählt `--offen` nicht
+   mit), Seitenliste veröffentlichen (Abschnitt „Vorschau“), danach sagen: welche Seiten, welche Versionen, welche Zuordnung
+   unsicher war.
+
+Der Lauf geht nur in einer Sitzung. Änderungen von anderswo holt der nächste Lauf nach, weil die Commits da sind.
+
+## Theme-Abgleich
+
+Sucht feste Werte in den Dateien der Seiten: Farben und die Eigenschaften aus `themeabgleich` der Config, außerhalb von
+`var(--…)`. Dateien des Themes bleiben draußen. Die Hinweise blockieren nichts.
+
+1. `tools/themeabgleich.py` gibt die Treffer je Seite als JSON aus; `token` nennt den Token mit genau diesem Wert.
+2. Bewerten: Fehlalarme streichen; ein Treffer mit `token` ist sicher ein Befund, einer ohne eine Entscheidung (neuer Token
+   oder begründet lassen, `grund` nennt die Begründung). Berechnete Werte im Code prüfen, die das Muster nicht sieht.
+3. Das Ergebnis mit `--uebernehmen <datei>` schreiben, dann den Listen-Befehl ausführen. Die Zeilennummern altern, darum läuft der Abgleich bei
+   jedem Aktualisieren neu; ohne Treffer bleibt ein leeres `{}`.
+
+Behoben werden die Werte nur auf Auftrag, unter code-erstellen bzw. mockup-erstellen. Der Abgleich ersetzt nicht den
+Token-Abgleich vor dem Speichern eines Mockups.
 
 ## Veröffentlichte Seitenliste
 
@@ -73,6 +128,8 @@ Erzeugt aus `seitenliste_vorlage.html`:
 
 - Liste mit Nummern, leichter Baumlinie, Chips M und C, Suche nach Nummer, Name oder Baustein, Filter Alle, Offen, Fertig,
   Nicht gebaut
+- mit Theme-Hinweisen: Chip T mit der Zahl, Filter Theme, aufklappbarer Hinweis je Seite und für alle Seiten, jeweils mit
+  „Prompt kopieren“ und dem Prompt in einem Textfeld, falls die Zwischenablage gesperrt ist
 - Reiter Seiten und Daten, wenn es eine Datenliste gibt
 - Fokus-Ansicht: gewählte Seite in der Mitte, Kommt von und Geht zu mit Pfeilen, ab 7 Nachbarn „+ n weitere“, der Weg
   bleibt oben stehen; am Desktop neben der Liste, am Handy als eigene Ansicht
@@ -126,11 +183,11 @@ Pfade bleiben gleich), den Link als `link` in die Config schreiben und nennen. C
 Zusätzlich zu `../SKILL.md#Abnahme festhalten`:
 
 1. `version_mockup` von der höheren der beiden Versionen aus hochzählen (Abschnitt „Versionen“) und Verlauf ergänzen.
-2. Befehl aus `Mockup.Seitenliste` ausführen.
+2. Befehl aus `Mockup.Seitenliste` mit `--abgenommen <nr>` ausführen.
 3. Eintrag am Abnahme-Ort, nur für diese Seite.
 
 Quelldatei, erzeugte Dateien und Abnahme kommen in denselben Commit. Damit steht die Version fest; code-erstellen zieht
-danach `version_code`, `code_stand` und Verlauf nach.
+danach `version_code`, `code_stand` und Verlauf über „Aktualisieren“ nach.
 
 ## Datenliste
 
@@ -154,7 +211,9 @@ Check des Projekts (`Mockup.Pruefung`), Teil von `Code.Tests`, blockiert den Com
 - Theme und Liste sind neu erzeugt
 - neue Tabelle oder Schema-Änderung ohne Eintrag ist rot; Datenliste und ihre Doku sind neu erzeugt, ihre Seiten gibt es
 
-Ein geänderter Fingerabdruck ohne neue Version ist nur ein Hinweis. Bekannte Grenze: Varianten mit `#` zählen nur als
+- `version_abgenommen` liegt nicht über `version_mockup`
+
+Ein geänderter Fingerabdruck ohne neue Version ist nur ein Hinweis, die Theme-Hinweise ebenso: Die Version entsteht erst aus dem fertigen Commit, darum kann der Check sie nicht sperren. Bekannte Grenze: Varianten mit `#` zählen nur als
 „Hauptseite gibt es“.
 
 ## Werkzeuge
@@ -164,10 +223,11 @@ nicht vor; angelegt wird in Claude Code.
 
 | Datei | Zweck | Anpassen |
 |---|---|---|
-| `seitenliste.config.json` | alle Projektwerte der Werkzeuge: Pfade, `titel`, `start`, `link`, `theme`, `seiten_im_code` (Muster, die Seiten im Code finden), `beziehungen` (Einstieg, Ziele, Handwege, Bausteine), `daten` (Datenliste; fehlt der Schlüssel, gibt es keinen Reiter) | ganz |
-| `seitenliste.py` | erzeugt Doku und Seite, `--abnahme <nr>` setzt `code_stand` | nichts |
+| `seitenliste.config.json` | alle Projektwerte der Werkzeuge: Pfade, `titel`, `start`, `link`, `theme`, `seiten_im_code` (Muster, die Seiten im Code finden), `themeabgleich` (`ziel`, `token`, `eigenschaften`, `ausnahmen`), `beziehungen` (Einstieg, Ziele, Handwege, Bausteine), `daten` (Datenliste; fehlt der Schlüssel, gibt es keinen Reiter) | ganz |
+| `seitenliste.py` | erzeugt Doku und Seite, `--abnahme <nr>` setzt `code_stand`; `--start`, `--offen`, `--eintragen`, `--abgenommen` (Abschnitt „Aktualisieren“) | nichts |
 | `seitenliste_vorlage.html` | veröffentlichte Seite | nichts |
 | `seitenbeziehungen.py` | schreibt `zu` und `nutzt` aus dem Code | nichts |
+| `themeabgleich.py` | Treffer und `--uebernehmen` (Abschnitt „Theme-Abgleich“) | nichts |
 | `seitenliste_check.py` | Abgleich, braucht Python und die Laufzeit des Theme-Befehls | nichts |
 | `datenliste.py` | erzeugt Quelldatei und Doku der Datenliste | nichts |
 | `schema_leer.py` | gibt das leere Schema als JSON aus, Vorlage für SQLite | `leere_datenbank`; andere Speicher: eigenes Skript mit derselben Ausgabe |

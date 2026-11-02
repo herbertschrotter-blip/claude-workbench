@@ -278,8 +278,9 @@ Nur, wenn `Mockup.Ablage` nicht `none` ist, Format nach `skills/mockup-erstellen
 das Modul. Fehlen die Felder oder ihre Dateien, ist das ein Befund (angelegt wird im Fix-Skill, nicht hier).
 
 - Den Abgleich auswerten: Ergebnis von `Mockup.Pruefung` (Lauf nur in einer Kopie, wie unten bei den erzeugten Dateien).
-- Melden: Hinweise auf geänderten Code, fehlende Mockups, tote Links, Seiten ohne Verbindungen, Abstand Mockup zu Code; mit
+- Melden: Hinweise auf geänderten Code, fehlende Mockups, tote Links, Seiten ohne Verbindungen, Abstand Abnahme zu Code; mit
   Datenliste auch Tabellen ohne Eintrag und veraltetes Schema. Inhalte echter Daten nie lesen.
+- Melden: Commits seit `stand_commit` ohne Version (Listen-Befehl mit `--offen`, liest nur) und die Zahl der Theme-Hinweise.
 - Jede Seite der Quelldatei nennt eine vorhandene Code-Datei und ein vorhandenes Mockup.
 - Jede Ansicht und jedes Formular im Code steht in der Liste, soweit das Projekt sie aufzählen kann; sonst „Nachweis
   offen“.

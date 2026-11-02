@@ -9,8 +9,8 @@ description: >
   layout drafts, dialog sketches, tab/panel arrangements, and changes to an
   existing project mockup ("erst ins Mockup einbauen", "im Mockup ändern"),
   also in the middle of a ticket or code task, including the mockup's generator
-  sources in the mockup folder and recording its approval (Abnahme, also short:
-  „Mockup 3 ist abgenommen“). For
+  sources in the mockup folder, recording its approval (Abnahme, short:
+  „Mockup 3 ist abgenommen“), and "aktualisiere Seitenliste". For
   sequential intents like "mock and then implement": triggers as the first
   step (mockup), then defers to code-erstellen. Do not trigger for direct
   XAML or Lit component implementation, small UI fixes in existing code, or
@@ -151,6 +151,10 @@ ausgenommen: Es gilt die Arbeitsweise unten ohne Seitenliste, und die Reference 
 „Nach dieser Aufgabe anlegen“ / „Dieses Projekt ausnehmen“ (Felder werden `none`). Eine laufende kleine Aufgabe wird nicht blockiert.
 Ablauf und Format: [references/seitenliste.md](references/seitenliste.md#prüfen-und-nachträglich-anlegen).
 
+„Aktualisiere Seitenliste“ gleicht Commits und Versionen je Seite ab: Jede Änderung ist eine neue Version, Claude liest die
+Diffs und schreibt den Verlauf, das Skript zählt und erzeugt; dazu der Theme-Abgleich als Hinweis. Ablauf:
+[references/seitenliste.md](references/seitenliste.md#aktualisieren).
+
 ---
 
 ## Docs laden
@@ -246,7 +250,7 @@ Pflicht, sobald der User abnimmt.
   Abweichung zum bisherigen Verhalten dort hinein. Beispiele: [references/beispiele.md](references/beispiele.md#abnahme-ort)
 - Ohne festgehaltene Abnahme gilt das Mockup für code-erstellen (Mockup-Hook) als **nicht** abgenommen.
 - Bei „Später“: Hinweis, dass der Bau des Schritts blockiert bleibt.
-- Mit Seitenliste: `version_mockup`, Verlauf und Befehl nach `references/seitenliste.md#Abnahme`; der Eintrag gilt nur
+- Mit Seitenliste: `version_mockup`, `version_abgenommen`, Verlauf und Befehl nach `references/seitenliste.md#Abnahme`; der Eintrag gilt nur
   für diese Seite.
 
 ### Commit-Vorschlag

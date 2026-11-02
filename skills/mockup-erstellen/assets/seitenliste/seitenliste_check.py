@@ -73,6 +73,8 @@ def pruefe_versionen(cfg: dict, seiten: list[dict]) -> list[str]:
         letzte = max(im_verlauf, key=version) if im_verlauf else None
         if letzte != hoechste:
             fehler.append(f"{s['nr']}: Verlauf reicht bis {letzte}, Version ist {hoechste}")
+        if s.get("version_abgenommen") and version(s["version_abgenommen"]) > version(m):
+            fehler.append(f"{s['nr']}: abgenommen {s['version_abgenommen']}, Mockup erst {m}")
         if s.get("mockup_alt") and not (ablage / s["mockup_alt"]).exists():
             fehler.append(f"{s['nr']}: Mockup fehlt: {s['mockup_alt']}")
         if s.get("mockup"):
@@ -160,6 +162,9 @@ def hinweise(cfg: dict, seiten: list[dict]) -> list[str]:
             aus.append(f"Hinweis: {s['nr']} {s['name']}: keine Verbindungen")
     if not cfg.get("seiten_im_code"):
         aus.append("Hinweis: seiten_im_code fehlt in der Config, Code und Liste sind nicht abgeglichen")
+    befunde = json.loads(sl.theme_text(cfg).replace("<\\/", "</"))
+    if befunde:
+        aus.append(f"Hinweis: Theme-Abgleich: {sum(map(len, befunde.values()))} feste Werte auf {len(befunde)} Seiten")
     return aus
 
 

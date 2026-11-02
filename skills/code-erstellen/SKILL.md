@@ -366,10 +366,10 @@ Prüfreihenfolge je Stack in der Stack-Referenz (z.B. home-assistant: Deploy →
 reload/restart → Zustand prüfen). Zum Schluss dem User sagen, was er wie sichtprüfen soll.
 
 **Seitenliste** (`Mockup.Seitenliste` nicht `none`; läuft auch ohne `Code.Auslieferung`, dann direkt nach dem Commit): Nach
-der Auslieferung je betroffene Seite `version_code` auf `version_mockup` setzen, nie niedriger als bisher, dazu Verlauf und
-`code_stand` neu (Listen-Befehl mit `--abnahme <nr>`). Ein Fix ohne
-Änderung des Aussehens bekommt einen Verlaufseintrag und `version_code` +0.1, kein Mockup nötig. Danach die Befehle aus
-`Mockup.Beziehungen` und `Mockup.Seitenliste` ausführen, das Ergebnis committen und die Seitenliste neu veröffentlichen.
+der Auslieferung die Seitenliste aktualisieren (`skills/mockup-erstellen/references/seitenliste.md#Aktualisieren`): Jede
+Änderung an einer Seite ist eine neue Version. Setzt der Code einen abgenommenen Stand um, zieht `version_code` auf
+`version_abgenommen` nach, nie niedriger als bisher. Ein Fix ohne Änderung des Aussehens bekommt einen Verlaufseintrag
+und `version_code` +0.1, kein Mockup nötig. Am Ende steht das Ergebnis im Commit und die Seitenliste ist neu veröffentlicht.
 
 ### Tracker-Abgleich (optional)
 

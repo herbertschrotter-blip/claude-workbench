@@ -8,6 +8,15 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.71.0] — 2026-11-02
+
+- **skills/mockup-erstellen, code-erstellen, ticket, audit, chat-wechsel, doc-pflege, Feature:** „Aktualisiere Seitenliste“
+  gleicht je Seite die Commits seit dem letzten Stand ab: Jede Änderung ist eine neue Version, Claude liest die Diffs,
+  ordnet sie den Seiten zu und schreibt den Verlauf, das Skript zählt und erzeugt. Neue Felder `version_abgenommen` und
+  `stand_commit`; 1.0 entsteht nur durch die Abnahme, sonst läuft die Nummer weiter (0.10).
+- **skills/mockup-erstellen, Feature:** Theme-Abgleich als Hinweis (`themeabgleich.py`): feste Werte in Code und Mockup
+  statt Theme, bewertet von Claude; in der Seitenliste Chip T, Filter, aufklappbarer Hinweis und „Prompt kopieren“.
+
 ## [v0.70.0] — 2026-11-02
 
 - **skills/mockup-erstellen, Feature:** Ablauf „Altes Mockup übernehmen“: Die Seite entsteht neu aus dem alten Mockup, die alte

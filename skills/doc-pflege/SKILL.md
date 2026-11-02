@@ -336,7 +336,7 @@ Ablauf (Orte aus `Doku.Sitzungsabschluss`; im älteren Doku-Profil Feld „Sitzu
 2. **Befunde und Entscheidungen** eintragen, Entscheidungen in `Doku.Entscheidungs-Ort`
 3. **Stand-Abschnitt** schreiben (Version, was gebaut, Stolpersteine; Datum)
 4. **Offene Punkte** als Checkliste, erledigte abhaken, neue ergänzen, jede mit Tracker-Bezug oder Begründung,
-   warum ohne. `Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`: Ist die Seitenliste aktuell und veröffentlicht? Offene Einträge (Seite ohne
+   warum ohne. `Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`: Ist die Seitenliste aktuell und veröffentlicht (sonst aktualisieren, `skills/mockup-erstellen/references/seitenliste.md#Aktualisieren`)? Offene Einträge (Seite ohne
    Mockup, Version ohne Verlaufseintrag, in der Sitzung geänderte Seite ohne Eintrag) hier aufführen. Fehlt sie:
    `skills/mockup-erstellen/references/seitenliste.md#Prüfen und nachträglich anlegen`
 5. `Commit.Doku-Check` durchgehen (nichts vergessen)

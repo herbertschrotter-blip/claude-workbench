@@ -160,8 +160,8 @@ Zum Schluss Auswahlfrage „Nächstes Ticket / Liste zeigen / Schluss für heute
 ## Tickets zu einer Seite
 
 Gehört ein Ticket zu einer Seite der Seitenliste (`Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`): Die Nummer der Seite als Notiz
-ans Ticket, die Arbeit läuft wie bei code-erstellen, beim Schließen kommt die Ticketnummer in den Verlauf der Seite; danach
-den Befehl aus `Mockup.Seitenliste` ausführen und committen.
+ans Ticket, die Arbeit läuft wie bei code-erstellen, beim Schließen die Seitenliste aktualisieren
+(`skills/mockup-erstellen/references/seitenliste.md#Aktualisieren`), die Ticketnummer steht im Eintrag der Version.
 
 **Seitenliste** (`Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`): Fehlen die Felder `Mockup.Seitenliste`, `Mockup.Theme`, `Mockup.Beziehungen`,
 `Mockup.Pruefung`, `Mockup.Datenliste` oder ihre Dateien, sagen, was fehlt, und per Auswahlfrage „Jetzt anlegen (Empfehlung)“ /
