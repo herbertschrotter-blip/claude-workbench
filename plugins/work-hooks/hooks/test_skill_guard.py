@@ -538,6 +538,67 @@ class PromptGrenzeTest(unittest.TestCase):
         self.assertEqual(skill_log.build(dict(base, transcript_path="/p/s1/subagents/agent-b2.jsonl"))["agent"], "b2")
 
 
+class ProfilTest(unittest.TestCase):
+    PROFIL = ("## Skill-Profil\n\n### Mockup\n- Ablage: mockups\n"
+              "- Theme: mockups/theme.js und mockups/theme.css (erzeugt von tools/mockup_theme.mjs)\n"
+              "- Seitenliste: mockups/seiten.json (Quelle); python3 tools/seitenliste.py erzeugt docs/seiten.md\n"
+              "\n### Review\n- Theme: tools/fremd.py\n")
+
+    def lauf(self, profil, datei, skills):
+        with tempfile.TemporaryDirectory() as tmp:
+            if profil is not None:
+                with open(os.path.join(tmp, "CLAUDE.md"), "w", encoding="utf-8") as fh:
+                    fh.write(profil)
+            regeln = dict(MECH, ausser_immer=[])  # der Testordner liegt unter /tmp, das sonst ausgenommen ist
+            return g.decide(hook("PreToolUse", "Edit", {"file_path": datei}, cwd=tmp), regeln, skills)[0]
+
+    def test_erzeuger_unter_mockup_erstellen(self):
+        self.assertEqual(self.lauf(self.PROFIL, "tools/mockup_theme.mjs", {"mockup-erstellen"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "tools/seitenliste.py", {"mockup-erstellen"}), 0)
+
+    def test_erzeuger_unter_code_erstellen_bleibt(self):
+        self.assertEqual(self.lauf(self.PROFIL, "tools/seitenliste.py", {"code-erstellen"}), 0)
+
+    def test_erzeuger_ohne_skill_blockt(self):
+        self.assertEqual(self.lauf(self.PROFIL, "tools/seitenliste.py", set()), 2)
+
+    def test_anderer_code_unter_mockup_erstellen_blockt(self):
+        self.assertEqual(self.lauf(self.PROFIL, "tools/anderes.py", {"mockup-erstellen"}), 2)
+
+    def test_feld_aus_anderem_bereich_zaehlt_nicht(self):
+        self.assertEqual(self.lauf(self.PROFIL, "tools/fremd.py", {"mockup-erstellen"}), 2)
+
+    def test_none_und_ohne_profil_wie_bisher(self):
+        ohne = "## Skill-Profil\n\n### Mockup\n- Theme: none\n- Seitenliste: none\n"
+        self.assertEqual(self.lauf(ohne, "tools/seitenliste.py", {"mockup-erstellen"}), 2)
+        self.assertEqual(self.lauf(None, "tools/seitenliste.py", {"mockup-erstellen"}), 2)
+
+    def test_kaputte_claude_md_blockt_nur_wie_bisher(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "CLAUDE.md"), "wb") as fh:
+                fh.write(b"## Skill-Profil\n\xff\n")
+            self.assertEqual(g.profil_pfade(os.path.join(tmp, "a.py"), ["Mockup.Theme"]), set())
+
+    def test_bereich_vor_dem_profil_zaehlt_nicht(self):
+        text = "### Mockup\n- Theme: tools/fremd.py\n\n## Skill-Profil\n\n### Mockup\n- Theme: none\n"
+        self.assertEqual(self.lauf(text, "tools/fremd.py", {"mockup-erstellen"}), 2)
+
+    def test_meldung_nennt_auch_die_profil_skills(self):
+        # nach einem Commit ist code-erstellen verbraucht: die Meldung muss es trotzdem nennen
+        with tempfile.TemporaryDirectory() as tmp:
+            with open(os.path.join(tmp, "CLAUDE.md"), "w", encoding="utf-8") as fh:
+                fh.write(self.PROFIL)
+            regel = next(r for r in MECH["regeln"] if r["id"] == "mockup")
+            text = g.message([(regel, os.path.join(tmp, "mockups/seiten.json"))], {})
+            self.assertIn("code-erstellen", text)
+            self.assertNotIn("code-erstellen", g.message([(regel, os.path.join(tmp, "mockups/a.html"))], {}))
+
+    def test_quelldatei_unter_code_und_doku(self):
+        self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten.json", {"code-erstellen"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten.json", {"doc-pflege"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten/start.html", {"code-erstellen"}), 2)
+
+
 class AuswertungOktoberTest(unittest.TestCase):
     """Befunde der Skill-Auswertung vom 21.10.2026."""
 

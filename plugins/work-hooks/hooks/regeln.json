@@ -99,13 +99,14 @@
         "skill-pflege",
         "projekt-anlegen"
       ],
+      "profil": {"felder": ["Mockup.Theme", "Mockup.Seitenliste"], "pflicht": ["mockup-erstellen"]},
       "modus": "blocken",
       "gilt_bis": [
         "commit",
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe; Auswertung 11.10.2026: 4 Fehlalarme durch relative Pfade nach cd (behoben in skill_guard.py e6262c3), 4 Testläufe vom 07.10. nicht gezählt; 21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Subagenten erben die Skills der Hauptsitzung nicht mehr (erbt_hauptsitzung fehlt = false), Worktrees unter .claude/worktrees/ werden geprüft (arbeitsordner); Auswertung 21.10.2026: 11.10. ab 19:54Z 1 Treffer/9 Fehlalarme (Subagenten mit eigenem code-erstellen, behoben 56631ab), 12.–21.10. 10/1 (Kopie eines Scratchpad-Skripts, Einzelfall); von den früheren 23 Treffern waren bis zu 9 Blockaden von Subagenten (nicht umgezählt); Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 45/2, 2 Fehlalarme (gelesener Pfad bzw. Pfad im Inhalt eines Heredocs als Ziel; Aufgabe Skill-Wächter · Werkzeug)",
+      "herkunft": "Skill-Auswertung 06.10.2026: ha-baustelle Teil 3, rund 310 Code-Änderungen ohne code-erstellen; 08.10.2026: regeln.json ausgenommen – skill-auswertung pflegt sie nach Freigabe; Auswertung 11.10.2026: 4 Fehlalarme durch relative Pfade nach cd (behoben in skill_guard.py e6262c3), 4 Testläufe vom 07.10. nicht gezählt; 21.10.2026 (Herbert): Befund Lumora/PhotoViewer V3 – Subagenten erben die Skills der Hauptsitzung nicht mehr (erbt_hauptsitzung fehlt = false), Worktrees unter .claude/worktrees/ werden geprüft (arbeitsordner); Auswertung 21.10.2026: 11.10. ab 19:54Z 1 Treffer/9 Fehlalarme (Subagenten mit eigenem code-erstellen, behoben 56631ab), 12.–21.10. 10/1 (Kopie eines Scratchpad-Skripts, Einzelfall); von den früheren 23 Treffern waren bis zu 9 Blockaden von Subagenten (nicht umgezählt); Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 45/2, 2 Fehlalarme (gelesener Pfad bzw. Pfad im Inhalt eines Heredocs als Ziel; Aufgabe Skill-Wächter · Werkzeug); 02.11.2026 (Herbert): Erzeuger laut Mockup.Theme und Mockup.Seitenliste auch unter mockup-erstellen änderbar (Feld profil)",
       "stand": {
         "seit": "2026-10-07",
         "treffer": 79,
@@ -190,13 +191,14 @@
       "pflicht": [
         "mockup-erstellen"
       ],
+      "profil": {"felder": ["Mockup.Seitenliste"], "pflicht": ["code-erstellen", "doc-pflege"]},
       "modus": "blocken",
       "gilt_bis": [
         "commit",
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Skill-Auswertung 04.10.2026 (mockup-erstellen-002) und 06.10.2026 (Zustandsvarianten); Auswertung 21.10.2026: 12.–21.10. 1/0; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 9/1, 1 Fehlalarm (Pfad im Inhalt einer Testdatei); berechtigt: Subagent schreibt Mockup",
+      "herkunft": "Skill-Auswertung 04.10.2026 (mockup-erstellen-002) und 06.10.2026 (Zustandsvarianten); Auswertung 21.10.2026: 12.–21.10. 1/0; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 9/1, 1 Fehlalarm (Pfad im Inhalt einer Testdatei); berechtigt: Subagent schreibt Mockup; 02.11.2026 (Herbert): Quelldatei der Seitenliste auch unter code-erstellen (Verlauf nach der Auslieferung) und doc-pflege änderbar (Feld profil)",
       "stand": {
         "seit": "2026-10-07",
         "treffer": 11,

@@ -57,6 +57,7 @@ Datei `plugins/work-hooks/hooks/regeln.json`, für alle Rechner gleich (kommt mi
 | `modus` | `blocken`, `warnen` oder `aus` |
 | `gilt_bis` | Grenzen, nach denen ein vorher geladener Skill für diese Regel nicht mehr zählt (`commit`, `aufgabenstart`, `task_id`, `prompt`) |
 | `ergaenzt` | optional: `id` einer Grundregel; die Regel meldet nur, wenn die Grundregel erfüllt ist (sonst meldet schon diese) |
+| `profil` | optional: `{"felder": ["Mockup.Seitenliste"], "pflicht": [...]}` – für Dateien, die diese Felder im Skill-Profil der nächsten `CLAUDE.md` nennen (Freitext, Pfade relativ zur Repo-Wurzel), zählen auch diese Skills. So bleibt `regeln.json` frei von Projektpfaden; `none` oder ohne Feld ändert nichts. Die Meldung nennt diese Skills mit, wenn das Ziel im Feld steht |
 | `erbt_hauptsitzung` | optional, Standard `false`: Skills der Hauptsitzung zählen auch für Subagenten |
 | `herkunft` | Befund oder Entscheidung, aus der die Regel stammt |
 | `stand` | `seit`, `treffer`, `fehlalarm`, `zuletzt` – nachgerechnet von skill-auswertung; `rueckblick` = Abspielen der Regeln gegen alte Transcripts |
@@ -171,6 +172,10 @@ Tests: `python3 -m unittest plugins/work-hooks/hooks/test_skill_guard.py` (die M
 - Die Blockmeldung nennt den Plugin-Stand (Commit aus dem Ordnernamen im Plugin-Cache). Blockt der Wächter, obwohl der
   Skill geladen ist, läuft die Sitzung womöglich mit einem alten Stand: `/plugin update` und Claude neu starten.
 - Dateien, die ein Build-Skript erzeugt (z. B. ein gebündeltes Mockup), sieht der Wächter nicht.
+- Das Regelfeld `profil` kann im Freitext Quelle und erzeugte Dateien nicht trennen: Auch eine dort genannte erzeugte
+  Datei ist für die Skills des Felds änderbar; dass sie nicht von Hand geändert wird, regeln die Skills. Es liest nur
+  eine Zeile je Feld, und ein Worktree ohne eigene `CLAUDE.md` blockt zu viel, nie zu wenig. Es prüft auch nicht, ob
+  beide Mockup-Felder gesetzt sind.
 - Hooks feuern laut Doku von Claude Code auch in Subagenten und tragen dann `agent_id` und `agent_type`. Ob
   `transcript_path` dort auf die Hauptsitzung oder den Agenten zeigt, ist nicht beschrieben; der Wächter baut den Pfad
   zum Transcript des Agenten deshalb selbst. Ohne `agent_id` und ohne Agenten-Pfad ist ein Subagent nicht von der

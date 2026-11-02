@@ -642,6 +642,34 @@ def actions(data):
     return result
 
 
+def profil_pfade(target, felder):
+    """Pfade, die das Skill-Profil der nächsten CLAUDE.md ab target nach oben in den Feldern nennt (Bereich.Feld, Freitext
+    mit Pfaden relativ zur Repo-Wurzel): Menge absoluter Pfade."""
+    path = os.path.dirname(target)
+    while True:
+        claude_md = os.path.join(path, "CLAUDE.md")
+        if os.path.isfile(claude_md):
+            try:
+                with open(claude_md, encoding="utf-8") as fh:
+                    text = fh.read()
+            except (OSError, ValueError):
+                return set()
+            if "## Skill-Profil" in text:
+                text = text[text.index("## Skill-Profil"):]
+                found = set()
+                for feld in felder:
+                    bereich, name = feld.split(".", 1)
+                    block = re.search(rf"^### {re.escape(bereich)}\s*$(.*?)(?=^#|\Z)", text, re.M | re.S)
+                    zeile = block and re.search(rf"^- {re.escape(name)}:(.*)$", block.group(1), re.M)
+                    if zeile:
+                        found |= {os.path.normpath(os.path.join(path, p)) for p in _FILE_NAME.findall(zeile.group(1))}
+                return found
+        parent = os.path.dirname(path)
+        if parent == path:
+            return set()
+        path = parent
+
+
 def _match(path, patterns):
     return any(fnmatch.fnmatch(path, p.replace("**", "*")) for p in patterns)
 
@@ -670,6 +698,14 @@ def _applies(rule, act, target, workdirs, always_except):
     return not (_match(where, always_except) or _match(where, rule.get("ausser", [])))
 
 
+def _profil_erlaubt(rule, target, have):
+    """Regelfeld profil: Für Dateien aus den genannten Profilfeldern zählen auch diese Skills."""
+    extra = rule.get("profil")
+    if not extra or not target or not any(p in have for p in extra.get("pflicht", [])):
+        return False
+    return os.path.normpath(target) in profil_pfade(target, extra.get("felder", []))
+
+
 def violations(rules, acts, project, skills, mode):
     """Regeln im gegebenen modus, deren Pflicht-Skill fehlt: Liste von (regel, ziel).
 
@@ -691,6 +727,8 @@ def violations(rules, acts, project, skills, mode):
             p in (skills(base) if callable(skills) else skills) for p in base.get("pflicht", []))
         for act, target in acts:
             if not _applies(rule, act, target, workdirs, always_except):
+                continue
+            if _profil_erlaubt(rule, target, have):
                 continue
             # ergänzende Regel: schweigt, wo die Grundregel für dieses Ziel schon meldet
             if base_missing and _applies(base, act, target, workdirs, always_except):
@@ -740,8 +778,12 @@ def message(found, names=None):
     lines = []
     for rule, target in found:
         where = f" ({target})" if target else ""
+        pflicht = list(rule["pflicht"])
+        extra = rule.get("profil")
+        if extra and target and os.path.normpath(target) in profil_pfade(target, extra.get("felder", [])):
+            pflicht += extra.get("pflicht", [])
         lines.append(f"- Regel „{rule['id']}“{where}: {rule.get('beschreibung', '')}. "
-                     f"Zuständig: {', '.join(names.get(p, p) for p in rule['pflicht'])}")
+                     f"Zuständig: {', '.join(names.get(p, p) for p in pflicht)}")
     return "\n".join(lines)
 
 
