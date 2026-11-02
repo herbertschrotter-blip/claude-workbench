@@ -88,7 +88,9 @@ welcher zuerst dran ist.
 
   Bleiben Commits ungepusht (`user-only`, `allowed`, ohne Profil nach „nicht pushen“), nennt der Übergabe-Prompt sie
   unter „Sonstige offene Punkte“ (Hash und Titel, „Push durch den Nutzer“). Nennt das Profil eine Upload-Liste
-  (`Doku.Upload-Liste`), stehen deren offene Zeilen ebenfalls dort.
+  (`Doku.Upload-Liste`), stehen deren offene Zeilen ebenfalls dort. Nennt es `Mockup.Seitenliste`, stehen dort auch Link
+  und Quelldatei der Seitenliste und die Seiten mit Mockup weiter als Code; fehlt sie bei einem Projekt mit Oberfläche, steht
+  das dort.
 
 ---
 
@@ -103,6 +105,7 @@ Die Werte kommen aus dem Skill-Profil der `CLAUDE.md` im Repo (`docs/skill-profi
 | `Commit.Push-Policy`, `Branch-Policy` | Push im Sitzungsabschluss, Branch im Prompt (Grundsätze) |
 | `Commit.Versionsquelle` | Version im Prompt und in der Link-Prüfung |
 | `Tracker.Config` | ClickUp-Abgleich, wenn Aufgaben eingebunden sind (Präfix, Listen, Statusmodell) |
+| `Mockup.Seitenliste` | Link, Quelldatei und offene Seiten im Prompt |
 | `Commit.*`, `Code.*`, `Doku.*` | Regeln-Block des Prompts |
 
 1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Teil entfällt im Prompt.

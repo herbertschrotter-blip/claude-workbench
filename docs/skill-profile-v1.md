@@ -86,8 +86,11 @@ Review-Serie [CGR-2026-09-24-skillsystem](./chatgpt-reviews/CGR-2026-09-24-skill
 - Designquelle: none | <pfad/ref>
 - Ansichten: none | <ansicht>; <ansicht>
 - Abnahme-Ort: none | <pfad/ref>
-- Theme: none | <dateien des Themes, erzeugte Teile, befehl>
-- Seitenliste: none | <quelldatei, befehl, erzeugte dateien>
+- Seitenliste: none | <quelldatei>; <befehl>; <vorlage, config, check>
+- Theme: none | <dateien>; <befehl>
+- Beziehungen: none | <befehl>
+- Pruefung: none | <check-name>
+- Datenliste: none | <quelldatei>; <befehl>; <doku>
 
 ### Review
 - Config: none | .claude/skill-config/review.md
@@ -121,12 +124,15 @@ Bedeutung einzelner Felder:
     pushen). Fehlt in einem vorhandenen Profil nur die Push-Policy, gilt „Fehlende Werte“.
 - **Upload-Liste:** nur im Skill-Repo – die Datei mit den Skill-Lieferungen, die der Nutzer noch bei claude.ai
   hochladen muss (skill-pflege, `references/delivery.md#Upload-Runde`). Optional; fehlt sie, gilt `none`.
-- **Mockup.Theme, Mockup.Seitenliste:** optional und nur gemeinsam wirksam: Fehlt eines oder steht es auf `none`, gilt für
-  alle Skills die bisherige Arbeitsweise. Sind beide gesetzt, gibt es je Seite oder Formular eine Mockup-Datei mit gemeinsamem Theme (mockup-erstellen, `references/seiten-theme.md`). `Theme` nennt die
-  Dateien des Themes, welche davon erzeugt sind, und den Befehl dazu. `Seitenliste` nennt die Quelldatei mit Version,
-  Code-Datei, Mockup und Verlauf je Seite und den Befehl, der Liste und Doku erzeugt. Der Wert ist Freitext, Pfade stehen relativ
-  zur Repo-Wurzel; der Skill-Wächter liest sie daraus. Es nutzen sie auch code-erstellen, audit und doc-pflege;
-  projekt-anlegen bietet sie an.
+- **Mockup.Seitenliste, Mockup.Theme, Mockup.Beziehungen, Mockup.Pruefung:** bei Projekten mit Oberfläche Pflicht, ohne
+  Oberfläche `none`; `Seitenliste: none` nimmt ein Projekt mit Oberfläche bewusst aus. Standard: mockup-erstellen,
+  `references/seitenliste.md`. `Seitenliste` nennt Quelldatei, Befehl, dazu Vorlage, Config und Skript des Checks; `Theme` die
+  Dateien und den Befehl (ohne Befehl: von Hand gepflegt); `Beziehungen` den Befehl, der die Verbindungen aus dem Code liest;
+  `Pruefung` den Namen des Checks, der auch in `Code.Tests` und `Commit.Pre-Commit-Checks` steht. Pfade stehen relativ zur
+  Repo-Wurzel; der Skill-Wächter liest sie daraus. Fehlen die Felder, gilt statt „Fehlende Werte“ die Frage aus
+  `references/seitenliste.md#Prüfen und nachträglich anlegen`.
+- **Mockup.Datenliste:** Reiter „Daten“ der Seitenliste: Quelldatei und Befehl, Aufbau aus einem leeren Schema, nie aus
+  echten Daten (`references/seitenliste.md#Datenliste`). Bei Projekten ohne Datenspeicher `none`.
 - **Projekte:** gilt für das Repo, in dem neue Projekte angelegt werden (z. B. den Konfigurationsordner von Home
   Assistant). `Ablage` ist der Ordner für neue Projekt-Repos, `Übersicht` die Datei mit einer Zeile je Projekt,
   `Geschützt` die Bereiche, die Claude dort nie ändert.
@@ -175,12 +181,12 @@ Grundfelder für alle: `Profil-Version`, `Projekt-ID`, `Repo`, `Branch-Policy`.
 | cc-steuerung | keine (nur Cowork-Chat mit ausdrücklichem Desktop-Commander-Auftrag) |
 | chat-wechsel | Doku.Sitzungsabschluss, Doku.Entscheidungs-Ort, Commit.Push-Policy; Tracker.Config, wenn Aufgaben eingebunden sind |
 | chatgpt-review | Review.Config, Commit.Push-Policy |
-| code-erstellen | Code.Stacks, Code.Pflichtkontext, Code.Architekturregeln, Code.Tests, Code.Auslieferung; Code.Aufgabenquelle, wenn das Projekt Aufgaben führt |
-| doc-pflege | Doku.Router, Doku.Standard, Doku.Entscheidungs-Ort; Commit.Push-Policy, wenn der Sitzungsabschluss committet |
+| code-erstellen | Code.Stacks, Code.Pflichtkontext, Code.Architekturregeln, Code.Tests, Code.Auslieferung; Code.Aufgabenquelle, wenn das Projekt Aufgaben führt; die Mockup-Felder der Seitenliste bei Projekten mit Oberfläche |
+| doc-pflege | Doku.Router, Doku.Standard, Doku.Entscheidungs-Ort; Commit.Push-Policy, wenn der Sitzungsabschluss committet; Mockup.Seitenliste, Mockup.Datenliste, wo gesetzt |
 | git-commit-helper | Commit.Format, Commit.Module, Commit.Versionsquelle, Commit.Versionsregel, Commit.Push-Policy, Commit.Pre-Commit-Checks |
-| mockup-erstellen | Mockup.Ablage, Mockup.Designquelle, Mockup.Ansichten, Mockup.Abnahme-Ort |
+| mockup-erstellen | Mockup.Ablage, Mockup.Designquelle, Mockup.Ansichten, Mockup.Abnahme-Ort; bei Projekten mit Oberfläche Mockup.Seitenliste, Mockup.Theme, Mockup.Beziehungen, Mockup.Pruefung, Mockup.Datenliste |
 | skill-neu, skill-pflege | das Profil des Skill-Repos (Commit, Doku, Checks) |
-| ticket | Ticket.Config |
+| ticket | Ticket.Config; die Mockup-Felder der Seitenliste bei Projekten mit Oberfläche |
 | tracker | Tracker.Provider, Tracker.Config |
 | projekt-anlegen | Projekte.Ablage; Projekte.GitHub-Owner, wenn GitHub gewählt wird; Code.Stacks; Modul.Grundsatzregeln, wenn der Stack welche hat (`none` gültig) |
 | skill-auswertung | Skill-Log.Config (im Skill-Repo) |

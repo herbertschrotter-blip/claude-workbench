@@ -1,0 +1,122 @@
+<title>@@TITEL@@</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root { --bg:#eef1f6; --flaeche:#fff; --ink:#172033; --leise:#5c6780; --linie:#c9d1df; --amber:#b86a00; --amber-g:#ffe9c7; --gruen:#14784f; --gruen-g:#d8f2e6; --auf-amber:#fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0c1528; --flaeche:#151f36; --ink:#f2f5fb; --leise:#a2adc4; --linie:#3a4866; --amber:#ffb340; --amber-g:#40300f; --gruen:#5fdca6; --gruen-g:#123a2c; --auf-amber:#1c1c1e; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#0c1528; --flaeche:#151f36; --ink:#f2f5fb; --leise:#a2adc4; --linie:#3a4866; --amber:#ffb340; --amber-g:#40300f; --gruen:#5fdca6; --gruen-g:#123a2c; --auf-amber:#1c1c1e; color-scheme:dark }
+* { box-sizing:border-box; } html,body { height:100%; } button:focus-visible,input:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
+.geruest { display:grid; grid-template-columns:minmax(300px,380px) minmax(0,1fr); height:100%; }
+.liste { overflow:auto; padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px)); border-right:1px solid var(--linie); display:flex; flex-direction:column; gap:14px; }
+.fokus { overflow:auto; padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px)); display:flex; flex-direction:column; gap:14px; }
+h1 { margin:0; font-size:20px; } .stand { font-size:13px; color:var(--leise); } .balken { height:8px; border-radius:4px; background:var(--linie); overflow:hidden; margin-top:6px; } .balken i { display:block; height:100%; background:var(--gruen); }
+.suche { font:inherit; color:var(--ink); background:var(--flaeche); border:1px solid var(--linie); border-radius:18px; padding:8px 14px; width:100%; }
+h2 { margin:0 0 4px; font-size:15px; } .nr { color:var(--amber); font-weight:700; font-variant-numeric:tabular-nums; margin-right:4px; }
+ul { list-style:none; margin:0 0 0 7px; padding:0; }
+ul > li { position:relative; padding:0 0 0 16px; }
+ul > li::before { content:""; position:absolute; left:0; top:0; bottom:0; width:1px; background:var(--linie); } ul > li:last-child::before { bottom:auto; height:19px; }
+ul > li::after { content:""; position:absolute; left:0; top:19px; width:11px; height:1px; background:var(--linie); }
+.z { all:unset; cursor:pointer; display:flex; justify-content:space-between; gap:10px; align-items:center; width:100%; box-sizing:border-box; padding:7px 8px; border-radius:9px; font-size:14px; }
+.z.on { background:var(--flaeche); outline:1px solid var(--amber); } .z.ver1 { } .z.dim { opacity:.35; }
+.vs { display:inline-flex; gap:4px; flex:none; } .v.l { background:none; color:var(--leise); border:1px solid var(--linie); } .v { white-space:nowrap; font-size:12px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--amber-g); color:var(--amber); } .v.f { background:var(--gruen-g); color:var(--gruen); }
+.zurueck { display:none; font:inherit; color:var(--amber); background:none; border:0; padding:0; text-align:left; cursor:pointer; font-weight:600; }
+.pfad { display:flex; flex-wrap:wrap; gap:4px; align-items:center; font-size:14px; color:var(--leise); min-height:28px; }
+.pfad button { font:inherit; color:var(--amber); background:none; border:0; padding:3px 2px; cursor:pointer; font-weight:600; }
+.feld { position:relative; display:grid; grid-template-columns:1fr 1.15fr 1fr; gap:14px 64px; align-items:center; min-height:320px; }
+.spalte { display:flex; flex-direction:column; gap:10px; min-width:0; position:relative; z-index:1; }
+.spalte h3 { margin:0; font-size:12px; font-weight:600; color:var(--leise); letter-spacing:.5px; text-transform:uppercase; }
+.karte { width:100%; text-align:left; font:inherit; color:var(--ink); background:var(--flaeche); border:1px solid var(--linie); border-radius:14px; padding:10px 12px; cursor:pointer; }
+.karte small { display:block; color:var(--leise); font-size:12px; margin-top:3px; }
+.mitte .karte { cursor:default; border:2px solid var(--amber); padding:14px; font-size:17px; font-weight:600; }
+.mk { display:inline-block; margin-top:10px; font:inherit; font-size:13px; font-weight:600; color:var(--auf-amber); background:var(--amber); border:0; border-radius:8px; padding:7px 11px; cursor:pointer; } .mk.alt { background:none; color:var(--ink); border:1px solid var(--linie); } .mk.kein { background:none; color:var(--leise); font-weight:400; padding:0; cursor:default; }
+.verl { margin:10px 0 0; padding:8px 0 0; border-top:1px dashed var(--linie); font-size:12px; font-weight:400; color:var(--leise); }
+.leer { color:var(--leise); font-size:13px; padding:6px 2px; }
+svg.pf { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; } svg.pf > path { fill:none; stroke:var(--gruen); stroke-width:1.6; opacity:.85; }
+.bau { display:flex; flex-wrap:wrap; gap:8px; align-items:center; font-size:13px; color:var(--leise); }
+.bau button { font:inherit; font-size:13px; color:var(--ink); background:var(--flaeche); border:1px solid var(--linie); border-radius:16px; padding:6px 12px; cursor:pointer; }
+.bau button.on, .filter button.on { background:var(--amber); color:var(--auf-amber); border-color:var(--amber); font-weight:600; }
+.filter { display:flex; flex-wrap:wrap; gap:6px; } .filter button { font:inherit; font-size:13px; color:var(--ink); background:var(--flaeche); border:1px solid var(--linie); border-radius:16px; padding:5px 11px; cursor:pointer; }
+.mehr { font:inherit; font-size:13px; color:var(--amber); background:none; border:1px dashed var(--linie); border-radius:14px; padding:8px; cursor:pointer; }
+#fenster { position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; background:var(--bg); }
+#fenster .leiste { display:flex; gap:12px; align-items:center; padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px; border-bottom:1px solid var(--linie); font-size:13px; color:var(--leise); }
+#fenster .leiste button { font:inherit; font-size:15px; font-weight:600; color:var(--amber); background:none; border:0; cursor:pointer; padding:6px 4px; }
+#fenster iframe { flex:1; width:100%; border:0; background:#1a1a1a; } #ffehler { padding:16px; }
+@media (max-width:780px) {
+  .geruest { grid-template-columns:1fr; } .liste { border-right:0; } .fokus { display:none; }
+  .geruest.auf .liste { display:none; } .geruest.auf .fokus { display:flex; } .zurueck { display:block; }
+  .feld { grid-template-columns:1fr; gap:44px; } .spalte.k { flex-direction:row; flex-wrap:wrap; } .spalte.k h3 { width:100%; } .spalte.k .karte { flex:1 1 44%; }
+}
+.sprung { font:inherit; font-size:12px; font-weight:400; color:var(--ink); background:none; border:1px solid var(--linie); border-radius:12px; padding:4px 8px; cursor:pointer; }
+.sprungz { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+.felder { margin-top:10px; font-size:12px; font-weight:400; max-height:260px; overflow:auto; } .felder div { display:flex; justify-content:space-between; gap:10px; padding:2px 0; border-top:1px solid var(--linie); } .felder i { color:var(--leise); font-style:normal; }
+</style>
+<div class="geruest" id="g">
+ <div class="liste"><div><h1>@@TITEL@@</h1><div class="stand" id="st"></div><div class="stand" style="margin-top:2px">M Mockup · C Code</div><div class="balken"><i id="bk"></i></div></div>
+  <div class="filter" id="re"></div><input class="suche" id="su" placeholder="Nummer, Name oder Baustein" aria-label="Seite suchen"><div class="filter" id="fi"></div><div id="li" style="display:flex;flex-direction:column;gap:14px"></div></div>
+ <div class="fokus"><button class="zurueck" id="zur">‹ Seitenliste</button><div class="pfad" id="pfad"></div><div class="feld" id="feld"></div><div class="bau" id="bau"></div></div>
+</div>
+<div id="fenster" hidden><div class="leiste"><button id="fzu">‹ Seitenliste</button><span id="ftitel"></span></div><iframe id="frahmen" title="Mockup"></iframe><p id="ffehler" hidden></p></div>
+<script>
+const SD=@@DATEN@@;
+const TD=@@TABELLEN@@;
+const TG=TD.gruppen.map((g)=>({nr:g.nr,bereich:g.bereich,ref:g.seiten,seiten:g.seiten_liste.map((s)=>({...s,nutzt:[]}))}));
+function baue(D){ const A={}; D.forEach((g)=>g.seiten.forEach((s)=>{A[s.nr]=s;}));
+ const V=[]; Object.values(A).forEach((s)=>s.zu.forEach((z)=>V.push([s.nr,z])));
+ const B={}; Object.values(A).forEach((s)=>s.nutzt.forEach((k)=>{(B[k]||=[]).push(s.nr);})); return {D,A,V,B}; }
+const MODI={seiten:baue(SD),daten:baue(TG)};
+let modus='seiten', {D,A,V,B}=MODI.seiten;
+const ver=(v)=>(v||'0.0').split('.').map(Number), kleiner=(a,b)=>{const[x,y]=ver(a),[u,w]=ver(b);return x<u||(x===u&&y<w);};
+const fertig=(s)=>[s.version_mockup,s.version_code].some((v)=>!kleiner(v,'1.0'));
+const ungebaut=(s)=>kleiner(s.version_code,s.version_mockup);
+const alle=Object.values(MODI.seiten.A), fe=alle.filter(fertig).length;
+const start=(()=>{try{const h=decodeURIComponent(location.hash.slice(1));return A[h]?h:"@@START@@";}catch{return "@@START@@";}})();
+let akt=start, weg=[start], bau=null, q='', filter='alle', auf=new Set(), merk={seiten:start,daten:TG[0]?.seiten[0]?.nr};
+const MAX=6;
+const esc=(t)=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+function nachbarn(){ return bau?B[bau]:[akt,...V.filter((x)=>x[0]===akt).map((x)=>x[1]),...V.filter((x)=>x[1]===akt).map((x)=>x[0])]; }
+function liste(){ const n=new Set(nachbarn());
+ st.textContent=modus==='seiten'?`${fe} von ${alle.length} überarbeitet · M Mockup · C Code`:`${TG.filter((x)=>x.nr[0]==='D').flatMap((x)=>x.seiten).length} Tabellen · Schema ${TD.schema} · nur Aufbau, keine Inhalte`;
+ bk.style.width=modus==='seiten'?`${fe/alle.length*100}%`:'100%';
+ re.innerHTML=!TG.length?'':[['seiten','Seiten'],['daten','Daten']].map(([k,t])=>`<button class="${modus===k?'on':''}" data-m="${k}">${t}</button>`).join('');
+ fi.innerHTML=modus==='daten'?'':[['alle',`Alle ${alle.length}`],['offen',`Offen ${alle.length-fe}`],['fertig',`Fertig ${fe}`],['neu',`Nicht gebaut ${alle.filter(ungebaut).length}`]].map(([k,t])=>`<button class="${filter===k?'on':''}" data-f="${k}">${t}</button>`).join('');
+ li.innerHTML=D.map((g)=>{const z=g.seiten.filter((s)=>(!q||s.name.toLowerCase().includes(q)||s.nr===q||s.nr.startsWith(q+'.')||s.nutzt.some((k)=>k.toLowerCase().includes(q)))&&(modus==='daten'||filter==='alle'||(filter==='neu'?ungebaut(s):(filter==='fertig')===fertig(s)))); if(!z.length)return '';
+  return `<section><h2><span class="nr">${g.nr}</span>${esc(g.bereich)}</h2><ul>${z.map((s)=>`<li><button class="z ${s.nr===akt?'on':''} ${n.has(s.nr)||q?'':'dim'}" data-n="${s.nr}"><span><span class="nr">${s.nr}</span>${esc(s.name)}</span><span class="vs">${modus==='daten'?`<span class="v l">${s.felder.length?s.felder.length+' Felder':esc(s.art)}</span>`:chips(s)}</span></button></li>`).join('')}</ul></section>`;}).join('');
+ const e=li.querySelector('.z.on'); if(e&&document.activeElement!==su) e.scrollIntoView({block:'nearest'}); }
+const chip=(b,v,t)=>`<span class="v ${v==null?'l':kleiner(v,'1.0')?'':'f'}" title="${t}">${b} ${v==null?'–':v}</span>`;
+const chips=(s)=>chip('M',s.version_mockup,'Mockup')+chip('C',s.version_code,'Code');
+const sprung=(n,t)=>`<button class="sprung" data-sprung="${n}"><span class="nr">${n}</span>${esc(t)}</button>`;
+const karte=(n)=>`<button class="karte" data-n="${n}"><span class="nr">${n}</span>${esc(A[n].name)}</button>`;
+const reihe=(k,l)=>{const zeig=auf.has(k)||l.length<=MAX?l:l.slice(0,MAX); return zeig.map(karte).join('')+(zeig.length<l.length?`<button class="mehr" data-mehr="${k}">+ ${l.length-zeig.length} weitere</button>`:'');};
+const mitteDaten=(s)=>{const g=TG.find((x)=>x.seiten.includes(s));
+ return `<div class="karte" id="mi"><span class="nr">${s.nr}</span>${esc(s.name)}<small>${esc(s.art)} · ${esc(s.zweck)}</small>
+ ${s.felder.length?`<div class="felder">${s.felder.map(([n,t,p])=>`<div><span>${p?'🔑 ':''}${esc(n)}</span><i>${esc(t)}</i></div>`).join('')}</div>`:''}
+ ${(s.seiten||g.ref).length?`<div class="verl">Genutzt von<div class="sprungz">${(s.seiten||g.ref).map((n)=>sprung(n,MODI.seiten.A[n].name)).join('')}</div></div>`:''}</div>`;};
+const datenLinks=(n)=>{const g=TG.filter((x)=>x.ref.includes(n)); return g.length?`<div class="verl">Daten<div class="sprungz">${g.map((x)=>sprung(x.seiten[0].nr,x.bereich)).join('')}</div></div>`:'';};
+function modusAuf(m,nr){merk[modus]=akt;modus=m;({D,A,V,B}=MODI[m]);akt=nr||merk[m];weg=[akt];bau=null;q='';su.value='';auf=new Set();alles();}
+function fokus(){ const s=A[akt];
+ pfad.innerHTML=weg.map((n,i)=>`<button data-i="${i}">${n}</button>`).join(' › ');
+ const von=bau?[]:V.filter((x)=>x[1]===akt).map((x)=>x[0]), zu=bau?B[bau].filter((n)=>n!==akt):V.filter((x)=>x[0]===akt).map((x)=>x[1]);
+ feld.innerHTML=`<div class="spalte k" id="sv"><h3>${bau?'':modus==='daten'?'Verwiesen von':'Kommt von'}</h3>${reihe('von',von)||(bau?'':`<div class="leer">${modus==='daten'?'Keine Tabelle verweist hierher':'Keine Seite führt direkt hierher'}</div>`)}</div>
+ <div class="spalte mitte">${modus==='daten'?mitteDaten(s):`<div class="karte" id="mi"><span class="nr">${akt}</span>${esc(s.name)}<small><span class="vs">${chip('Mockup',s.version_mockup,'Mockup')}${chip('Code',s.version_code,'Code')}</span> ${s.art}</small>${s.mockup||s.mockup_alt?`<button class="mk ${s.mockup?'':'alt'}" data-url="${s.mockup||s.mockup_alt}">${s.mockup?'Mockup':'Altes Mockup'}</button>`:'<span class="mk kein">kein Mockup</span>'}<div class="verl">${[...s.verlauf].reverse().map((v)=>`${v.v} · ${v.datum} · ${esc(v.was)}`).join('<br>')}</div>${datenLinks(akt)}</div>`}</div>
+ <div class="spalte k" id="sz"><h3>${bau?'Nutzen '+bau:modus==='daten'?'Verweist auf':'Geht zu'}</h3>${reihe('zu',zu)||`<div class="leer">${modus==='daten'?'Verweist auf nichts':'Führt zu keiner weiteren Seite'}</div>`}</div>
+ <svg class="pf" id="sv2"><defs><marker id="sp" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" style="color:var(--gruen)"></path></marker></defs></svg>`;
+ const b=Object.keys(B).filter((k)=>B[k].includes(akt)); document.getElementById('bau').innerHTML=b.length?`<span>Bausteine:</span>${b.map((k)=>`<button class="${bau===k?'on':''}" data-b="${k}">${k}</button>`).join('')}`:'';
+ pfeile(); }
+function pfeile(){ const f=feld, c=document.getElementById('sv2'), m=document.getElementById('mi'); if(!c||!f.offsetParent)return;
+ c.querySelectorAll(':scope > path').forEach((p)=>p.remove());
+ const r=f.getBoundingClientRect(), a=m.getBoundingClientRect(), sm=getComputedStyle(f).gridTemplateColumns.split(' ').length===1;
+ const l=(x1,y1,x2,y2)=>{const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',sm?`M${x1} ${y1}C${x1} ${(y1+y2)/2} ${x2} ${(y1+y2)/2} ${x2} ${y2}`:`M${x1} ${y1}C${(x1+x2)/2} ${y1} ${(x1+x2)/2} ${y2} ${x2} ${y2}`);p.setAttribute('marker-end','url(#sp)');c.appendChild(p);};
+ document.querySelectorAll('#sv .karte').forEach((k)=>{const b=k.getBoundingClientRect(); sm?l(b.left+b.width/2-r.left,b.bottom-r.top,a.left+a.width/2-r.left,a.top-r.top):l(b.right-r.left,b.top+b.height/2-r.top,a.left-r.left,a.top+a.height/2-r.top);});
+ document.querySelectorAll('#sz .karte').forEach((k)=>{const b=k.getBoundingClientRect(); sm?l(a.left+a.width/2-r.left,a.bottom-r.top,b.left+b.width/2-r.left,b.top-r.top):l(a.right-r.left,a.top+a.height/2-r.top,b.left-r.left,b.top+b.height/2-r.top);}); }
+const alles=()=>{liste();fokus();};
+function wahl(n){akt=n;weg=[...weg.slice(-5),n];bau=null;auf=new Set();g.classList.add('auf');alles();}
+async function mockupAuf(url){ const f=fenster,r=frahmen,e=ffehler; f.hidden=false;r.hidden=false;e.hidden=true;ftitel.textContent=url;
+ try{const a=await fetch(url); if(!a.ok)throw new Error(`Antwort ${a.status}`); const b=new URL(url,location.href).href; r.srcdoc=(await a.text()).replace(/<head>/i,`<head><base href="${b}">`);}
+ catch(err){r.hidden=true;e.hidden=false;e.textContent=`Das Mockup ${url} lässt sich nicht laden (${err.message}).`;} }
+fzu.onclick=()=>{fenster.hidden=true;frahmen.removeAttribute('srcdoc');};
+addEventListener('message',(e)=>{if(e.source!==frahmen.contentWindow||!e.data)return; if(e.data.mockup)mockupAuf(e.data.mockup);});
+document.addEventListener('click',(e)=>{const t=e.target; const mo=t.closest('[data-m]'),sp=t.closest('[data-sprung]'); if(mo){modusAuf(mo.dataset.m);return;} if(sp){const x=sp.dataset.sprung; modusAuf(/^[DS]/.test(x)?'daten':'seiten',x);return;}
+ const n=t.closest('[data-n]'),p=t.closest('.pfad button'),b=t.closest('.bau button'),u=t.closest('[data-url]'),fb=t.closest('[data-f]'),m=t.closest('[data-mehr]');
+ if(u)mockupAuf(u.dataset.url); else if(m){auf.add(m.dataset.mehr);fokus();} else if(fb){filter=fb.dataset.f;liste();} else if(n)wahl(n.dataset.n); else if(p){weg=weg.slice(0,+p.dataset.i+1);akt=weg.at(-1);bau=null;alles();} else if(b){bau=bau===b.dataset.b?null:b.dataset.b;alles();} else if(t.id==='zur'){g.classList.remove('auf');}});
+su.oninput=(e)=>{q=e.target.value.toLowerCase().trim();liste();}; addEventListener('resize',pfeile); alles();
+</script>

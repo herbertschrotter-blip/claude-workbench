@@ -157,6 +157,17 @@ dann beginnt der Ablauf bei „Ticket holen und einfach erklären“ mit dem Hin
 
 Zum Schluss Auswahlfrage „Nächstes Ticket / Liste zeigen / Schluss für heute“.
 
+## Tickets zu einer Seite
+
+Gehört ein Ticket zu einer Seite der Seitenliste (`Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`): Die Nummer der Seite als Notiz
+ans Ticket, die Arbeit läuft wie bei code-erstellen, beim Schließen kommt die Ticketnummer in den Verlauf der Seite; danach
+den Befehl aus `Mockup.Seitenliste` ausführen und committen.
+
+**Seitenliste** (`Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`): Fehlen die Felder `Mockup.Seitenliste`, `Mockup.Theme`, `Mockup.Beziehungen`,
+`Mockup.Pruefung`, `Mockup.Datenliste` oder ihre Dateien, sagen, was fehlt, und per Auswahlfrage „Jetzt anlegen (Empfehlung)“ /
+„Nach dieser Aufgabe anlegen“ / „Dieses Projekt ausnehmen“ (Felder werden `none`). Eine laufende kleine Aufgabe wird nicht blockiert.
+Ablauf und Format: `skills/mockup-erstellen/references/seitenliste.md#Prüfen und nachträglich anlegen`.
+
 ## Verkürzter Ablauf für Wünsche und Anregungen
 
 Gilt für jede Art, die laut Config (`Arten`) `verkürzt` läuft. Ein Wunsch ist kein Fehler: „Echter Fehler?“ und

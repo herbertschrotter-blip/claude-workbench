@@ -119,7 +119,7 @@ im Cowork-Chat: `references/cowork.md`, Abschnitt „Skill-Profil und Docs lesen
 | `Doku.Sitzungsabschluss` | Orte für Statusliste, Stand, offene Punkte; ob am Ende jeder Sitzung Pflicht | wo gesetzt |
 | `Commit.Doku-Check` | Doku-Hinweise nach Code-Änderungen, Begleit-Docs | wo gesetzt |
 | `Commit.Format`, `Commit.Module` | Doku-Commits | wo gesetzt |
-| `Mockup.Seitenliste` | aus der Seitenliste erzeugte Doku: Quelldatei und Befehl; Sitzungsabschluss (nur mit `Mockup.Theme`) | wo gesetzt |
+| `Mockup.Seitenliste`, `Mockup.Datenliste` | erzeugte Doku: Quelldatei und Befehl; Sitzungsabschluss | wo gesetzt |
 
 1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Teil entfällt. Fehlt ein Pflichtfeld oder
    steht es auf `fehlt`: genau dieses Feld nennen und nach `docs/skill-profile-v1.md`, Abschnitt „Fehlende Werte“, fragen.
@@ -336,8 +336,9 @@ Ablauf (Orte aus `Doku.Sitzungsabschluss`; im älteren Doku-Profil Feld „Sitzu
 2. **Befunde und Entscheidungen** eintragen, Entscheidungen in `Doku.Entscheidungs-Ort`
 3. **Stand-Abschnitt** schreiben (Version, was gebaut, Stolpersteine; Datum)
 4. **Offene Punkte** als Checkliste, erledigte abhaken, neue ergänzen, jede mit Tracker-Bezug oder Begründung,
-   warum ohne. Nennt das Profil `Mockup.Theme` und `Mockup.Seitenliste`: die Seitenliste auf offene Einträge prüfen
-   (Seite ohne Mockup, Version ohne Verlaufseintrag, in der Sitzung geänderte Seite ohne Eintrag) und sie hier aufführen
+   warum ohne. `Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`: Ist die Seitenliste aktuell und veröffentlicht? Offene Einträge (Seite ohne
+   Mockup, Version ohne Verlaufseintrag, in der Sitzung geänderte Seite ohne Eintrag) hier aufführen. Fehlt sie:
+   `skills/mockup-erstellen/references/seitenliste.md#Prüfen und nachträglich anlegen`
 5. `Commit.Doku-Check` durchgehen (nichts vergessen)
 6. Commit im `Commit.Format` mit dem Doku-Modul aus `Commit.Module`, Typ `Docs`, Kurztitel
    „Sitzungsabschluss <Datum> – <Kurztitel>“ (git-commit-helper); Push nach der Push-Policy (Grundsätze)
@@ -396,7 +397,7 @@ macht audit.
 - Statusliste auf `fertig` setzen, solange Tests oder Commit fehlen
 - Pfade oder Dateinamen eines anderen Projekts annehmen (auch aus `references/beispiele.md`) — alles aus dem Skill-Profil
 - Sitzung ohne Sitzungsabschluss beenden, wenn Docs geändert wurden
-- Eine aus der Seitenliste erzeugte Doku von Hand ändern — stattdessen die Quelldatei und den Befehl aus
-  `Mockup.Seitenliste`
+- Eine aus Seiten- oder Datenliste erzeugte Doku von Hand ändern — stattdessen die Quelle und den Befehl aus
+  `Mockup.Seitenliste` bzw. `Mockup.Datenliste`
 - Docs von einem Agenten schreiben lassen oder seine Funde ungeprüft übernehmen (Abschnitt „Doku pflegen“, „Mit
   Agenten“)

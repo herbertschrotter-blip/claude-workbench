@@ -128,8 +128,10 @@ bekommt keine. Als Inhaber `git config user.name` nennen, sonst fragen.
   das der Baustein; Claude ergänzt danach Zweck und Grenzen in den Grundentscheidungen. Ohne Generator legt Claude
   die Grundentscheidungen selbst in `docs/entscheidungen.md` an und trägt sie als `Doku.Entscheidungs-Ort` ein, nie
   `none`.
-- Bei Projekten mit Oberfläche per Auswahlfrage anbieten, `Mockup.Theme` und `Mockup.Seitenliste` zu setzen (optionale
-  Felder, je Seite eine Datei mit gemeinsamem Theme); nie ungefragt anlegen. Ohne Zustimmung bleiben sie `none`.
+- Projekte mit Oberfläche bekommen die Felder `Mockup.Seitenliste`, `Mockup.Theme`, `Mockup.Beziehungen`,
+  `Mockup.Pruefung`, `Mockup.Datenliste`, das Grundgerüst, den Check und eine erste Seitenliste; das steht im Plan. Ablauf nach dem Generator:
+  `skills/mockup-erstellen/references/seitenliste.md#Prüfen und nachträglich anlegen`. Ohne Oberfläche stehen die Felder auf `none`, ohne
+  Datenspeicher `Mockup.Datenliste`.
 - Erster Commit im Format von git-commit-helper, erst wenn die Prüfungen grün sind. Pushen nur nach der Push-Policy
   des neuen Profils.
 - GitHub nur nach Auswahlfrage: erstellen (privat als Standard) / später / nie, erst nach dem lokalen Anlegen. Ablauf in
@@ -159,8 +161,8 @@ Grunddateien, kein GitHub – nur Profil und Configs. Jeder Schritt läuft wie o
 3. **Vorschlag zeigen:** das Skill-Profil v1 für die gewählten Bereiche mit den erkannten Werten und ihrer Herkunft
    (Datei); Unbekanntes als `fehlt`, bewusst Leeres als `none`. Dazu die Configs unter `.claude/skill-config/`, die die
    Bereiche brauchen (z. B. `tracker.md` mit Listen, Status und Feldern aus dem Tracker gelesen), in der Gliederung aus
-   `docs/skill-profile-v1.md`. Hat das Projekt eine Oberfläche, die optionalen Felder `Mockup.Theme` und
-   `Mockup.Seitenliste` mit anbieten, nie ungefragt setzen. Auswahlfrage: anlegen / anpassen / abbrechen.
+   `docs/skill-profile-v1.md`. Hat das Projekt eine Oberfläche, gilt für die Seitenliste
+   `skills/mockup-erstellen/references/seitenliste.md#Prüfen und nachträglich anlegen`. Auswahlfrage: anlegen / anpassen / abbrechen.
 4. **Anlegen:** Den Profil-Block an die `CLAUDE.md` anhängen; vorhandener Text bleibt. Steht ein Wert schon als Prosa
    oder in einem älteren Profil-Abschnitt, die Stelle nennen und per Auswahlfrage klären, ob sie auf das Profil verweist
    oder bleibt (Werte genau einmal). Commit im Format des neuen Profils, Push nach seiner Push-Policy.

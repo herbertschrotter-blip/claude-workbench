@@ -8,8 +8,8 @@ Smartphone arbeitet und dort nicht hochladen kann.
 - **Eintragen:** nach jeder fertigen Skill-Änderung statt einer sofortigen Lieferung eine Zeile; ist der Skill schon
   eingetragen, die Zeile auf die neue Version setzen. Hochgeladen wird immer der aktuelle Stand aus dem Repo.
 - **Austragen:** wenn Herbert „gespeichert“ meldet.
-- **Am PC:** jede Zeile aus dem Repo-Stand neu bauen (Zip mit `SKILL.md` und `references/`, ohne `scripts/` und
-  `templates/`; ohne references nur `SKILL.md`), hochladen, Dateizahl unter „Inhalte“ prüfen.
+- **Am PC:** jede Zeile aus dem Repo-Stand neu bauen (Zip mit `SKILL.md` und `references/`, ohne `scripts/`,
+  `templates/` und `assets/`; ohne references nur `SKILL.md`), hochladen, Dateizahl unter „Inhalte“ prüfen.
 
 | Skill | Version | Commit | Lieferung | offen seit |
 |---|---|---|---|---|

@@ -32,7 +32,7 @@ Zuerst kommt das Repo: Die Lieferung wird aus dem Repo-Stand nach dem Commit geb
 - Skill ohne references: die Datei `SKILL.md`.
 - Skill mit references: eine Zip mit `SKILL.md` und dem Ordner `references/`, in der Struktur des Repos. Das gilt auch,
   wenn nur eine Reference geändert wurde, denn claude.ai hält den Skill als Ganzes.
-- Skripte und Vorlagen, die nur Claude Code ausführt (`scripts/`, `templates/`), gehören nicht in die Zip. Bei claude.ai
+- Skripte und Vorlagen, die nur Claude Code ausführt (`scripts/`, `templates/`, `assets/`), gehören nicht in die Zip. Bei claude.ai
   beschreiben die references den Ablauf ohne Ausführung; eine Ausführung wird dort nie behauptet.
 - Die Datei heißt immer exakt `SKILL.md`, mit derselben Groß- und Kleinschreibung. Nur so erkennt claude.ai sie als
   Skill-Datei. Keine Präfixe, Suffixe oder Versionsangaben im Namen.

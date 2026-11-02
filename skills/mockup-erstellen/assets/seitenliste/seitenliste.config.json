@@ -1,0 +1,34 @@
+{
+  "titel": "Projekt Seitenliste",
+  "quelle": "mockups/seiten.json",
+  "doku": "docs/seiten.md",
+  "seite": "mockups/index.html",
+  "vorlage": "tools/seitenliste_vorlage.html",
+  "mockup_ablage": "mockups",
+  "code_wurzel": "src",
+  "start": "1.1",
+  "link": "",
+  "theme": { "befehl": ["node", "tools/mockup_theme.mjs"], "dateien": ["mockups/theme-app.css"] },
+  "seiten_im_code": [
+    { "praefix": "ansicht", "datei": "src/app.js", "block": "const ANSICHT = \\{([^}]*)\\}", "eintrag": "(?:^|,)\\s*(\\w+)" }
+  ],
+  "daten": {
+    "quelle": "mockups/daten.json",
+    "doku": "docs/daten.md",
+    "schema_befehl": ["python3", "tools/schema_leer.py"],
+    "gruppen": [
+      { "bereich": "Stammdaten", "seiten": ["1.1"], "tabellen": { "kunde": "Kunden" } }
+    ],
+    "orte": [
+      { "bereich": "Browser (je Gerät)", "art": "Schlüssel", "eintraege": { "projekt-ansicht": "Zuletzt offene Ansicht" } }
+    ]
+  },
+  "beziehungen": {
+    "dateien": "*.js",
+    "kopf": "^(?:export )?(?:async )?(?:function\\s+(\\w+)|const\\s+(\\w+)\\s*=)",
+    "einstieg": { "1.1": ["startAnsicht"] },
+    "ziel": { "\\boeffneDetail\\(": ["1.2"] },
+    "hand": { "1.2": ["1.1"] },
+    "bausteine": { "Karte": ["1.1", "1.2"] }
+  }
+}

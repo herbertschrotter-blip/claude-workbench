@@ -312,9 +312,11 @@ Die Skills sind in drei konzeptionelle Gruppen einteilbar: **Fachskills**, **Met
 ```
 skills/<skill-name>/
 ├── SKILL.md              ← Die Skill-Definition (Frontmatter + Body)
-└── references/           ← (optional) Progressive Disclosure Details
-    ├── <aspekt-1>.md
-    └── ...
+├── references/           ← (optional) Progressive Disclosure Details
+│   ├── <aspekt-1>.md
+│   └── ...
+├── scripts/              ← (optional) Skripte und ihre Tests, nur Claude Code
+└── assets/               ← (optional) Vorlagen für Projekte, nur Claude Code (z. B. mockup-erstellen/assets/seitenliste)
 ```
 
 Die Testsätze eines Skills liegen nicht mehr im Skill-Ordner, sondern als Eval-Fälle zentral unter `quality/evals/`

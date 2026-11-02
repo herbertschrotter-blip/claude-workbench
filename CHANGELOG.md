@@ -8,6 +8,21 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.69.0] — 2026-11-02
+
+- **skills/mockup-erstellen, code-erstellen, ticket, audit, doc-pflege, projekt-anlegen, chat-wechsel, skill-pflege, Feature:**
+  Die Seitenliste wird Standard für alle Projekte mit Oberfläche; fehlt sie, bieten die Skills an, sie nachträglich
+  anzulegen (Jetzt / Nach dieser Aufgabe / Ausnehmen).
+  - Format mit fester Nummer, getrennten Versionen für Mockup und Code, Schlüssel, Verbindungen, Bausteinen und
+    Fingerabdruck; neue Reference `references/seitenliste.md` statt `seiten-theme.md`.
+  - Neue Vorlagen `skills/mockup-erstellen/assets/seitenliste/`, aus ha-hausbau verallgemeinert; Projektwerte stehen in einer
+    Config. Mit Tests unter `scripts/tests/`. `assets/` kommt nicht in die Zip (skill-pflege `delivery.md`).
+  - Neue Profilfelder `Mockup.Beziehungen`, `Mockup.Pruefung`; bei Projekten mit Oberfläche sind die vier Felder Pflicht,
+    `none` nimmt aus (`docs/skill-profile-v1.md`). Das „nur gemeinsam wirksam“ aus v0.68.0 entfällt.
+  - Datenliste: neues Feld `Mockup.Datenliste`, Reiter „Daten“ mit Nummern D1.1 und S1.1, Aufbau aus leerem Schema, Abgleich
+    als Check; code-erstellen liest sie bei Änderungen an Daten und nennt betroffene Seiten.
+  - code-erstellen: `version_code` nachziehen, Fix ohne Änderung des Aussehens +0.1 (statt v0.68.0: keine neue Version).
+
 ## [v0.68.0] — 2026-11-02
 
 - **skills/mockup-erstellen, code-erstellen, audit, doc-pflege, projekt-anlegen, Feature:** zweite Arbeitsweise für

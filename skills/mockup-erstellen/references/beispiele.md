@@ -10,7 +10,7 @@ eigenes Profil.
 - Docs laden BPM und Heidi
 - Abnahme-Ort
 - Commit
-- Seiten mit Theme (ha-hausbau)
+- Seitenliste (ha-hausbau)
 
 ## Profilwerte BPM und Heidi
 
@@ -59,12 +59,17 @@ Token-Abgleich gegen Colors.xaml.
 - Format: `[vX.Y.Z] <Commit-Modul>, Docs: Mockup <Datei> – <Kurztitel>` (BPM: `Docs`, Heidi: `Doku`)
 - Version: BPM PATCH; Heidi: reine Doku-Commits behalten die Kartenversion
 
-## Seiten mit Theme (ha-hausbau)
+## Seitenliste (ha-hausbau)
 
-Zweite Arbeitsweise (`seiten-theme.md`), Stand der Felder im Projekt ha-hausbau:
+Referenz-Umsetzung des Standards (`seitenliste.md`). Das Projekt nutzt noch eigene Werkzeuge mit festen Listen `BLATT` und
+`ANSICHT`; die Vorlagen unter `../assets/seitenliste/` holen das aus der Config.
 
 | Feld | Wert |
 |------|------|
 | Ablage der Seiten | `mockups/seiten/`, eine Datei je Seite oder Formular |
-| `Mockup.Theme` | `mockups/theme.js` (von Hand), dazu erzeugte Dateien wie `mockups/theme-app.css`; Befehl `tools/mockup_theme.mjs` |
-| `Mockup.Seitenliste` | Quelle `mockups/seiten.json`; Befehl `python3 tools/seitenliste.py` erzeugt `docs/seiten.md` und `mockups/index.html` |
+| `Mockup.Seitenliste` | `mockups/seiten.json`; `python3 tools/seitenliste.py` (Vorlage `tools/seitenliste_vorlage.html`) erzeugt `docs/seiten.md` und `mockups/index.html` |
+| `Mockup.Theme` | `mockups/theme.js` (von Hand), erzeugt `mockups/theme-app.css` u. a.; `node tools/mockup_theme.mjs` |
+| `Mockup.Beziehungen` | `python3 tools/seitenbeziehungen.py` |
+| `Mockup.Pruefung` | `seite` (`tests/seite/seitenliste.test.mjs`) |
+| `Mockup.Datenliste` | `mockups/daten.json`; `.venv/bin/python tools/datenliste.py` erzeugt auch `docs/daten.md` |
+| `Commit.Doku-Check` | Seite geändert → `mockups/seiten.json`; Schema oder Speicherort geändert → `tools/datenliste.py` |

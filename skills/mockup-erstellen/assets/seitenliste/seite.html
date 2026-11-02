@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1.1 Beispiel</title>
+<link rel="stylesheet" href="../theme-app.css">
+<script src="../theme.js"></script>
+</head>
+<body>
+<script>
+const M = Mockup;
+M.start({ nr: '1.1', titel: 'Beispiel', version: '0.1',
+  zustaende: [['ok', 'normal'], ['leer', 'leer']],
+  zeige: (s) => s.z === 'leer' ? '<p>Noch keine Einträge</p>' : `<button onclick="${M.gehe('naechste-seite')}">Weiter</button>`,
+});
+</script>
+</body>
+</html>

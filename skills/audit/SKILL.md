@@ -111,7 +111,7 @@ läuft, das sie braucht.
 | `Modul.Manifest` | Pfad oder Muster der Modul-Manifeste |
 | `Modul.Prüfumfang` | Positivliste der lesbaren Bereiche |
 | `Modul.Nachweise` | optional: Zuordnung Check/Testfall → Teilnachweis |
-| `Mockup.Seitenliste`, `Mockup.Theme` | optional, nur gemeinsam wirksam: Quelldatei, Erzeuger und erzeugte Dateien; `none` oder ohne Feld → „Modul 9 — Seitenliste“ entfällt |
+| `Mockup.Seitenliste`, `Mockup.Theme`, `Mockup.Pruefung`, `Mockup.Datenliste` | Quelldatei, Erzeuger, Check; `Mockup.Seitenliste: none` → „Modul 9 — Seitenliste“ entfällt |
 
 1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Prüfpunkt oder das Modul entfällt.
 2. **Rückfall:** die älteren Abschnitte `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router) und `## Code-Profil`
@@ -153,7 +153,7 @@ Beispiele zweier Projekte: `references/beispiele.md`, Abschnitt „Doc-Laderegel
 
 ### Modus A — Vollaudit
 Alle 9 Module („Modul 7 — Grundsatzregeln“ nur, wenn das Profil Grundsatzregeln nennt; „Modul 8 — Skills (im
-Skill-Repo)“ nur im Skill-Repo; „Modul 9 — Seitenliste“ nur mit `Mockup.Theme` und `Mockup.Seitenliste`). Token-intensiv — vor
+Skill-Repo)“ nur im Skill-Repo; „Modul 9 — Seitenliste“ nur mit `Mockup.Ablage`). Token-intensiv — vor
 Start per Auswahlfrage bestätigen lassen.
 
 ### Modus B — Teilaudit
@@ -274,8 +274,12 @@ Nur im Skill-Repo (Repo mit `skills/<name>/SKILL.md` und `docs/skill-quality.md`
 
 Neutral: Stimmen Seitenliste, Code, Mockups und erzeugte Dateien überein?
 
-Nur, wenn das Profil `Mockup.Theme` und `Mockup.Seitenliste` nennt; sonst entfällt das Modul.
+Nur, wenn `Mockup.Ablage` nicht `none` ist, Format nach `skills/mockup-erstellen/references/seitenliste.md`; bei `Mockup.Seitenliste: none` entfällt
+das Modul. Fehlen die Felder oder ihre Dateien, ist das ein Befund (angelegt wird im Fix-Skill, nicht hier).
 
+- Den Abgleich auswerten: Ergebnis von `Mockup.Pruefung` (Lauf nur in einer Kopie, wie unten bei den erzeugten Dateien).
+- Melden: Hinweise auf geänderten Code, fehlende Mockups, tote Links, Seiten ohne Verbindungen, Abstand Mockup zu Code; mit
+  Datenliste auch Tabellen ohne Eintrag und veraltetes Schema. Inhalte echter Daten nie lesen.
 - Jede Seite der Quelldatei nennt eine vorhandene Code-Datei und ein vorhandenes Mockup.
 - Jede Ansicht und jedes Formular im Code steht in der Liste, soweit das Projekt sie aufzählen kann; sonst „Nachweis
   offen“.

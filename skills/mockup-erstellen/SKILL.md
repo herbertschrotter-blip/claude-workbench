@@ -3,7 +3,7 @@ name: mockup-erstellen
 description: >
   Erstellt UI-Mockups als HTML-Entwürfe für neue Screens, Dialoge und
   Layoutvarianten – nach dem Skill-Profil des Projekts (Bereich Mockup: Ablage,
-  Designquelle, Ansichten, optional Theme und Seitenliste). Use when users want to mocken, entwerfen, skizzieren,
+  Designquelle, Ansichten, Theme, Seitenliste). Use when users want to mocken, entwerfen, skizzieren,
   zeigen, visualisieren, layouten, or want to clarify how a screen should
   look before coding — including mockups, screen designs, UI proposals,
   layout drafts, dialog sketches, tab/panel arrangements, and changes to an
@@ -31,8 +31,8 @@ Erstellt HTML-Mockups für die Screens des aktiven Projekts. Stellt sicher dass:
 Was projektspezifisch ist, steht im Skill-Profil des Projekts (Abschnitt „Voraussetzung: Skill-Profil“). Wie zwei
 Projekte die Werte füllen (Ordner je Fenster mit Sitemap; eine Datei mit Tabs und CSS-Variablen aus einer Token-Datei):
 [references/beispiele.md](references/beispiele.md). Was nur im Cowork-Chat gilt (Visualizer, Desktop Commander):
-[references/cowork.md](references/cowork.md). Je Seite eine Datei mit gemeinsamem Theme und Seitenliste:
-[references/seiten-theme.md](references/seiten-theme.md).
+[references/cowork.md](references/cowork.md). Der Standard für Projekte mit Oberfläche, je Seite eine Datei
+mit gemeinsamem Theme und Seitenliste: [references/seitenliste.md](references/seitenliste.md).
 
 ---
 
@@ -121,8 +121,11 @@ Cowork: für Schreiboperationen Arbeitsverzeichnis nach **cc-steuerung**, Abschn
 | Vorschau | – (Umgebung) | wie der User das Mockup sieht |
 | Abnahme-Ort | `Mockup.Abnahme-Ort` | wo die Abnahme festgehalten wird |
 | Commit-Modul | `Commit.Module` | Modulname für den Commit |
-| Theme | `Mockup.Theme` (optional) | Dateien des gemeinsamen Themes, erzeugte Teile und der Befehl dazu |
-| Seitenliste | `Mockup.Seitenliste` (optional) | Quelldatei mit Version, Mockup und Verlauf je Seite, Befehl, der Liste und Doku erzeugt |
+| Theme | `Mockup.Theme` | Dateien des gemeinsamen Themes, Befehl dazu |
+| Seitenliste | `Mockup.Seitenliste` | Quelldatei je Seite, Befehl, der Liste und Doku erzeugt |
+| Beziehungen | `Mockup.Beziehungen` | Befehl, der die Verbindungen aus dem Code liest |
+| Prüfung | `Mockup.Pruefung` | Name des Checks für den Abgleich |
+| Datenliste | `Mockup.Datenliste` | Quelldatei und Befehl des Reiters „Daten“ |
 
 Werte von BPM und Heidi als Beispiel: [references/beispiele.md](references/beispiele.md#profilwerte-bpm-und-heidi).
 
@@ -137,11 +140,16 @@ Mockup in einem solchen Projekt lesen. Ohne „Sitemap: ja“ wird die Reference
 
 ---
 
-## Seiten mit Theme (`Mockup.Theme` und `Mockup.Seitenliste` gesetzt)
+## Seitenliste (Projekte mit Oberfläche)
 
-Nennt das Profil beide Felder, gilt je Seite oder Formular eine Datei mit gemeinsamem Theme und einer Seitenliste:
-[references/seiten-theme.md](references/seiten-theme.md). Vor jedem Mockup in einem solchen Projekt lesen. Steht eines
-der Felder auf `none` oder fehlt es, bleibt alles wie bisher und die Reference wird nicht geladen.
+Standard: je Seite oder Formular eine Datei mit gemeinsamem Theme und einer Seitenliste. Vor jedem Mockup
+[references/seitenliste.md](references/seitenliste.md) lesen. Steht `Mockup.Seitenliste` auf `none`, ist das Projekt
+ausgenommen: Es gilt die Arbeitsweise unten ohne Seitenliste, und die Reference wird nicht geladen.
+
+**Seitenliste** (`Mockup.Ablage` und `Mockup.Seitenliste` nicht `none`): Fehlen die Felder `Mockup.Seitenliste`, `Mockup.Theme`, `Mockup.Beziehungen`,
+`Mockup.Pruefung`, `Mockup.Datenliste` oder ihre Dateien, sagen, was fehlt, und per Auswahlfrage „Jetzt anlegen (Empfehlung)“ /
+„Nach dieser Aufgabe anlegen“ / „Dieses Projekt ausnehmen“ (Felder werden `none`). Eine laufende kleine Aufgabe wird nicht blockiert.
+Ablauf und Format: [references/seitenliste.md](references/seitenliste.md#prüfen-und-nachträglich-anlegen).
 
 ---
 
@@ -161,11 +169,11 @@ Wie BPM und Heidi das füllen: [references/beispiele.md](references/beispiele.md
 
 ### Bestehende Mockups prüfen
 
-Vor Erstellung eines neuen Mockups die Ablage des Profils listen (`<Ablage>/**/*.html`); bei Seiten mit Theme zuerst die
-Seitenliste lesen (`references/seiten-theme.md#Eine Datei je Seite`):
+Vor Erstellung eines neuen Mockups die Ablage des Profils listen (`<Ablage>/**/*.html`); mit Seitenliste zuerst sie lesen;
+gibt es die Seite, wird nur ihre Datei geändert (`references/seitenliste.md#Mockups und Theme`):
 - Prüfe ob `NN_Fenster/`-Ordner schon existiert (dann ist es eine neue Variante, kein neues Fenster — siehe `references/sitemap.md#Neues Fenster anlegen`)
 - Bei Update einer bestehenden Mockup-Datei: Per Auswahlfrage fragen (Archivieren, Überschreiben, Abbrechen); nicht bei
-  Seiten mit Theme.
+  Seiten der Seitenliste.
   Abgelöste Mockups bleiben liegen, wenn das Projekt es so führt, und werden am Abnahme-Ort als „abgelöst durch
   <Datei>“ vermerkt
 
@@ -204,8 +212,8 @@ Verbindlich, in dieser Reihenfolge.
 - **Claude Code:** Datei in die Ablage schreiben (Speichern ist hier dieselbe Datei) und im
   **Browser-Bereich** öffnen (`file://`-Pfad bzw. `preview_start`), Screenshot prüfen, zusätzlich
   per `SendUserFile` (render) an den User; Ansichten aus dem Profil im Browser nachstellen
-  (`resize_window` auf die Breite der Ansicht). Bei Seiten mit Theme statt der einzelnen Datei die Seitenliste samt
-  Seiten und Theme veröffentlichen und den Link nennen (`references/seiten-theme.md#Vorschau`)
+  (`resize_window` auf die Breite der Ansicht). Mit Seitenliste statt der einzelnen Datei die Seitenliste samt Seiten
+  und Theme veröffentlichen und den Link nennen (`references/seitenliste.md#Vorschau`)
 - **Cowork:** [references/cowork.md](references/cowork.md#vorschau)
 - User bestätigt oder gibt Änderungswünsche
 - Iterieren bis User zufrieden ist
@@ -217,7 +225,7 @@ Verbindlich, in dieser Reihenfolge.
 - Neue Tokens, die es in der Quelle nicht gibt, gelten als Abweichung
 - Mockup darf keine Werte enthalten, die später „aus Versehen“ Standard der App werden
 - Für erzeugte Theme-Dateien entfällt der Abgleich; er gilt für alles, was in der Seite oder im von Hand gepflegten
-  Theme-Teil steht (`references/seiten-theme.md#Theme`)
+  Theme-Teil steht (`references/seitenliste.md#Mockups und Theme`)
 
 ### Ansichten prüfen (`Mockup.Ansichten`)
 - Jede Pflichtansicht ist im Mockup vorhanden (z. B. Desktop und Smartphone-Breite nebeneinander)
@@ -238,15 +246,15 @@ Pflicht, sobald der User abnimmt.
   Abweichung zum bisherigen Verhalten dort hinein. Beispiele: [references/beispiele.md](references/beispiele.md#abnahme-ort)
 - Ohne festgehaltene Abnahme gilt das Mockup für code-erstellen (Mockup-Hook) als **nicht** abgenommen.
 - Bei „Später“: Hinweis, dass der Bau des Schritts blockiert bleibt.
-- Bei Seiten mit Theme: Verlaufseintrag, Version und Befehl nach `references/seiten-theme.md#Abnahme und Version`; die
-  Abnahme gilt nur für die geänderte Seite.
+- Mit Seitenliste: `version_mockup`, Verlauf und Befehl nach `references/seitenliste.md#Abnahme`; der Eintrag gilt nur
+  für diese Seite.
 
 ### Commit-Vorschlag
 - Format: `Commit.Format` mit dem Doku-Modul aus `Commit.Module`, Typ `Docs`: `[vX.Y.Z] <Modul>, Docs: Mockup <Datei> – <Kurztitel>`
 - Version: `Commit.Versionsregel` (reine Doku-Commits behalten oft die aktuelle Nummer)
 - Abnahme-Eintrag (Abschnitt „Abnahme festhalten“) im selben Commit
 - Falls Sitemap mitgeändert oder Aufrufer-Mockups gepatcht: in Commit-Message erwähnen
-- Bei Seiten mit Theme: Quelldatei der Seitenliste und erzeugte Dateien im selben Commit
+- Mit Seitenliste: Quelldatei und erzeugte Dateien im selben Commit
 
 ---
 
@@ -257,7 +265,7 @@ Pflicht, sobald der User abnimmt.
 - Eigenes `<style>` Block mit den Tokens der Designquelle des Profils (geladen, nicht im Skill gespeichert)
 - Kein Framework, keine externen Dependencies (keine Web-Fonts, keine CDN-Skripte), wenn das Projekt sie verbietet
 - Seiten mit Theme sind nicht allein öffenbar und haben keinen eigenen Token-Block, auch nicht in der „Struktur“ unten:
-  sie brauchen die Theme-Dateien (`references/seiten-theme.md#Theme`). Das Verbot externer Ressourcen bleibt
+  sie brauchen die Theme-Dateien (`references/seitenliste.md#Mockups und Theme`). Das Verbot externer Ressourcen bleibt
 
 ### Tokens in der Form des Profils
 - Tokens in der Form der Designquelle: Hex-Werte aus der Quelle, oder CSS-Variablen in einem `:root`-Block mit
@@ -313,4 +321,4 @@ Pflicht, sobald der User abnimmt.
 - **Tote Pfade nicht prüfen vor Mockup-Erstellung** — `alert('Mockup folgt: X')` muss ersetzt werden wenn X jetzt existiert
 - **Aufrufer-HTMLs nicht patchen** beim Anlegen eines neuen Fensters — `references/sitemap.md#Neues Fenster anlegen`, Abschnitt „Aufrufer-HTMLs patchen“ ist Pflicht
 - **Pfade in onclick ohne Selbstcheck speichern** — Datei-Existenz und Sitemap-Konsistenz prüfen (`references/sitemap.md#Sitemap und Selbstcheck`)
-- **Bausteine in Seiten kopieren, erzeugte Theme-Dateien von Hand ändern, Abnahme ohne Verlaufseintrag** (Seiten mit Theme, `references/seiten-theme.md`)
+- **Bausteine in Seiten kopieren, erzeugte Theme-Dateien von Hand ändern, Abnahme ohne Verlaufseintrag** (`references/seitenliste.md`)
