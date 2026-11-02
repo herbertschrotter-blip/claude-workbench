@@ -542,6 +542,8 @@ class ProfilTest(unittest.TestCase):
     PROFIL = ("## Skill-Profil\n\n### Mockup\n- Ablage: mockups\n"
               "- Theme: mockups/theme.js und mockups/theme.css (erzeugt von tools/mockup_theme.mjs)\n"
               "- Seitenliste: mockups/seiten.json (Quelle); python3 tools/seitenliste.py erzeugt docs/seiten.md\n"
+              "- Beziehungen: python3 tools/seitenbeziehungen.py\n"
+              "- Datenliste: mockups/daten.json; python3 tools/datenliste.py\n"
               "\n### Review\n- Theme: tools/fremd.py\n")
 
     def lauf(self, profil, datei, skills):
@@ -555,6 +557,8 @@ class ProfilTest(unittest.TestCase):
     def test_erzeuger_unter_mockup_erstellen(self):
         self.assertEqual(self.lauf(self.PROFIL, "tools/mockup_theme.mjs", {"mockup-erstellen"}), 0)
         self.assertEqual(self.lauf(self.PROFIL, "tools/seitenliste.py", {"mockup-erstellen"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "tools/seitenbeziehungen.py", {"mockup-erstellen"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "tools/datenliste.py", {"mockup-erstellen"}), 0)
 
     def test_erzeuger_unter_code_erstellen_bleibt(self):
         self.assertEqual(self.lauf(self.PROFIL, "tools/seitenliste.py", {"code-erstellen"}), 0)
@@ -596,6 +600,9 @@ class ProfilTest(unittest.TestCase):
     def test_quelldatei_unter_code_und_doku(self):
         self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten.json", {"code-erstellen"}), 0)
         self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten.json", {"doc-pflege"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten.json", {"ticket"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "mockups/daten.json", {"code-erstellen"}), 0)
+        self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten.json", {"projekt-anlegen"}), 0)
         self.assertEqual(self.lauf(self.PROFIL, "mockups/seiten/start.html", {"code-erstellen"}), 2)
 
 

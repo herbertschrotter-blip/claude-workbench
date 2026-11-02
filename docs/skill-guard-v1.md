@@ -174,8 +174,7 @@ Tests: `python3 -m unittest plugins/work-hooks/hooks/test_skill_guard.py` (die M
 - Dateien, die ein Build-Skript erzeugt (z. B. ein gebündeltes Mockup), sieht der Wächter nicht.
 - Das Regelfeld `profil` kann im Freitext Quelle und erzeugte Dateien nicht trennen: Auch eine dort genannte erzeugte
   Datei ist für die Skills des Felds änderbar; dass sie nicht von Hand geändert wird, regeln die Skills. Es liest nur
-  eine Zeile je Feld, und ein Worktree ohne eigene `CLAUDE.md` blockt zu viel, nie zu wenig. Es prüft auch nicht, ob
-  beide Mockup-Felder gesetzt sind.
+  eine Zeile je Feld, und ein Worktree ohne eigene `CLAUDE.md` blockt zu viel, nie zu wenig.
 - Hooks feuern laut Doku von Claude Code auch in Subagenten und tragen dann `agent_id` und `agent_type`. Ob
   `transcript_path` dort auf die Hauptsitzung oder den Agenten zeigt, ist nicht beschrieben; der Wächter baut den Pfad
   zum Transcript des Agenten deshalb selbst. Ohne `agent_id` und ohne Agenten-Pfad ist ein Subagent nicht von der
