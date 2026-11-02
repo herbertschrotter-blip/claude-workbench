@@ -17,6 +17,6 @@ Smartphone arbeitet und dort nicht hochladen kann.
 | chat-wechsel | v0.71.0 | 98871e5 | Zip (SKILL.md + references/, 6 Dateien) | 02.11.2026 |
 | code-erstellen | v0.71.0 | 98871e5 | Zip (SKILL.md + references/, 8 Dateien) | 02.11.2026 |
 | doc-pflege | v0.71.0 | 98871e5 | Zip (SKILL.md + references/, 3 Dateien) | 02.11.2026 |
-| mockup-erstellen | v0.72.0 | ec48c2b | Zip (SKILL.md + references/, 5 Dateien) | 02.11.2026 |
+| mockup-erstellen | v0.73.0 | 727e187 | Zip (SKILL.md + references/, 5 Dateien) | 02.11.2026 |
 | projekt-anlegen | v0.72.0 | ec48c2b | Zip (SKILL.md + references/, 7 Dateien) | 02.11.2026 |
 | ticket | v0.71.0 | 98871e5 | Zip (SKILL.md + references/, 2 Dateien) | 02.11.2026 |
