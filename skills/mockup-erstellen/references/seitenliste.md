@@ -12,6 +12,7 @@ daraus erzeugt eine Doku und eine veröffentlichte Seite. Dateien und Befehle ko
 - Versionen
 - Veröffentlichte Seitenliste
 - Mockups und Theme
+- Altes Mockup übernehmen
 - Vorschau
 - Abnahme
 - Datenliste
@@ -95,8 +96,24 @@ Erzeugt aus `seitenliste_vorlage.html`:
   Theme-Teil steht.
 - Interaktiv heißt: Seiten, Zustände und Hauptknöpfe sind klickbar, Knöpfe führen zur nächsten Seite. Keine echte Logik.
 - Die Pflichtansichten aus `Mockup.Ansichten` sind umschaltbar, Nummer und Version stehen in der Vorführleiste.
-- Ältere Mockups bleiben liegen. Eine Seite wandert erst um, wenn sie dran ist; das alte Mockup wird dann am Abnahme-Ort
-  als abgelöst vermerkt.
+- Ältere Mockups bleiben liegen. Eine Seite wandert erst um, wenn sie dran ist (Abschnitt „Altes Mockup übernehmen“); das
+  alte Mockup wird dann am Abnahme-Ort als abgelöst vermerkt.
+
+## Altes Mockup übernehmen
+
+Ein älteres Mockup je Thema wird zur Seite der Seitenliste, wenn seine Seite dran ist oder der User es sagt:
+
+1. Die Seite aus dem alten Mockup heraus neu in der Ablage anlegen, mit Bausteinen aus dem Theme. Die alte Datei bleibt
+   unberührt, auch wenn sie mehrere Seiten zeigt; jede Seite bekommt ihre eigene Datei, nur mit ihrem Teil.
+2. Klickziele des alten Mockups übernehmen: Knöpfe führen mit `Mockup.geh` zur neuen Datei der Zielseite. Hat das Ziel noch
+   keine eigene Datei, führt der Knopf zu seinem alten Mockup (`Mockup.geh('../<datei>')`).
+3. In die Quelldatei eintragen: `mockup` setzen, `mockup_alt` bleibt als Herkunft stehen. Die Verlinkungen kommen nach `zu`:
+   den Befehl aus `Mockup.Beziehungen` ausführen und Wege, die der Code nicht zeigt, unter `hand` der Config ergänzen. Fehlt
+   die Seite noch in der Liste, bekommt sie die nächste freie Nummer.
+4. Sieht die Seite aus wie vorher, bleibt `version_mockup`, im Verlauf steht „aus altem Mockup übernommen“ unter dieser
+   Version. Ändert sie sich, zählt die Version nach Abschnitt „Abnahme“.
+5. Befehl aus `Mockup.Seitenliste` ausführen, Vorschau wie unten. Nach der Abnahme das alte Mockup am Abnahme-Ort als
+   abgelöst vermerken, die Datei selbst nicht ändern.
 
 ## Vorschau
 

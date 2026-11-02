@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.70.0] — 2026-11-02
+
+- **skills/mockup-erstellen, Feature:** Ablauf „Altes Mockup übernehmen“: Die Seite entsteht neu aus dem alten Mockup, die alte
+  Datei bleibt unberührt, Seite und Verlinkungen kommen in die Seitenliste.
+
 ## [v0.69.0] — 2026-11-02
 
 - **skills/mockup-erstellen, code-erstellen, ticket, audit, doc-pflege, projekt-anlegen, chat-wechsel, skill-pflege, Feature:**
