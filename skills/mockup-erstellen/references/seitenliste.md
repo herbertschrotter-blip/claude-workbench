@@ -14,6 +14,7 @@ daraus erzeugt eine Doku und eine veröffentlichte Seite. Dateien und Befehle ko
 - Theme-Abgleich
 - Veröffentlichte Seitenliste
 - Mockups und Theme
+- Dev-Schalter
 - Altes Mockup übernehmen
 - Vorschau
 - Abnahme
@@ -101,7 +102,9 @@ Das Skript liefert Fakten und schreibt, Claude liest und bewertet.
    <datei>` übernehmen. Je Eintrag `nr`, `art`, `was`, dazu `datum` und `commit` aus Schritt 2, wo vorhanden `ticket`. Der Befehl
    zählt die Versionen, schreibt die Mockup-Version in die Datei, setzt `code_stand` und `stand_commit` aller Seiten.
    Versionsnummern, Hashes und erzeugte Dateien nie von Hand ändern.
-5. Theme-Abgleich (nächster Abschnitt) und Befehl aus `Mockup.Beziehungen`.
+5. Theme-Abgleich (nächster Abschnitt) und Befehl aus `Mockup.Beziehungen`. Ist `dev_versionen` gesetzt und hat sich eine
+   Code-Version geändert: neu bauen, das Gebaute kommt in den Commit aus dem nächsten Schritt, danach `Code.Auslieferung`
+   (Abschnitt „Dev-Schalter“).
 6. Check aus `Mockup.Pruefung`, Commit mit `Seitenliste aktualisiert` im Kurztitel (diese Commits zählt `--offen` nicht
    mit), Seitenliste veröffentlichen (Abschnitt „Vorschau“), danach sagen: welche Seiten, welche Versionen, welche Zuordnung
    unsicher war.
@@ -131,6 +134,12 @@ Erzeugt aus `seitenliste_vorlage.html`:
 - mit Theme-Hinweisen: Chip T mit der Zahl, Filter Theme, aufklappbarer Hinweis je Seite und für alle Seiten, jeweils mit
   „Prompt kopieren“ und dem Prompt in einem Textfeld, falls die Zwischenablage gesperrt ist
 - Reiter Seiten und Daten, wenn es eine Datenliste gibt
+- Haben Mockup und Code einer Seite beide eine Version und sind sie ungleich, sind beide Chips rot und die Zeile ist rot
+  gerahmt und hinterlegt; beim Abdunkeln bleibt sie gut sichtbar, der Kopf erklärt es („rot: M und C ungleich“). Seiten ohne
+  Mockup oder ohne Code bleiben normal. Rot heißt nur ungleich, auch wenn der Code weiter ist als das Mockup
+- Knopf „Gesamt“ für den offenen Reiter: Vollbild mit allen Seiten bzw. Tabellen je Bereich und allen Verbindungen als
+  Linien. Antippen hebt die Seite samt Nachbarn und Linien hervor, zeigt „kommt von n · geht zu n“ und „Öffnen ›“ zur
+  Fokus-Ansicht. Rote Seiten bleiben rot
 - Fokus-Ansicht: gewählte Seite in der Mitte, Kommt von und Geht zu mit Pfeilen, ab 7 Nachbarn „+ n weitere“, der Weg
   bleibt oben stehen; am Desktop neben der Liste, am Handy als eigene Ansicht
 - Mockups öffnen in einem eigenen Fenster per fetch und `srcdoc` mit `base`, weil Seitenlinks im Rahmen der
@@ -153,8 +162,24 @@ Erzeugt aus `seitenliste_vorlage.html`:
   Theme-Teil steht.
 - Interaktiv heißt: Seiten, Zustände und Hauptknöpfe sind klickbar, Knöpfe führen zur nächsten Seite. Keine echte Logik.
 - Die Pflichtansichten aus `Mockup.Ansichten` sind umschaltbar, Nummer und Version stehen in der Vorführleiste.
+- Jedes Mockup zeigt Nummer und Version der Seite unten links im Rahmen (`theme.js`), immer und ohne Schalter.
 - Ältere Mockups bleiben liegen. Eine Seite wandert erst um, wenn sie dran ist (Abschnitt „Altes Mockup übernehmen“); das
   alte Mockup wird dann am Abnahme-Ort als abgelöst vermerkt.
+
+## Dev-Schalter
+
+Standard für alle Projekte mit Oberfläche (`Mockup.Dev-Schalter`; `none` nimmt ein Projekt bewusst aus). Der Schalter blendet
+Entwicklerhilfen ein, ist ab Werk aus und gilt nur für das Gerät (im Web `localStorage`, ohne Speicher bleibt er aus). Er
+steht im Menü der App, in ha-hausbau unter ☰ Mehr, und braucht keine Rechte.
+
+- **Erste Hilfe:** Nummer und Version der Seite unten links in jedem Fenster und Formular, nur bei Dev AN und an einer
+  zentralen Stelle der App, nicht je Seite. Format wie im Mockup, z. B. `1.4 v2.1`. Das Programm zeigt `version_code`, das
+  Mockup `version_mockup`.
+- **Herkunft:** Die Anzeige holt die Werte über den Schlüssel der Seite aus der Datei `dev_versionen`. Der Listen-Befehl
+  erzeugt sie aus der Quelldatei, der Abgleich meldet sie als veraltet. Fenster ohne Eintrag zeigen die Version des Programms.
+- **Neu bauen:** Die Seitenversion entsteht erst nach dem Commit (Abschnitt „Aktualisieren“). Darum wird nach jedem
+  Listen-Nachtrag neu gebaut und ausgeliefert; ohne das zeigt das Programm die alte Nummer. Die Bauergebnisse gehören
+  nicht in `code` einer Seite, sonst meldet der Abgleich den Fingerabdruck als geändert.
 
 ## Altes Mockup übernehmen
 
@@ -212,6 +237,7 @@ Check des Projekts (`Mockup.Pruefung`), Teil von `Code.Tests`, blockiert den Com
 - neue Tabelle oder Schema-Änderung ohne Eintrag ist rot; Datenliste und ihre Doku sind neu erzeugt, ihre Seiten gibt es
 
 - `version_abgenommen` liegt nicht über `version_mockup`
+- die Datei `dev_versionen` ist neu erzeugt
 
 Ein geänderter Fingerabdruck ohne neue Version ist nur ein Hinweis, die Theme-Hinweise ebenso: Die Version entsteht erst aus dem fertigen Commit, darum kann der Check sie nicht sperren. Bekannte Grenze: Varianten mit `#` zählen nur als
 „Hauptseite gibt es“.
@@ -223,7 +249,7 @@ nicht vor; angelegt wird in Claude Code.
 
 | Datei | Zweck | Anpassen |
 |---|---|---|
-| `seitenliste.config.json` | alle Projektwerte der Werkzeuge: Pfade, `titel`, `start`, `link`, `theme`, `seiten_im_code` (Muster, die Seiten im Code finden), `themeabgleich` (`ziel`, `token`, `eigenschaften`, `ausnahmen`), `beziehungen` (Einstieg, Ziele, Handwege, Bausteine), `daten` (Datenliste; fehlt der Schlüssel, gibt es keinen Reiter) | ganz |
+| `seitenliste.config.json` | alle Projektwerte der Werkzeuge: Pfade, `titel`, `start`, `link`, `dev_versionen` (Datei für den Dev-Schalter, `.json` oder JavaScript; ohne Schlüssel keine), `theme`, `seiten_im_code` (Muster, die Seiten im Code finden), `themeabgleich` (`ziel`, `token`, `eigenschaften`, `ausnahmen`), `beziehungen` (Einstieg, Ziele, Handwege, Bausteine), `daten` (Datenliste; fehlt der Schlüssel, gibt es keinen Reiter) | ganz |
 | `seitenliste.py` | erzeugt Doku und Seite, `--abnahme <nr>` setzt `code_stand`; `--start`, `--offen`, `--eintragen`, `--abgenommen` (Abschnitt „Aktualisieren“) | nichts |
 | `seitenliste_vorlage.html` | veröffentlichte Seite | nichts |
 | `seitenbeziehungen.py` | schreibt `zu` und `nutzt` aus dem Code | nichts |

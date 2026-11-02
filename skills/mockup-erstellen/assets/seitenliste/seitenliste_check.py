@@ -21,9 +21,7 @@ def version(v: str | None) -> tuple[int, int]:
     return int(teile[0]), int(teile[1])
 
 
-def schluessel(s: dict) -> list[str]:
-    k = s.get("schluessel") or []
-    return [k] if isinstance(k, str) else k
+schluessel = sl.schluessel
 
 
 def im_code(cfg: dict) -> set[str]:
@@ -117,7 +115,10 @@ def pruefe_erzeugt(cfg: dict, gruppen: list[dict]) -> list[str]:
     fehler = []
     if cfg.get("daten") and not (sl.WURZEL / cfg["daten"]["quelle"]).exists():
         return [f"{cfg['daten']['quelle']} fehlt: python3 tools/datenliste.py"]
-    for name, soll in ((cfg["doku"], sl.md(cfg, gruppen)), (cfg["seite"], sl.html(cfg, gruppen))):
+    erzeugt = [(cfg["doku"], sl.md(cfg, gruppen)), (cfg["seite"], sl.html(cfg, gruppen))]
+    if cfg.get("dev_versionen"):
+        erzeugt.append((cfg["dev_versionen"], sl.dev_text(cfg, gruppen)))
+    for name, soll in erzeugt:
         p = sl.WURZEL / name
         if not p.exists() or p.read_text(encoding="utf8") != soll:
             fehler.append(f"{name} veraltet: python3 tools/seitenliste.py")

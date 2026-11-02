@@ -1,4 +1,4 @@
-// Gemeinsame Bausteine der Mockups je Seite: Vorführleiste (Nummer, Version, Ansichten, Zustände) und Wechsel zwischen den
+// Gemeinsame Bausteine der Mockups je Seite: Vorführleiste (Nummer, Version, Ansichten, Zustände), Version unten links und Wechsel zwischen den
 // Seiten. Eine Seite ruft Mockup.start({ nr, titel, version, zustaende, zeige(s) }) auf. Bausteine, die mehrere Seiten
 // nutzen, kommen hierher, nie in eine Seite. ANSICHTEN aus Mockup.Ansichten des Skill-Profils eintragen; die Pfade `seiten/` und
 // `../index.html` gelten für Seiten unter <Ablage>/seiten/ neben der Seitenliste.
@@ -13,7 +13,8 @@
     .vorf button { font: inherit; font-size: 12px; background: #2a2a2a; color: #ddd; border: 1px solid #444; border-radius: 8px; padding: 4px 9px; cursor: pointer; }
     .vorf button.on { background: #3987e5; border-color: #3987e5; color: #fff; }
     .buehne { display: flex; justify-content: center; padding: 16px; }
-    .rahmen { width: 100%; height: 800px; border-radius: 18px; overflow: hidden; border: 1px solid #333; position: relative; transform: translateZ(0); }`;
+    .rahmen { width: 100%; height: 800px; border-radius: 18px; overflow: hidden; border: 1px solid #333; position: relative; transform: translateZ(0); }
+    .vnr { position: absolute; left: 10px; bottom: 6px; z-index: 50; padding: 1px 6px; border-radius: 5px; font-size: 11px; color: #fff; background: rgba(0, 0, 0, .55); pointer-events: none; }`;
   document.head.appendChild(rahmen);
 
   let s = {}, opt = {};
@@ -27,7 +28,7 @@
   function zeigen() {
     const r = document.getElementById('rahmen');
     r.style.maxWidth = `${ANSICHTEN.find(([k]) => k === s.ansicht)[2]}px`;
-    r.innerHTML = opt.zeige(s);
+    r.innerHTML = `${opt.zeige(s)}<div class="vnr">${opt.nr} v${opt.version}</div>`;
     document.querySelectorAll('.vorf button').forEach((b) => b.classList.toggle('on', s[b.dataset.k] === b.dataset.w));
   }
 

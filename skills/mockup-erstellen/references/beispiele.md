@@ -71,5 +71,6 @@ Referenz-Umsetzung des Standards (`seitenliste.md`). Das Projekt nutzt noch eige
 | `Mockup.Theme` | `mockups/theme.js` (von Hand), erzeugt `mockups/theme-app.css` u. a.; `node tools/mockup_theme.mjs` |
 | `Mockup.Beziehungen` | `python3 tools/seitenbeziehungen.py` |
 | `Mockup.Pruefung` | `seite` (`tests/seite/seitenliste.test.mjs`) |
+| `Mockup.Dev-Schalter` | `☰ Mehr; hausbau-dev; custom_components/hausbau/frontend/src/seitenversionen.js` (Vorschlag: Das Projekt zeigt noch Version der Integration und Fensternamen) |
 | `Mockup.Datenliste` | `mockups/daten.json`; `.venv/bin/python tools/datenliste.py` erzeugt auch `docs/daten.md` |
 | `Commit.Doku-Check` | Seite geändert → `mockups/seiten.json`; Schema oder Speicherort geändert → `tools/datenliste.py` |

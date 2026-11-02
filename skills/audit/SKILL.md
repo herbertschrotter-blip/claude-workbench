@@ -112,6 +112,7 @@ läuft, das sie braucht.
 | `Modul.Prüfumfang` | Positivliste der lesbaren Bereiche |
 | `Modul.Nachweise` | optional: Zuordnung Check/Testfall → Teilnachweis |
 | `Mockup.Seitenliste`, `Mockup.Theme`, `Mockup.Pruefung`, `Mockup.Datenliste` | Quelldatei, Erzeuger, Check; `Mockup.Seitenliste: none` → „Modul 9 — Seitenliste“ entfällt |
+| `Mockup.Dev-Schalter` | Ort, Speicher, erzeugte Datei; `none` → Punkt in „Modul 9 — Seitenliste“ entfällt |
 
 1. **Skill-Profil v1** (Abschnitt `## Skill-Profil`). `none` ist gültig: der Prüfpunkt oder das Modul entfällt.
 2. **Rückfall:** die älteren Abschnitte `## Doku-Profil` (Feld „Validierung“, Pflicht-Docs, Router) und `## Code-Profil`
@@ -281,6 +282,9 @@ das Modul. Fehlen die Felder oder ihre Dateien, ist das ein Befund (angelegt wir
 - Melden: Hinweise auf geänderten Code, fehlende Mockups, tote Links, Seiten ohne Verbindungen, Abstand Abnahme zu Code; mit
   Datenliste auch Tabellen ohne Eintrag und veraltetes Schema. Inhalte echter Daten nie lesen.
 - Melden: Commits seit `stand_commit` ohne Version (Listen-Befehl mit `--offen`, liest nur) und die Zahl der Theme-Hinweise.
+- Melden: `Mockup.Dev-Schalter` fehlt oder der Schalter fehlt im Code; Mockups ohne Version unten links; Seitenversion im
+  ausgelieferten Stand älter als `version_code`, soweit prüfbar, sonst „Nachweis offen“
+  (`skills/mockup-erstellen/references/seitenliste.md#Dev-Schalter`).
 - Jede Seite der Quelldatei nennt eine vorhandene Code-Datei und ein vorhandenes Mockup.
 - Jede Ansicht und jedes Formular im Code steht in der Liste, soweit das Projekt sie aufzählen kann; sonst „Nachweis
   offen“.

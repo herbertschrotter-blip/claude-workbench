@@ -8,6 +8,15 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.72.0] — 2026-11-02
+
+- **skills/mockup-erstellen, Feature:** Seitenliste aus ha-hausbau übernommen: Seiten mit ungleichen Versionen von Mockup und
+  Code sind rot (`--rot`, `--rot-g`), Knopf „Gesamt“ zeigt alle Seiten bzw. Tabellen mit ihren Verbindungen im Vollbild.
+- **skills/mockup-erstellen, projekt-anlegen, audit, Feature:** Dev-Schalter als Standard für Projekte mit Oberfläche (Feld
+  `Mockup.Dev-Schalter`): Mockups zeigen Nummer und Version immer unten links, das Programm bei Dev AN. Der Listen-Befehl
+  erzeugt die Datei `dev_versionen`, nach jedem Listen-Nachtrag wird neu gebaut.
+- **skills/mockup-erstellen, Fix:** Das Mockup-Fenster der Seitenliste blieb trotz `hidden` sichtbar.
+
 ## [v0.71.0] — 2026-11-02
 
 - **skills/mockup-erstellen, code-erstellen, ticket, audit, chat-wechsel, doc-pflege, Feature:** „Aktualisiere Seitenliste“

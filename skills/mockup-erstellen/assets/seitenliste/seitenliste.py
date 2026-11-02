@@ -80,6 +80,20 @@ def theme_text(cfg: dict) -> str:
     return json.dumps(befunde, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
 
 
+def schluessel(s: dict) -> list[str]:
+    k = s.get("schluessel") or []
+    return [k] if isinstance(k, str) else k
+
+
+def dev_text(cfg: dict, gruppen: list[dict]) -> str:
+    """Schlüssel → Nummer und Code-Version für die Anzeige des Dev-Schalters; .json oder JavaScript."""
+    werte = {k: {"nr": s["nr"], "v": s["version_code"]} for g in gruppen for s in g["seiten"] if s.get("version_code") for k in schluessel(s)}
+    text = json.dumps(werte, ensure_ascii=False, indent=1, sort_keys=True)
+    if cfg["dev_versionen"].endswith(".json"):
+        return text + "\n"
+    return f"// Erzeugt von tools/seitenliste.py aus {cfg['quelle']}, nicht von Hand ändern.\nexport const SEITEN = {text};\n"
+
+
 def dateien(s: dict) -> list[str]:
     return sorted(x.strip() for x in (s.get("code") or "").split(",") if x.strip())
 
@@ -208,6 +222,8 @@ def main() -> None:
     schreiben(cfg, gruppen)
     (WURZEL / cfg["doku"]).write_text(md(cfg, gruppen), encoding="utf8")
     (WURZEL / cfg["seite"]).write_text(html(cfg, gruppen), encoding="utf8")
+    if cfg.get("dev_versionen"):
+        (WURZEL / cfg["dev_versionen"]).write_text(dev_text(cfg, gruppen), encoding="utf8")
 
 
 if __name__ == "__main__":

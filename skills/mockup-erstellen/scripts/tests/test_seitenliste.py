@@ -337,5 +337,60 @@ class AktualisierenTest(SeitenlisteTest):
         self.assertIn("Theme-Abgleich: 1 feste Werte auf 1 Seiten", r.stdout)
 
 
+class VorlageTest(SeitenlisteTest):
+    """Rote Markierung, Gesamtübersicht und Dev-Schalter."""
+
+    def ungleich(self, m, c):
+        text = (ASSETS / "seitenliste_vorlage.html").read_text(encoding="utf8")
+        zeilen = [z for z in text.splitlines() if z.startswith(("const ver=", "const ungleich="))]
+        code = "\n".join(zeilen) + f"\nconsole.log(ungleich({json.dumps({'version_mockup': m, 'version_code': c})}))"
+        return subprocess.run(["node", "-e", code], capture_output=True, text=True, check=True).stdout.strip() == "true"
+
+    @unittest.skipUnless(shutil.which("node"), "node fehlt")
+    def test_ungleich(self):
+        self.assertTrue(self.ungleich("1.0", "0.1"))
+        self.assertTrue(self.ungleich("0.10", "0.1"))  # als Kommazahl wären sie gleich
+        self.assertFalse(self.ungleich("1.2", "1.2"))
+        self.assertFalse(self.ungleich(None, "0.1"))
+        self.assertFalse(self.ungleich("0.1", None))
+
+    def test_gesamt_und_fenster_in_der_seite(self):
+        t = (self.w / "mockups/index.html").read_text(encoding="utf8")
+        for teil in ('data-gesamt="1"', 'id="gesamt"', "rot: M und C ungleich", "#fenster[hidden]", "--rot-g"):
+            self.assertIn(teil, t)
+        self.assertNotIn("@@", t)
+
+    def test_mockup_zeigt_nummer_und_version(self):
+        self.assertIn('<div class="vnr">${opt.nr} v${opt.version}</div>', (ASSETS / "theme.js").read_text(encoding="utf8"))
+
+    def devcfg(self, ziel="src/seitenversionen.js"):
+        self.cfg["dev_versionen"] = ziel
+        (self.w / "tools/seitenliste.config.json").write_text(json.dumps(self.cfg), encoding="utf8")
+        self.assertEqual(self.lauf("seitenliste.py").returncode, 0)
+
+    def test_dev_versionen_js(self):
+        self.devcfg()
+        t = (self.w / "src/seitenversionen.js").read_text(encoding="utf8")
+        self.assertIn("export const SEITEN", t)
+        self.assertIn('"ansicht:detail"', t)
+        self.assertEqual(self.lauf("seitenliste_check.py").returncode, 0)
+
+    def test_dev_versionen_json_ohne_entwurf(self):
+        g = self.daten()
+        g[0]["seiten"].append({"nr": "1.3", "name": "Neu", "art": "Blatt", "schluessel": ["blatt:neu"], "version_mockup": "0.1"})
+        (self.w / "mockups/seiten.json").write_text(json.dumps(g), encoding="utf8")
+        self.devcfg("mockups/dev.json")
+        d = json.loads((self.w / "mockups/dev.json").read_text(encoding="utf8"))
+        self.assertEqual(d["ansicht:detail"], {"nr": "1.2", "v": "0.1"})
+        self.assertNotIn("blatt:neu", d)
+
+    def test_dev_versionen_veraltet_ist_rot(self):
+        self.devcfg()
+        (self.w / "src/seitenversionen.js").write_text("alt", encoding="utf8")
+        lauf = self.lauf("seitenliste_check.py")
+        self.assertEqual(lauf.returncode, 1)
+        self.assertIn("seitenversionen.js veraltet", lauf.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()

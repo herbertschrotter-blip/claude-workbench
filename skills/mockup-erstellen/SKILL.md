@@ -123,6 +123,7 @@ Cowork: für Schreiboperationen Arbeitsverzeichnis nach **cc-steuerung**, Abschn
 | Commit-Modul | `Commit.Module` | Modulname für den Commit |
 | Theme | `Mockup.Theme` | Dateien des gemeinsamen Themes, Befehl dazu |
 | Seitenliste | `Mockup.Seitenliste` | Quelldatei je Seite, Befehl, der Liste und Doku erzeugt |
+| Dev-Schalter | `Mockup.Dev-Schalter` | Ort, Speicher, erzeugte Datei; Standard: [references/seitenliste.md](references/seitenliste.md#dev-schalter) |
 | Beziehungen | `Mockup.Beziehungen` | Befehl, der die Verbindungen aus dem Code liest |
 | Prüfung | `Mockup.Pruefung` | Name des Checks für den Abgleich |
 | Datenliste | `Mockup.Datenliste` | Quelldatei und Befehl des Reiters „Daten“ |

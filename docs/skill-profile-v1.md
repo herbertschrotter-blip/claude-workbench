@@ -91,6 +91,7 @@ Review-Serie [CGR-2026-09-24-skillsystem](./chatgpt-reviews/CGR-2026-09-24-skill
 - Beziehungen: none | <befehl>
 - Pruefung: none | <check-name>
 - Datenliste: none | <quelldatei>; <befehl>; <doku>
+- Dev-Schalter: none | <ort>; <speicherschlüssel>; <erzeugte datei>
 
 ### Review
 - Config: none | .claude/skill-config/review.md
@@ -133,6 +134,9 @@ Bedeutung einzelner Felder:
   `references/seitenliste.md#Prüfen und nachträglich anlegen`.
 - **Mockup.Datenliste:** Reiter „Daten“ der Seitenliste: Quelldatei und Befehl, Aufbau aus einem leeren Schema, nie aus
   echten Daten (`references/seitenliste.md#Datenliste`). Bei Projekten ohne Datenspeicher `none`.
+- **Mockup.Dev-Schalter:** optional: Ort des Schalters in der App, Schlüssel des Speichers je Gerät, die aus der Seitenliste
+  erzeugte Datei für die Anzeige (`references/seitenliste.md#Dev-Schalter`). Bei Projekten mit Oberfläche ist das Fehlen ein
+  Hinweis im Audit, kein Fehler; `none` nimmt ein Projekt bewusst aus.
 - **Projekte:** gilt für das Repo, in dem neue Projekte angelegt werden (z. B. den Konfigurationsordner von Home
   Assistant). `Ablage` ist der Ordner für neue Projekt-Repos, `Übersicht` die Datei mit einer Zeile je Projekt,
   `Geschützt` die Bereiche, die Claude dort nie ändert.

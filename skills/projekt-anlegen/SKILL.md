@@ -132,6 +132,9 @@ bekommt keine. Als Inhaber `git config user.name` nennen, sonst fragen.
   `Mockup.Pruefung`, `Mockup.Datenliste`, das Grundgerüst, den Check und eine erste Seitenliste; das steht im Plan. Ablauf nach dem Generator:
   `skills/mockup-erstellen/references/seitenliste.md#Prüfen und nachträglich anlegen`. Ohne Oberfläche stehen die Felder auf `none`, ohne
   Datenspeicher `Mockup.Datenliste`.
+- Projekte mit Oberfläche bekommen auch `Mockup.Dev-Schalter` und einen Dev-Schalter im Menü der App; das Grundgerüst des
+  Generators enthält keine Oberfläche, der Schalter kommt mit der ersten Seite
+  (`skills/mockup-erstellen/references/seitenliste.md#Dev-Schalter`).
 - Erster Commit im Format von git-commit-helper, erst wenn die Prüfungen grün sind. Pushen nur nach der Push-Policy
   des neuen Profils.
 - GitHub nur nach Auswahlfrage: erstellen (privat als Standard) / später / nie, erst nach dem lokalen Anlegen. Ablauf in

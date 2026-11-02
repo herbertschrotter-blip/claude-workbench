@@ -1,9 +1,9 @@
 <title>@@TITEL@@</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
-:root { --bg:#eef1f6; --flaeche:#fff; --ink:#172033; --leise:#5c6780; --linie:#c9d1df; --amber:#b86a00; --amber-g:#ffe9c7; --gruen:#14784f; --gruen-g:#d8f2e6; --auf-amber:#fff; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0c1528; --flaeche:#151f36; --ink:#f2f5fb; --leise:#a2adc4; --linie:#3a4866; --amber:#ffb340; --amber-g:#40300f; --gruen:#5fdca6; --gruen-g:#123a2c; --auf-amber:#1c1c1e; color-scheme:dark } }
-:root[data-theme="dark"] { --bg:#0c1528; --flaeche:#151f36; --ink:#f2f5fb; --leise:#a2adc4; --linie:#3a4866; --amber:#ffb340; --amber-g:#40300f; --gruen:#5fdca6; --gruen-g:#123a2c; --auf-amber:#1c1c1e; color-scheme:dark }
+:root { --bg:#eef1f6; --flaeche:#fff; --ink:#172033; --leise:#5c6780; --linie:#c9d1df; --amber:#b86a00; --amber-g:#ffe9c7; --gruen:#14784f; --gruen-g:#d8f2e6; --auf-amber:#fff; --rot:#c62828; --rot-g:#fde3e3; --auf-rot:#fff; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#0c1528; --flaeche:#151f36; --ink:#f2f5fb; --leise:#a2adc4; --linie:#3a4866; --amber:#ffb340; --amber-g:#40300f; --gruen:#5fdca6; --gruen-g:#123a2c; --auf-amber:#1c1c1e; --rot:#ff6b6b; --rot-g:#4a1a1f; --auf-rot:#1c1c1e; color-scheme:dark } }
+:root[data-theme="dark"] { --bg:#0c1528; --flaeche:#151f36; --ink:#f2f5fb; --leise:#a2adc4; --linie:#3a4866; --amber:#ffb340; --amber-g:#40300f; --gruen:#5fdca6; --gruen-g:#123a2c; --auf-amber:#1c1c1e; --rot:#ff6b6b; --rot-g:#4a1a1f; --auf-rot:#1c1c1e; color-scheme:dark }
 * { box-sizing:border-box; } html,body { height:100%; } button:focus-visible,input:focus-visible { outline:2px solid var(--amber); outline-offset:2px; }
 body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
 .geruest { display:grid; grid-template-columns:minmax(300px,380px) minmax(0,1fr); height:100%; }
@@ -17,7 +17,7 @@ ul > li { position:relative; padding:0 0 0 16px; }
 ul > li::before { content:""; position:absolute; left:0; top:0; bottom:0; width:1px; background:var(--linie); } ul > li:last-child::before { bottom:auto; height:19px; }
 ul > li::after { content:""; position:absolute; left:0; top:19px; width:11px; height:1px; background:var(--linie); }
 .z { all:unset; cursor:pointer; display:flex; justify-content:space-between; gap:10px; align-items:center; width:100%; box-sizing:border-box; padding:7px 8px; border-radius:9px; font-size:14px; }
-.z.on { background:var(--flaeche); outline:1px solid var(--amber); } .z.ver1 { } .z.dim { opacity:.35; }
+.z.on { background:var(--flaeche); outline:1px solid var(--amber); } .z.ver1 { } .z.dim { opacity:.35; } .z.ab { outline:1.5px solid var(--rot); background:var(--rot-g); } .z.ab.on { outline-width:3px; } .z.ab.dim { opacity:.85; } .z.ab .v:not(.t) { background:var(--rot); color:var(--auf-rot); }
 .vs { display:inline-flex; gap:4px; flex:none; } .v.l { background:none; color:var(--leise); border:1px solid var(--linie); } .v { white-space:nowrap; font-size:12px; font-weight:700; padding:2px 7px; border-radius:6px; background:var(--amber-g); color:var(--amber); } .v.f { background:var(--gruen-g); color:var(--gruen); }
 .zurueck { display:none; font:inherit; color:var(--amber); background:none; border:0; padding:0; text-align:left; cursor:pointer; font-weight:600; }
 .pfad { display:flex; flex-wrap:wrap; gap:4px; align-items:center; font-size:14px; color:var(--leise); min-height:28px; }
@@ -37,10 +37,17 @@ svg.pf { position:absolute; inset:0; width:100%; height:100%; pointer-events:non
 .bau button.on, .filter button.on { background:var(--amber); color:var(--auf-amber); border-color:var(--amber); font-weight:600; }
 .filter { display:flex; flex-wrap:wrap; gap:6px; } .filter button { font:inherit; font-size:13px; color:var(--ink); background:var(--flaeche); border:1px solid var(--linie); border-radius:16px; padding:5px 11px; cursor:pointer; }
 .mehr { font:inherit; font-size:13px; color:var(--amber); background:none; border:1px dashed var(--linie); border-radius:14px; padding:8px; cursor:pointer; }
-#fenster { position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; background:var(--bg); }
+#fenster[hidden] { display:none; } #fenster { position:fixed; inset:0; z-index:20; display:flex; flex-direction:column; background:var(--bg); }
 #fenster .leiste { display:flex; gap:12px; align-items:center; padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px; border-bottom:1px solid var(--linie); font-size:13px; color:var(--leise); }
 #fenster .leiste button { font:inherit; font-size:15px; font-weight:600; color:var(--amber); background:none; border:0; cursor:pointer; padding:6px 4px; }
 #fenster iframe { flex:1; width:100%; border:0; background:#1a1a1a; } #ffehler { padding:16px; }
+#gesamt[hidden] { display:none; } #gesamt { position:fixed; inset:0; z-index:19; display:flex; flex-direction:column; background:var(--bg); }
+#gesamt .leiste { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:calc(8px + env(safe-area-inset-top,0px)) 12px 8px; border-bottom:1px solid var(--linie); font-size:13px; color:var(--leise); }
+#gesamt .leiste button { font:inherit; font-size:15px; font-weight:600; color:var(--amber); background:none; border:0; cursor:pointer; padding:6px 4px; }
+#gf { position:relative; flex:1; overflow:auto; } #gs { position:absolute; left:0; top:0; pointer-events:none; color:var(--leise); }
+#gi { position:relative; display:flex; flex-wrap:wrap; gap:44px; align-items:flex-start; padding:16px; }
+.gb { width:210px; } .gb h2 { font-size:13px; } .gk { font:inherit; font-size:12px; display:block; width:100%; text-align:left; color:var(--ink); background:var(--flaeche); border:1px solid var(--linie); border-radius:8px; padding:4px 7px; margin-top:4px; cursor:pointer; }
+.gk.ab { border-color:var(--rot); background:var(--rot-g); } .gk.an { outline:2px solid var(--amber); } .gk.nah:not(.ab) { border-color:var(--amber); } .gk.dim { opacity:.3; }
 @media (max-width:780px) {
   .geruest { grid-template-columns:1fr; } .liste { border-right:0; } .fokus { display:none; }
   .geruest.auf .liste { display:none; } .geruest.auf .fokus { display:flex; } .zurueck { display:block; }
@@ -55,10 +62,11 @@ svg.pf { position:absolute; inset:0; width:100%; height:100%; pointer-events:non
 .felder { margin-top:10px; font-size:12px; font-weight:400; max-height:260px; overflow:auto; } .felder div { display:flex; justify-content:space-between; gap:10px; padding:2px 0; border-top:1px solid var(--linie); } .felder i { color:var(--leise); font-style:normal; }
 </style>
 <div class="geruest" id="g">
- <div class="liste"><div><h1>@@TITEL@@</h1><div class="stand" id="st"></div><div class="stand" style="margin-top:2px">M Mockup · C Code</div><div class="balken"><i id="bk"></i></div></div>
+ <div class="liste"><div><h1>@@TITEL@@</h1><div class="stand" id="st"></div><div class="balken"><i id="bk"></i></div></div>
   <div class="filter" id="re"></div><input class="suche" id="su" placeholder="Nummer, Name oder Baustein" aria-label="Seite suchen"><div class="filter" id="fi"></div><div id="tg"></div><div id="li" style="display:flex;flex-direction:column;gap:14px"></div></div>
  <div class="fokus"><button class="zurueck" id="zur">‹ Seitenliste</button><div class="pfad" id="pfad"></div><div class="feld" id="feld"></div><div class="bau" id="bau"></div></div>
 </div>
+<div id="gesamt" hidden><div class="leiste"><button id="gzu">‹ Seitenliste</button><span id="gtitel"></span><button id="gauf" hidden>Öffnen ›</button></div><div id="gf"><svg id="gs"></svg><div id="gi"></div></div></div>
 <div id="fenster" hidden><div class="leiste"><button id="fzu">‹ Seitenliste</button><span id="ftitel"></span></div><iframe id="frahmen" title="Mockup"></iframe><p id="ffehler" hidden></p></div>
 <script>
 const SD=@@DATEN@@;
@@ -73,6 +81,7 @@ let modus='seiten', {D,A,V,B}=MODI.seiten;
 const ver=(v)=>(v||'0.0').split('.').map(Number), kleiner=(a,b)=>{const[x,y]=ver(a),[u,w]=ver(b);return x<u||(x===u&&y<w);};
 const fertig=(s)=>[s.version_mockup,s.version_code].some((v)=>!kleiner(v,'1.0'));
 const ungebaut=(s)=>kleiner(s.version_code,s.version_abgenommen??s.version_mockup);
+const ungleich=(s)=>s.version_mockup!=null&&s.version_code!=null&&(kleiner(s.version_mockup,s.version_code)||kleiner(s.version_code,s.version_mockup));
 const thema=(s)=>TH[s.nr]||[];
 const alle=Object.values(MODI.seiten.A), fe=alle.filter(fertig).length;
 const start=(()=>{try{const h=decodeURIComponent(location.hash.slice(1));return A[h]?h:"@@START@@";}catch{return "@@START@@";}})();
@@ -81,13 +90,13 @@ const MAX=6;
 const esc=(t)=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function nachbarn(){ return bau?B[bau]:[akt,...V.filter((x)=>x[0]===akt).map((x)=>x[1]),...V.filter((x)=>x[1]===akt).map((x)=>x[0])]; }
 function liste(){ const n=new Set(nachbarn());
- st.textContent=modus==='seiten'?`${fe} von ${alle.length} überarbeitet · M Mockup · C Code`:`${TG.filter((x)=>x.nr[0]==='D').flatMap((x)=>x.seiten).length} Tabellen · Schema ${TD.schema} · nur Aufbau, keine Inhalte`;
+ st.textContent=modus==='seiten'?`${fe} von ${alle.length} überarbeitet · M Mockup · C Code · rot: M und C ungleich`:`${TG.filter((x)=>x.nr[0]==='D').flatMap((x)=>x.seiten).length} Tabellen · Schema ${TD.schema} · nur Aufbau, keine Inhalte`;
  bk.style.width=modus==='seiten'?`${fe/alle.length*100}%`:'100%';
- re.innerHTML=!TG.length?'':[['seiten','Seiten'],['daten','Daten']].map(([k,t])=>`<button class="${modus===k?'on':''}" data-m="${k}">${t}</button>`).join('');
+ re.innerHTML=(TG.length?[['seiten','Seiten'],['daten','Daten']].map(([k,t])=>`<button class="${modus===k?'on':''}" data-m="${k}">${t}</button>`).join(''):'')+'<button data-gesamt="1">Gesamt</button>';
  fi.innerHTML=modus==='daten'?'':[['alle',`Alle ${alle.length}`],['offen',`Offen ${alle.length-fe}`],['fertig',`Fertig ${fe}`],['neu',`Nicht gebaut ${alle.filter(ungebaut).length}`],...(Object.keys(TH).length?[['theme',`Theme ${alle.filter((s)=>thema(s).length).length}`]]:[])].map(([k,t])=>`<button class="${filter===k?'on':''}" data-f="${k}">${t}</button>`).join('');
  tg.innerHTML=modus==='seiten'&&Object.keys(TH).length?`<details class="thema"><summary>Alle Theme-Hinweise</summary>${kopie(promptAlle(),'Prompt für alle kopieren')}</details>`:'';
  li.innerHTML=D.map((g)=>{const z=g.seiten.filter((s)=>(!q||s.name.toLowerCase().includes(q)||s.nr===q||s.nr.startsWith(q+'.')||s.nutzt.some((k)=>k.toLowerCase().includes(q)))&&(modus==='daten'||filter==='alle'||(filter==='theme'?thema(s).length:filter==='neu'?ungebaut(s):(filter==='fertig')===fertig(s)))); if(!z.length)return '';
-  return `<section><h2><span class="nr">${g.nr}</span>${esc(g.bereich)}</h2><ul>${z.map((s)=>`<li><button class="z ${s.nr===akt?'on':''} ${n.has(s.nr)||q?'':'dim'}" data-n="${s.nr}"><span><span class="nr">${s.nr}</span>${esc(s.name)}</span><span class="vs">${modus==='daten'?`<span class="v l">${s.felder.length?s.felder.length+' Felder':esc(s.art)}</span>`:chips(s)}</span></button></li>`).join('')}</ul></section>`;}).join('');
+  return `<section><h2><span class="nr">${g.nr}</span>${esc(g.bereich)}</h2><ul>${z.map((s)=>`<li><button class="z ${modus==='seiten'&&ungleich(s)?'ab':''} ${s.nr===akt?'on':''} ${n.has(s.nr)||q?'':'dim'}" data-n="${s.nr}"><span><span class="nr">${s.nr}</span>${esc(s.name)}</span><span class="vs">${modus==='daten'?`<span class="v l">${s.felder.length?s.felder.length+' Felder':esc(s.art)}</span>`:chips(s)}</span></button></li>`).join('')}</ul></section>`;}).join('');
  const e=li.querySelector('.z.on'); if(e&&document.activeElement!==su) e.scrollIntoView({block:'nearest'}); }
 const chip=(b,v,t)=>`<span class="v ${v==null?'l':kleiner(v,'1.0')?'':'f'}" title="${t}">${b} ${v==null?'–':v}</span>`;
 const chips=(s)=>chip('M',s.version_mockup,'Mockup')+chip('C',s.version_code,'Code')+(thema(s).length?`<span class="v t" title="Feste Werte statt Theme">T ${thema(s).length}</span>`:'');
@@ -121,6 +130,15 @@ function pfeile(){ const f=feld, c=document.getElementById('sv2'), m=document.ge
  const l=(x1,y1,x2,y2)=>{const p=document.createElementNS('http://www.w3.org/2000/svg','path');p.setAttribute('d',sm?`M${x1} ${y1}C${x1} ${(y1+y2)/2} ${x2} ${(y1+y2)/2} ${x2} ${y2}`:`M${x1} ${y1}C${(x1+x2)/2} ${y1} ${(x1+x2)/2} ${y2} ${x2} ${y2}`);p.setAttribute('marker-end','url(#sp)');c.appendChild(p);};
  document.querySelectorAll('#sv .karte').forEach((k)=>{const b=k.getBoundingClientRect(); sm?l(b.left+b.width/2-r.left,b.bottom-r.top,a.left+a.width/2-r.left,a.top-r.top):l(b.right-r.left,b.top+b.height/2-r.top,a.left-r.left,a.top+a.height/2-r.top);});
  document.querySelectorAll('#sz .karte').forEach((k)=>{const b=k.getBoundingClientRect(); sm?l(a.left+a.width/2-r.left,a.bottom-r.top,b.left+b.width/2-r.left,b.top-r.top):l(a.right-r.left,a.top+a.height/2-r.top,b.left-r.left,b.top+b.height/2-r.top);}); }
+// Gesamtübersicht des Reiters: alle Seiten bzw. Tabellen je Bereich mit allen Verbindungen, Antippen hebt eine hervor
+let gw=null;
+function gesamtAuf(){ gw=null; gesamt.hidden=false; gi.innerHTML=D.map((x)=>`<section class="gb"><h2><span class="nr">${x.nr}</span>${esc(x.bereich)}</h2>${x.seiten.map((s)=>`<button class="gk ${modus==='seiten'&&ungleich(s)?'ab':''}" data-gk="${s.nr}"><span class="nr">${s.nr}</span>${esc(s.name)}</button>`).join('')}</section>`).join(''); gLinien(); }
+function gLinien(){ const raus=V.filter((x)=>x[0]===gw).length, rein=V.filter((x)=>x[1]===gw).length, nah=new Set(V.filter((x)=>x.includes(gw)).flat()), k={};
+ gtitel.textContent=gw?`${gw} ${A[gw].name} · kommt von ${rein} · geht zu ${raus}`:`${Object.keys(A).length} ${modus==='seiten'?'Seiten':'Einträge'} · ${V.length} Verbindungen · antippen hebt hervor`; gauf.hidden=!gw;
+ gi.querySelectorAll('.gk').forEach((e)=>{const n=e.dataset.gk;k[n]=e;e.classList.toggle('an',n===gw);e.classList.toggle('nah',!!gw&&n!==gw&&nah.has(n));e.classList.toggle('dim',!!gw&&!nah.has(n));});
+ const r=gi.getBoundingClientRect(), o=(e)=>{const b=e.getBoundingClientRect();return {l:b.left-r.left,r:b.right-r.left,y:b.top+b.height/2-r.top};};
+ gs.setAttribute('width',gi.scrollWidth);gs.setAttribute('height',gi.scrollHeight);
+ gs.innerHTML=V.filter(([a,b])=>k[a]&&k[b]&&a!==b&&(!gw||a===gw||b===gw)).map(([a,b])=>{const p=o(k[a]),z=o(k[b]),v=z.l>=p.r,x1=v?p.r:p.l,x2=v?z.l:z.r,m=(x1+x2)/2;return `<path d="M${x1} ${p.y}C${m} ${p.y} ${m} ${z.y} ${x2} ${z.y}" fill="none" stroke="${gw?'var(--amber)':'currentColor'}" stroke-width="${gw?1.5:1}" opacity="${gw?.9:.18}"/>`;}).join(''); }
 const alles=()=>{liste();fokus();};
 function wahl(n){akt=n;weg=[...weg.slice(-5),n];bau=null;auf=new Set();g.classList.add('auf');alles();}
 async function mockupAuf(url){ const f=fenster,r=frahmen,e=ffehler; f.hidden=false;r.hidden=false;e.hidden=true;ftitel.textContent=url;
@@ -128,9 +146,10 @@ async function mockupAuf(url){ const f=fenster,r=frahmen,e=ffehler; f.hidden=fal
  catch(err){r.hidden=true;e.hidden=false;e.textContent=`Das Mockup ${url} lässt sich nicht laden (${err.message}).`;} }
 async function kopieren(k){const f=k.nextElementSibling,alt=k.textContent; try{await navigator.clipboard.writeText(f.value);k.textContent='Kopiert';}catch{f.focus();f.select();k.textContent='Bitte von Hand kopieren';} setTimeout(()=>{k.textContent=alt;},2000);}
 fzu.onclick=()=>{fenster.hidden=true;frahmen.removeAttribute('srcdoc');};
+gzu.onclick=()=>{gesamt.hidden=true;}; gauf.onclick=()=>{gesamt.hidden=true;wahl(gw);};
 addEventListener('message',(e)=>{if(e.source!==frahmen.contentWindow||!e.data)return; if(e.data.mockup)mockupAuf(e.data.mockup);});
-document.addEventListener('click',(e)=>{const t=e.target; const ko=t.closest('[data-kopie]'); if(ko){kopieren(ko);return;} const mo=t.closest('[data-m]'),sp=t.closest('[data-sprung]'); if(mo){modusAuf(mo.dataset.m);return;} if(sp){const x=sp.dataset.sprung; modusAuf(/^[DS]/.test(x)?'daten':'seiten',x);return;}
+document.addEventListener('click',(e)=>{const t=e.target; const ko=t.closest('[data-kopie]'); if(ko){kopieren(ko);return;} const gk=t.closest('[data-gk]'); if(gk){gw=gw===gk.dataset.gk?null:gk.dataset.gk;gLinien();return;} if(t.closest('[data-gesamt]')){gesamtAuf();return;} const mo=t.closest('[data-m]'),sp=t.closest('[data-sprung]'); if(mo){modusAuf(mo.dataset.m);return;} if(sp){const x=sp.dataset.sprung; modusAuf(/^[DS]/.test(x)?'daten':'seiten',x);return;}
  const n=t.closest('[data-n]'),p=t.closest('.pfad button'),b=t.closest('.bau button'),u=t.closest('[data-url]'),fb=t.closest('[data-f]'),m=t.closest('[data-mehr]');
  if(u)mockupAuf(u.dataset.url); else if(m){auf.add(m.dataset.mehr);fokus();} else if(fb){filter=fb.dataset.f;liste();} else if(n)wahl(n.dataset.n); else if(p){weg=weg.slice(0,+p.dataset.i+1);akt=weg.at(-1);bau=null;alles();} else if(b){bau=bau===b.dataset.b?null:b.dataset.b;alles();} else if(t.id==='zur'){g.classList.remove('auf');}});
-su.oninput=(e)=>{q=e.target.value.toLowerCase().trim();liste();}; addEventListener('resize',pfeile); alles();
+su.oninput=(e)=>{q=e.target.value.toLowerCase().trim();liste();}; addEventListener('resize',()=>{pfeile();if(!gesamt.hidden)gLinien();}); alles();
 </script>

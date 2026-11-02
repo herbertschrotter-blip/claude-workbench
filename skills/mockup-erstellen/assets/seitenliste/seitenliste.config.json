@@ -8,6 +8,7 @@
   "code_wurzel": "src",
   "start": "1.1",
   "link": "",
+  "dev_versionen": "src/seitenversionen.js",
   "theme": { "befehl": ["node", "tools/mockup_theme.mjs"], "dateien": ["mockups/theme-app.css"] },
   "themeabgleich": {
     "ziel": "mockups/theme-hinweise.json",
