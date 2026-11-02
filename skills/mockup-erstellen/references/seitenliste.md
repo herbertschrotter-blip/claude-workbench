@@ -133,6 +133,8 @@ Erzeugt aus `seitenliste_vorlage.html`:
   Nicht gebaut
 - mit Theme-Hinweisen: Chip T mit der Zahl, Filter Theme, aufklappbarer Hinweis je Seite und für alle Seiten, jeweils mit
   „Prompt kopieren“ und dem Prompt in einem Textfeld, falls die Zwischenablage gesperrt ist
+- Die Art steht als Kürzel vor der Nummer (Se Seite, Bl Blatt, Fo Formular, Vo Vollbild), dazu ein Filter nach Art. Das
+  Kürzel kommt aus `art` und gehört nicht zur Nummer; so bleibt die Nummer stabil, wenn sich die Art ändert
 - Reiter Seiten und Daten, wenn es eine Datenliste gibt
 - Haben Mockup und Code einer Seite beide eine Version und sind sie ungleich, sind beide Chips rot und die Zeile ist rot
   gerahmt und hinterlegt; beim Abdunkeln bleibt sie gut sichtbar, der Kopf erklärt es („rot: M und C ungleich“). Seiten ohne

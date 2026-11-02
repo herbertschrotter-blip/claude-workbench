@@ -55,6 +55,7 @@ svg.pf { position:absolute; inset:0; width:100%; height:100%; pointer-events:non
 }
 .sprung { font:inherit; font-size:12px; font-weight:400; color:var(--ink); background:none; border:1px solid var(--linie); border-radius:12px; padding:4px 8px; cursor:pointer; }
 .sprungz { display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+.art { display:inline-block; font-size:10px; font-weight:700; line-height:14px; color:var(--leise); border:1px solid var(--linie); border-radius:4px; padding:0 3px; margin-right:4px; vertical-align:1px; }
 .v.t { background:none; color:var(--amber); border:1px solid var(--amber); }
 .thema { margin-top:10px; font-size:13px; font-weight:400; } .thema summary { cursor:pointer; color:var(--amber); font-weight:600; }
 .thema ul { margin:6px 0; } .thema ul > li { padding:2px 0; } .thema ul > li::before, .thema ul > li::after { display:none; } .thema code { font-size:12px; overflow-wrap:anywhere; }
@@ -63,7 +64,7 @@ svg.pf { position:absolute; inset:0; width:100%; height:100%; pointer-events:non
 </style>
 <div class="geruest" id="g">
  <div class="liste"><div><h1>@@TITEL@@</h1><div class="stand" id="st"></div><div class="balken"><i id="bk"></i></div></div>
-  <div class="filter" id="re"></div><input class="suche" id="su" placeholder="Nummer, Name oder Baustein" aria-label="Seite suchen"><div class="filter" id="fi"></div><div id="tg"></div><div id="li" style="display:flex;flex-direction:column;gap:14px"></div></div>
+  <div class="filter" id="re"></div><input class="suche" id="su" placeholder="Nummer, Name oder Baustein" aria-label="Seite suchen"><div class="filter" id="fi"></div><div class="filter" id="fa"></div><div id="tg"></div><div id="li" style="display:flex;flex-direction:column;gap:14px"></div></div>
  <div class="fokus"><button class="zurueck" id="zur">‹ Seitenliste</button><div class="pfad" id="pfad"></div><div class="feld" id="feld"></div><div class="bau" id="bau"></div></div>
 </div>
 <div id="gesamt" hidden><div class="leiste"><button id="gzu">‹ Seitenliste</button><span id="gtitel"></span><button id="gauf" hidden>Öffnen ›</button></div><div id="gf"><svg id="gs"></svg><div id="gi"></div></div></div>
@@ -83,9 +84,11 @@ const fertig=(s)=>[s.version_mockup,s.version_code].some((v)=>!kleiner(v,'1.0'))
 const ungebaut=(s)=>kleiner(s.version_code,s.version_abgenommen??s.version_mockup);
 const ungleich=(s)=>s.version_mockup!=null&&s.version_code!=null&&(kleiner(s.version_mockup,s.version_code)||kleiner(s.version_code,s.version_mockup));
 const thema=(s)=>TH[s.nr]||[];
+const KURZ={Seite:'Se',Blatt:'Bl',Formular:'Fo',Vollbild:'Vo'}, kurz=(a)=>KURZ[a]||a.slice(0,2);
+const kz=(s)=>modus==='seiten'?`<span class="art" title="${esc(s.art)}">${esc(kurz(s.art))}</span>`:'';
 const alle=Object.values(MODI.seiten.A), fe=alle.filter(fertig).length;
 const start=(()=>{try{const h=decodeURIComponent(location.hash.slice(1));return A[h]?h:"@@START@@";}catch{return "@@START@@";}})();
-let akt=start, weg=[start], bau=null, q='', filter='alle', auf=new Set(), merk={seiten:start,daten:TG[0]?.seiten[0]?.nr};
+let akt=start, weg=[start], bau=null, q='', filter='alle', artw='', auf=new Set(), merk={seiten:start,daten:TG[0]?.seiten[0]?.nr};
 const MAX=6;
 const esc=(t)=>t.replace(/&/g,'&amp;').replace(/</g,'&lt;');
 function nachbarn(){ return bau?B[bau]:[akt,...V.filter((x)=>x[0]===akt).map((x)=>x[1]),...V.filter((x)=>x[1]===akt).map((x)=>x[0])]; }
@@ -94,9 +97,10 @@ function liste(){ const n=new Set(nachbarn());
  bk.style.width=modus==='seiten'?`${fe/alle.length*100}%`:'100%';
  re.innerHTML=(TG.length?[['seiten','Seiten'],['daten','Daten']].map(([k,t])=>`<button class="${modus===k?'on':''}" data-m="${k}">${t}</button>`).join(''):'')+'<button data-gesamt="1">Gesamt</button>';
  fi.innerHTML=modus==='daten'?'':[['alle',`Alle ${alle.length}`],['offen',`Offen ${alle.length-fe}`],['fertig',`Fertig ${fe}`],['neu',`Nicht gebaut ${alle.filter(ungebaut).length}`],...(Object.keys(TH).length?[['theme',`Theme ${alle.filter((s)=>thema(s).length).length}`]]:[])].map(([k,t])=>`<button class="${filter===k?'on':''}" data-f="${k}">${t}</button>`).join('');
+ fa.innerHTML=modus==='daten'?'':[...new Set(alle.map((s)=>s.art))].map((a)=>`<button class="${artw===a?'on':''}" data-a="${esc(a)}" title="${esc(a)}">${esc(kurz(a))} ${alle.filter((s)=>s.art===a).length}</button>`).join('');
  tg.innerHTML=modus==='seiten'&&Object.keys(TH).length?`<details class="thema"><summary>Alle Theme-Hinweise</summary>${kopie(promptAlle(),'Prompt für alle kopieren')}</details>`:'';
- li.innerHTML=D.map((g)=>{const z=g.seiten.filter((s)=>(!q||s.name.toLowerCase().includes(q)||s.nr===q||s.nr.startsWith(q+'.')||s.nutzt.some((k)=>k.toLowerCase().includes(q)))&&(modus==='daten'||filter==='alle'||(filter==='theme'?thema(s).length:filter==='neu'?ungebaut(s):(filter==='fertig')===fertig(s)))); if(!z.length)return '';
-  return `<section><h2><span class="nr">${g.nr}</span>${esc(g.bereich)}</h2><ul>${z.map((s)=>`<li><button class="z ${modus==='seiten'&&ungleich(s)?'ab':''} ${s.nr===akt?'on':''} ${n.has(s.nr)||q?'':'dim'}" data-n="${s.nr}"><span><span class="nr">${s.nr}</span>${esc(s.name)}</span><span class="vs">${modus==='daten'?`<span class="v l">${s.felder.length?s.felder.length+' Felder':esc(s.art)}</span>`:chips(s)}</span></button></li>`).join('')}</ul></section>`;}).join('');
+ li.innerHTML=D.map((g)=>{const z=g.seiten.filter((s)=>(!q||s.name.toLowerCase().includes(q)||s.nr===q||s.nr.startsWith(q+'.')||s.nutzt.some((k)=>k.toLowerCase().includes(q)))&&(modus==='daten'||!artw||s.art===artw)&&(modus==='daten'||filter==='alle'||(filter==='theme'?thema(s).length:filter==='neu'?ungebaut(s):(filter==='fertig')===fertig(s)))); if(!z.length)return '';
+  return `<section><h2><span class="nr">${g.nr}</span>${esc(g.bereich)}</h2><ul>${z.map((s)=>`<li><button class="z ${modus==='seiten'&&ungleich(s)?'ab':''} ${s.nr===akt?'on':''} ${n.has(s.nr)||q?'':'dim'}" data-n="${s.nr}"><span>${kz(s)}<span class="nr">${s.nr}</span>${esc(s.name)}</span><span class="vs">${modus==='daten'?`<span class="v l">${s.felder.length?s.felder.length+' Felder':esc(s.art)}</span>`:chips(s)}</span></button></li>`).join('')}</ul></section>`;}).join('');
  const e=li.querySelector('.z.on'); if(e&&document.activeElement!==su) e.scrollIntoView({block:'nearest'}); }
 const chip=(b,v,t)=>`<span class="v ${v==null?'l':kleiner(v,'1.0')?'':'f'}" title="${t}">${b} ${v==null?'–':v}</span>`;
 const chips=(s)=>chip('M',s.version_mockup,'Mockup')+chip('C',s.version_code,'Code')+(thema(s).length?`<span class="v t" title="Feste Werte statt Theme">T ${thema(s).length}</span>`:'');
@@ -107,7 +111,7 @@ const promptAlle=()=>{const l=alle.filter((s)=>thema(s).length); return `${l.len
 const kopie=(p,t)=>`<button class="mk" data-kopie>${t}</button><textarea readonly aria-label="Prompt">${esc(p)}</textarea>`;
 const themaSeite=(s)=>thema(s).length?`<details class="thema"><summary>Theme: ${thema(s).length} feste Werte</summary><ul>${thema(s).map((b)=>`<li><code>${esc(zeile(b).slice(2))}</code>${b.grund?` <small>${esc(b.grund)}</small>`:''}</li>`).join('')}</ul>${kopie(`${promptSeite(s)}\n${ENDE}`,'Prompt kopieren')}</details>`:'';
 const sprung=(n,t)=>`<button class="sprung" data-sprung="${n}"><span class="nr">${n}</span>${esc(t)}</button>`;
-const karte=(n)=>`<button class="karte" data-n="${n}"><span class="nr">${n}</span>${esc(A[n].name)}</button>`;
+const karte=(n)=>`<button class="karte" data-n="${n}">${kz(A[n])}<span class="nr">${n}</span>${esc(A[n].name)}</button>`;
 const reihe=(k,l)=>{const zeig=auf.has(k)||l.length<=MAX?l:l.slice(0,MAX); return zeig.map(karte).join('')+(zeig.length<l.length?`<button class="mehr" data-mehr="${k}">+ ${l.length-zeig.length} weitere</button>`:'');};
 const mitteDaten=(s)=>{const g=TG.find((x)=>x.seiten.includes(s));
  return `<div class="karte" id="mi"><span class="nr">${s.nr}</span>${esc(s.name)}<small>${esc(s.art)} · ${esc(s.zweck)}</small>
@@ -132,7 +136,7 @@ function pfeile(){ const f=feld, c=document.getElementById('sv2'), m=document.ge
  document.querySelectorAll('#sz .karte').forEach((k)=>{const b=k.getBoundingClientRect(); sm?l(a.left+a.width/2-r.left,a.bottom-r.top,b.left+b.width/2-r.left,b.top-r.top):l(a.right-r.left,a.top+a.height/2-r.top,b.left-r.left,b.top+b.height/2-r.top);}); }
 // Gesamtübersicht des Reiters: alle Seiten bzw. Tabellen je Bereich mit allen Verbindungen, Antippen hebt eine hervor
 let gw=null;
-function gesamtAuf(){ gw=null; gesamt.hidden=false; gi.innerHTML=D.map((x)=>`<section class="gb"><h2><span class="nr">${x.nr}</span>${esc(x.bereich)}</h2>${x.seiten.map((s)=>`<button class="gk ${modus==='seiten'&&ungleich(s)?'ab':''}" data-gk="${s.nr}"><span class="nr">${s.nr}</span>${esc(s.name)}</button>`).join('')}</section>`).join(''); gLinien(); }
+function gesamtAuf(){ gw=null; gesamt.hidden=false; gi.innerHTML=D.map((x)=>`<section class="gb"><h2><span class="nr">${x.nr}</span>${esc(x.bereich)}</h2>${x.seiten.map((s)=>`<button class="gk ${modus==='seiten'&&ungleich(s)?'ab':''}" data-gk="${s.nr}">${kz(s)}<span class="nr">${s.nr}</span>${esc(s.name)}</button>`).join('')}</section>`).join(''); gLinien(); }
 function gLinien(){ const raus=V.filter((x)=>x[0]===gw).length, rein=V.filter((x)=>x[1]===gw).length, nah=new Set(V.filter((x)=>x.includes(gw)).flat()), k={};
  gtitel.textContent=gw?`${gw} ${A[gw].name} · kommt von ${rein} · geht zu ${raus}`:`${Object.keys(A).length} ${modus==='seiten'?'Seiten':'Einträge'} · ${V.length} Verbindungen · antippen hebt hervor`; gauf.hidden=!gw;
  gi.querySelectorAll('.gk').forEach((e)=>{const n=e.dataset.gk;k[n]=e;e.classList.toggle('an',n===gw);e.classList.toggle('nah',!!gw&&n!==gw&&nah.has(n));e.classList.toggle('dim',!!gw&&!nah.has(n));});
@@ -148,7 +152,7 @@ async function kopieren(k){const f=k.nextElementSibling,alt=k.textContent; try{a
 fzu.onclick=()=>{fenster.hidden=true;frahmen.removeAttribute('srcdoc');};
 gzu.onclick=()=>{gesamt.hidden=true;}; gauf.onclick=()=>{gesamt.hidden=true;wahl(gw);};
 addEventListener('message',(e)=>{if(e.source!==frahmen.contentWindow||!e.data)return; if(e.data.mockup)mockupAuf(e.data.mockup);});
-document.addEventListener('click',(e)=>{const t=e.target; const ko=t.closest('[data-kopie]'); if(ko){kopieren(ko);return;} const gk=t.closest('[data-gk]'); if(gk){gw=gw===gk.dataset.gk?null:gk.dataset.gk;gLinien();return;} if(t.closest('[data-gesamt]')){gesamtAuf();return;} const mo=t.closest('[data-m]'),sp=t.closest('[data-sprung]'); if(mo){modusAuf(mo.dataset.m);return;} if(sp){const x=sp.dataset.sprung; modusAuf(/^[DS]/.test(x)?'daten':'seiten',x);return;}
+document.addEventListener('click',(e)=>{const t=e.target; const ko=t.closest('[data-kopie]'); if(ko){kopieren(ko);return;} const gk=t.closest('[data-gk]'); if(gk){gw=gw===gk.dataset.gk?null:gk.dataset.gk;gLinien();return;} if(t.closest('[data-gesamt]')){gesamtAuf();return;} const fa2=t.closest('[data-a]'); if(fa2){artw=artw===fa2.dataset.a?'':fa2.dataset.a;liste();return;} const mo=t.closest('[data-m]'),sp=t.closest('[data-sprung]'); if(mo){modusAuf(mo.dataset.m);return;} if(sp){const x=sp.dataset.sprung; modusAuf(/^[DS]/.test(x)?'daten':'seiten',x);return;}
  const n=t.closest('[data-n]'),p=t.closest('.pfad button'),b=t.closest('.bau button'),u=t.closest('[data-url]'),fb=t.closest('[data-f]'),m=t.closest('[data-mehr]');
  if(u)mockupAuf(u.dataset.url); else if(m){auf.add(m.dataset.mehr);fokus();} else if(fb){filter=fb.dataset.f;liste();} else if(n)wahl(n.dataset.n); else if(p){weg=weg.slice(0,+p.dataset.i+1);akt=weg.at(-1);bau=null;alles();} else if(b){bau=bau===b.dataset.b?null:b.dataset.b;alles();} else if(t.id==='zur'){g.classList.remove('auf');}});
 su.oninput=(e)=>{q=e.target.value.toLowerCase().trim();liste();}; addEventListener('resize',()=>{pfeile();if(!gesamt.hidden)gLinien();}); alles();

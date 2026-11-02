@@ -8,6 +8,11 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.73.0] — 2026-11-02
+
+- **skills/mockup-erstellen, Feature:** Die Seitenliste zeigt die Art als Kürzel vor der Nummer (Se, Bl, Fo, Vo) und hat einen
+  Filter nach Art. Die Nummer selbst bleibt unverändert.
+
 ## [v0.72.0] — 2026-11-02
 
 - **skills/mockup-erstellen, Feature:** Seitenliste aus ha-hausbau übernommen: Seiten mit ungleichen Versionen von Mockup und

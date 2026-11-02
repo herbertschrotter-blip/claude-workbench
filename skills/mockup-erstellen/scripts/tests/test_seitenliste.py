@@ -356,7 +356,7 @@ class VorlageTest(SeitenlisteTest):
 
     def test_gesamt_und_fenster_in_der_seite(self):
         t = (self.w / "mockups/index.html").read_text(encoding="utf8")
-        for teil in ('data-gesamt="1"', 'id="gesamt"', "rot: M und C ungleich", "#fenster[hidden]", "--rot-g"):
+        for teil in ('data-gesamt="1"', 'id="gesamt"', 'id="fa"', "KURZ=", "rot: M und C ungleich", "#fenster[hidden]", "--rot-g"):
             self.assertIn(teil, t)
         self.assertNotIn("@@", t)
 
