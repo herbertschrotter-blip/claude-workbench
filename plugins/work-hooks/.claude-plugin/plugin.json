@@ -1,6 +1,6 @@
 {
   "name": "work-hooks",
-  "description": "Skill-Log und Skill-Wächter als Hooks, ohne Skills.",
+  "description": "Skill-Log, Skill-Wächter und Neustart-Warteschlange als Hooks, ohne Skills.",
   "author": {
     "name": "Herbert Schrotter"
   },

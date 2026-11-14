@@ -8,6 +8,16 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.74.0] — 2026-11-14
+
+- **skills/neustart, Feature:** Neustart-Warteschlange: Wer warten muss, trägt seinen Wunsch ein; die Sitzung, die als
+  Letzte fertig wird, startet für alle neu (ein Neustart erledigt alle Wünsche von vorher). Eine Sperre verhindert zwei
+  Neustarts zugleich. Sitzungen, die auf den Nutzer warten (`waiting`), und das Warten in der Warteschlange zählen als
+  frei; vorher blockierten sich zwei Sitzungen gegenseitig.
+- **plugins/work-hooks, Feature:** Hook `neustart_hook.py` (auch im Plugin work): am Rundenende Hinweis, für eine
+  wartende Sitzung neu zu starten; während des Neustarts lehnt er Aufrufe an Home Assistant ab; danach einmal der
+  Hinweis, dass neu gestartet wurde.
+
 ## [v0.73.0] — 2026-11-02
 
 - **skills/mockup-erstellen, Feature:** Die Seitenliste zeigt die Art als Kürzel vor der Nummer (Se, Bl, Fo, Vo) und hat einen

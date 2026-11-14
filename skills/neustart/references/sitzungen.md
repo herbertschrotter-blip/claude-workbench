@@ -7,10 +7,11 @@ Neustart, dass nichts anderes läuft.
 
 Eine andere Sitzung ist **frei**, wenn beides gilt:
 
-- Claude ruht dort (Status `idle`). Belegt sind `busy` (Claude arbeitet), `waiting` (wartet auf den Nutzer, etwa
-  eine Freigabe oder Auswahlfrage) und `shell` (ein Befehl läuft).
+- Claude ruht dort (Status `idle`) oder wartet auf den Nutzer (`waiting`, etwa eine Freigabe oder Auswahlfrage). Belegt
+  sind `busy` (Claude arbeitet) und `shell` (ein Befehl läuft). Eine wartende Sitzung erfährt nach dem Neustart über
+  den Hook, dass neu gestartet wurde (Abschnitt „Warteschlange“).
 - Kein Befehl der Sitzung läuft, auch keiner im Hintergrund: kein Shell-Prozess unter dem Claude-Prozess. Dauerhafte
-  Hilfsprozesse wie MCP-Server zählen nicht.
+  Hilfsprozesse wie MCP-Server zählen nicht, das Warten von `sitzungen.py --warten` auch nicht.
 
 Ein Agent im Hintergrund, der gerade nur liest und keinen Befehl ausführt, ist so nicht sicher zu erkennen; startet er
 Befehle, ist die Sitzung belegt.
@@ -30,7 +31,60 @@ Im Hintergrund warten, ohne den Chat zu blockieren:
 python3 <Skill-Ordner>/scripts/sitzungen.py --warten 900
 ```
 
-Das Skript endet, sobald alle frei sind (Exit 0), spätestens nach 900 Sekunden (Exit 1, mit der Liste der belegten).
+Das Skript endet, sobald alle frei sind und keine andere Sitzung die Sperre hat (Exit 0), spätestens nach 900 Sekunden
+(Exit 1, mit der Liste der belegten). Hat eine andere Sitzung den eigenen Wunsch inzwischen erledigt, endet es mit
+Exit 4 („erledigt durch …“): dann nur noch kontrollieren.
+
+## Warteschlange
+
+Ablage `~/.claude/neustart/` (bzw. `$CLAUDE_CONFIG_DIR/neustart/`), gemeinsam für alle Sitzungen des Rechners:
+
+| Datei | Inhalt |
+|---|---|
+| `wuensche/<sitzung>.json` | ein Wunsch je Sitzung: `sitzung`, `pid`, `name`, `ordner`, `ziel` (Stack), `grund`, `seit` |
+| `sperre.json` | wer gerade neu startet: `sitzung`, `pid`, `name`, `ziel`, `seit`; atomar angelegt |
+| `letzter.json` | letzter Neustart: `zeit`, `beginn`, `sitzung`, `name`, `ziel`, `erledigt` (Sitzungen) |
+| `sitzungen/<sitzung>.json` | nur für den Hook: welcher Neustart schon gemeldet, nach welchen Wünschen schon gefragt |
+
+Befehle:
+
+```
+python3 <Skill-Ordner>/scripts/sitzungen.py --eintragen --ziel home-assistant --grund "<kurz>"
+```
+
+```
+python3 <Skill-Ordner>/scripts/sitzungen.py --wuensche
+```
+
+```
+python3 <Skill-Ordner>/scripts/sitzungen.py --sperre --ziel home-assistant
+```
+
+```
+python3 <Skill-Ordner>/scripts/sitzungen.py --fertig
+```
+
+```
+python3 <Skill-Ordner>/scripts/sitzungen.py --austragen
+```
+
+- `--sperre`: Exit 0 = genommen, Exit 1 = eine andere Sitzung startet gerade neu (Name und Uhrzeit in der Ausgabe).
+- `--fertig`: trägt alle Wünsche aus, die vor dem Nehmen der Sperre eingetragen waren, schreibt `letzter.json` und löst
+  die Sperre. Ein später eingetragener Wunsch bleibt stehen, er braucht einen weiteren Neustart.
+- Wünsche beendeter Sitzungen fallen weg. Eine Sperre gilt als liegen geblieben, wenn ihre Sitzung beendet ist oder sie
+  älter als 15 Minuten ist; dann darf eine andere Sitzung sie übernehmen.
+
+Der Hook (`plugins/work-hooks/hooks/neustart_hook.py`) wirkt nur in der Sitzung, in der er läuft:
+
+- **Stop:** offene Wünsche anderer Sitzungen, keine Sperre → Claude ruht noch nicht, sondern startet für sie neu. Je
+  Wunsch einmal; ein zweiter Stop direkt danach geht durch.
+- **PreToolUse** (Werkzeuge des Ziels, bei Home Assistant `mcp__home-assistant__…`): hat eine andere Sitzung die
+  Sperre, wird der Aufruf abgelehnt.
+- **UserPromptSubmit, PostToolUse** (Antwort auf eine Auswahlfrage): Hinweis auf einen Neustart einer anderen Sitzung,
+  einmal je Neustart.
+- **SessionStart:** merkt sich den Stand; eine neue Sitzung bekommt keinen älteren Neustart gemeldet.
+
+Abschalten: Umgebungsvariable `NEUSTART_HOOK=aus`. Befehle der Shell (`ha core …`) sperrt der Hook nicht.
 
 ## Ohne Skript
 

@@ -73,8 +73,8 @@ Updates, Entfernen und was bei Problemen hilft: [`docs/installation.md`](./docs/
 Claude-Skills von Herbert Schrotter für Claude Code, als Plugin-Marketplace `workbench`. Entstanden im Projekt
 BauProjektManager (BPM), heute für C#-, TypeScript-, Python- und Home-Assistant-Projekte im Einsatz.
 
-Dieses Repo enthält 16 Skills samt Evals, Prüfskript, Refactor-Dokumentation und Memory-Konventionen, dazu zwei Hooks
-(Skill-Log und Skill-Wächter). Die Skills sind projektneutral: Projektwerte (Pfade, Präfixe, IDs, Befehle) kommen aus
+Dieses Repo enthält 16 Skills samt Evals, Prüfskript, Refactor-Dokumentation und Memory-Konventionen, dazu drei Hooks
+(Skill-Log, Skill-Wächter und Neustart-Warteschlange). Die Skills sind projektneutral: Projektwerte (Pfade, Präfixe, IDs, Befehle) kommen aus
 dem Skill-Profil in der `CLAUDE.md` des jeweiligen Repos und dessen Configs unter `.claude/skill-config/`. Sie sind auf
 eine bestimmte Arbeitsweise zugeschnitten (Deutsch, ClickUp, Commit-Format `[vX.Y.Z] Modul, Typ: Kurztitel`, Kapitel 10);
 wer sie nutzen will, ist willkommen. Für generische Skills siehe z.B.
@@ -130,9 +130,9 @@ Die Logik steht in [`tools/einrichten.py`](./tools/einrichten.py).
 
 | Plugin | Inhalt | Wann |
 |---|---|---|
-| `work` | 12 Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Neustart, Reviews) + Agenten erkunder, pruefer, gutachter + Hooks Skill-Log und Skill-Wächter | Standard |
+| `work` | 12 Skills für die Projektarbeit (Code, Mockups, Doku, Tickets, Tracker, Commits, Übergaben, Sitzungen, Neustart, Reviews) + Agenten erkunder, pruefer, gutachter + Hooks Skill-Log, Skill-Wächter und Neustart-Warteschlange | Standard |
 | `skill-workshop` | skill-neu, skill-pflege, skill-auswertung | zusätzlich, für die Arbeit an Skills |
-| `work-hooks` | nur Skill-Log und Skill-Wächter, ohne Skills | wenn die Skills schon anders geladen werden (z. B. Upload bei claude.ai). **Nie zusammen mit `work`** – sonst läuft jeder Hook doppelt |
+| `work-hooks` | nur die Hooks (Skill-Log, Skill-Wächter, Neustart-Warteschlange), ohne Skills | wenn die Skills schon anders geladen werden (z. B. Upload bei claude.ai). **Nie zusammen mit `work`** – sonst läuft jeder Hook doppelt |
 
 Die Hooks kommen mit dem Plugin; von Hand eingerichtet wird nichts außer den Einstellungen unten.
 
@@ -618,7 +618,7 @@ claude-workbench/
 │
 ├── plugins/
 │   └── work-hooks/                        ← Plugin nur mit Hooks: .claude-plugin/plugin.json; hooks/: hooks.json,
-│                                            skill_log.py, skill_guard.py, regeln.json, skill_sync.py, Tests
+│                                            skill_log.py, skill_guard.py, regeln.json, skill_sync.py, neustart_hook.py, Tests
 │
 ├── quality/                               ← für claude plugin eval selbst ein Plugin
 │   ├── .claude-plugin/plugin.json         ← Eval-Manifest (experimental.evals: evals)
