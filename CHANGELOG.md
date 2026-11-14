@@ -8,6 +8,12 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.75.0] — 2026-11-14
+
+- **skills/neustart, code-erstellen, ticket, Feature:** Frage vor dem Einspielen mit Neustart: Arbeitet eine andere
+  Sitzung noch, ist die erste Option „Einspielen, <Sitzung> startet danach neu“ (Warteschlange ohne Zeitgrenze) und
+  ersetzt „Später“.
+
 ## [v0.74.0] — 2026-11-14
 
 - **skills/neustart, Feature:** Neustart-Warteschlange: Wer warten muss, trägt seinen Wunsch ein; die Sitzung, die als

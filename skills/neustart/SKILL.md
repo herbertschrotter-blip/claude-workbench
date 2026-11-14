@@ -75,6 +75,22 @@ aus, die vor dem Neustart eingetragen waren.
 Kontrolle laut Reference: läuft das System, sind neue Fehler im Protokoll, sind die betroffenen Teile da. Dem Nutzer
 kurz berichten: Prüfung, Wartezeit, Neustart, Kontrolle. Ein Fehler nach dem Neustart wird nicht still übergangen.
 
+## Frage vor dem Einspielen
+
+Fragt ein Skill vor einem Einspielen, das einen Neustart braucht, den Nutzer per Auswahlfrage (z. B. code-erstellen,
+ticket), läuft vorher das Nachsehen aus Schritt 2. Arbeitet eine andere Sitzung noch, stehen diese Optionen in dieser
+Reihenfolge:
+
+1. **Einspielen, `<Name der Sitzung>` startet danach neu (Empfehlung):** einspielen, Wunsch in die Warteschlange, ohne
+   Zeitgrenze warten; die Sitzung, die zuletzt fertig wird, startet für alle neu (Abschnitt „Warteschlange“). Diese
+   Sitzung kontrolliert danach selbst. Endet das Warten nach 15 Minuten ohne Neustart, wird es still erneuert, ohne
+   Auswahlfrage.
+2. **Einspielen und warten:** wie Schritt 3, höchstens 15 Minuten, dann Auswahlfrage.
+3. **Einspielen, Nutzer startet neu.**
+
+„Später“ entfällt in diesem Fall; es bleibt über die freie Antwort möglich. Sind alle frei, gelten die Optionen des
+fragenden Skills unverändert.
+
 ## Warteschlange
 
 Die Sitzungen eines Rechners teilen sich eine Warteschlange für Neustart-Wünsche, eine Sperre für den laufenden Neustart
@@ -111,6 +127,8 @@ Meldet der Hook am Ende der Runde einen wartenden Wunsch:
 - die App, in der Claude läuft, oder den Rechner neu starten
 - einen Neustart melden, ohne danach kontrolliert zu haben
 - neu starten, ohne die Sperre der Warteschlange zu haben, oder sie nach dem Neustart liegen lassen
+- vor einem Einspielen mit Neustart fragen, ohne nachgesehen zu haben, ob eine andere Sitzung arbeitet (Abschnitt
+  „Frage vor dem Einspielen“)
 
 ## VERWEIS
 

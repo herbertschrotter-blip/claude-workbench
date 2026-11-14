@@ -364,6 +364,8 @@ Ergebnis; im Cowork-Chat: [references/cowork.md](references/cowork.md#auslieferu
 (`Code.Auslieferung`), die
 Prüfreihenfolge je Stack in der Stack-Referenz (z.B. home-assistant: Deploy → check_config →
 reload/restart → Zustand prüfen). Zum Schluss dem User sagen, was er wie sichtprüfen soll.
+Braucht das Einspielen einen Neustart, gelten für die Frage davor und den Neustart selbst
+`skills/neustart/SKILL.md#Frage vor dem Einspielen` und der Skill neustart.
 
 **Seitenliste** (`Mockup.Seitenliste` nicht `none`; läuft auch ohne `Code.Auslieferung`, dann direkt nach dem Commit): Nach
 der Auslieferung die Seitenliste aktualisieren (`skills/mockup-erstellen/references/seitenliste.md#Aktualisieren`): Jede

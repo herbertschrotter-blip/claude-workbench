@@ -140,7 +140,8 @@ An **code-erstellen** übergeben: Pflicht-Docs, Impact Check, Fix, und **ein Tes
 
 ### Schritt 6 — Einspielen
 Tests grün → Commit (git-commit-helper-Format, Ticketnummer im Kurztitel) → Auslieferung nach `Code.Auslieferung`.
-Vor dem Einspielen Auswahlfrage, wenn es den Betrieb stört (Neustart, laufender Auftrag).
+Vor dem Einspielen Auswahlfrage, wenn es den Betrieb stört (Neustart, laufender Auftrag); mit Neustart nach
+`skills/neustart/SKILL.md#Frage vor dem Einspielen`.
 
 ### Schritt 7 — Ticket lösen
 Ticket auf `geloest` mit den Pflichtangaben laut Config (Profil-Befehl, z. B. Commit und Version), Notiz mit Ursache
