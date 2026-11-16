@@ -123,6 +123,8 @@ Stand 30.10.2026, 123 Fälle.
 | `mockup-erstellen-real-generator-quelle` | mockup-erstellen | Pass im Mockup-Generator mockups/quelle/uebersicht.js die Kartenbreite an und bau das Mockup neu. | mockup-erstellen | code-erstellen | normal, echt |
 | `mockup-erstellen-real-abnahme` | mockup-erstellen | Variante 2 ist abgenommen – trag die Abnahme im README des Mockup-Ordners ein. | mockup-erstellen | doc-pflege | normal, echt, Ziel |
 | `mockup-erstellen-real-abnahme-kurz` | mockup-erstellen | Mockup 12 ist abgenommen. | mockup-erstellen | doc-pflege | normal, echt |
+| `mockup-erstellen-real-seitenliste-erstellen` | mockup-erstellen | Erstelle die Mockup- und DB-Seitenleiste laut Skill. | mockup-erstellen | doc-pflege | normal, echt |
+| `mockup-erstellen-real-seitenliste-laden` | mockup-erstellen | Lade die Seitenliste. | mockup-erstellen | doc-pflege | normal, echt |
 | `skill-update` | skill-pflege | Ergänze im bestehenden chat-wechsel-Skill eine Regel, dass tote Dateiverweise vor der Übergabe gemeldet werden. | skill-pflege | skill-neu | kritisch, Pilot |
 | `skill-pflege-description` | skill-pflege | Schärf die Description des tracker-Skills, damit „Aufgabe anlegen“ zuverlässig auslöst. | skill-pflege | skill-neu, tracker | kritisch |
 | `skill-pflege-typo` | skill-pflege | In der SKILL.md von git-commit-helper sind zwei Tippfehler. Korrigier die bitte. | skill-pflege | git-commit-helper | normal |
@@ -160,6 +162,8 @@ Stand 30.10.2026, 123 Fälle.
 | `ticket-real-tickets-pruefen` | ticket | tickets prüfen | ticket | tracker | normal, echt |
 | `ticket-real-welche-tickets` | ticket | Welche neuen Tickets liegen für das Projekt an? | ticket | tracker | normal, echt |
 | `ticket-real-tickets-loesen` | ticket | Tickets lösen – die lokalen und die von GitHub, eins nach dem anderen. | ticket | tracker | normal, echt |
+| `ticket-real-tickets-anlegen-beginnen` | ticket | Der Prüfbericht hat sieben Befunde im Code ergeben. Ja, lege dafür Tickets an und beginne mit dem ersten. | ticket | tracker | normal, echt |
+| `ticket-real-tickets-noch-offen` | ticket | welche tickets sind noch offen | ticket | tracker | normal, echt |
 | `ticket-no-trigger-bug-without-number` | ticket | In der Kartenansicht springt die Roboterposition hin und her. Kannst du das beheben? | code-erstellen | ticket | normal |
 | `ticket-discard` | ticket | ticket verwerfen FE-0002, das war nur ein Test von mir | ticket | tracker | normal |
 | `ticket-close` | ticket | FE-0004 ist behoben, ticket schließen | ticket | tracker | normal |

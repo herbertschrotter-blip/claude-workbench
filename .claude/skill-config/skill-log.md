@@ -25,10 +25,10 @@ fehlenden im Bericht nennen.
 
 | Rechner | ausgewertet bis (UTC) |
 |---|---|
-| ha-pi | 2026-10-29T15:34:30Z |
+| ha-pi | 2026-11-16T09:06:19Z |
 | surface7 | 2026-10-14T20:02:48Z |
-| desktop-pc | 2026-10-27T21:11:47Z |
-| Firmenlaptop | 2026-10-26T21:51:21Z |
+| desktop-pc | 2026-11-06T19:20:12Z |
+| Firmenlaptop | 2026-11-13T03:46:07Z |
 
 `–` heißt: noch nie ausgewertet, „seit letzter Auswertung“ bedeutet dann „alles“.
 
