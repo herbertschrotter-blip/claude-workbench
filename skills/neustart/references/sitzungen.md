@@ -7,11 +7,14 @@ Neustart, dass nichts anderes läuft.
 
 Eine andere Sitzung ist **frei**, wenn beides gilt:
 
-- Claude ruht dort (Status `idle`) oder wartet auf den Nutzer (`waiting`, etwa eine Freigabe oder Auswahlfrage). Belegt
-  sind `busy` (Claude arbeitet) und `shell` (ein Befehl läuft). Eine wartende Sitzung erfährt nach dem Neustart über
-  den Hook, dass neu gestartet wurde (Abschnitt „Warteschlange“).
+- Claude ruht dort (Status `idle`, mit Befehl im Hintergrund `shell`) oder wartet auf den Nutzer (`waiting`, etwa eine
+  Freigabe oder Auswahlfrage). Belegt ist `busy` (Claude arbeitet). Eine wartende Sitzung erfährt nach dem Neustart
+  über den Hook, dass neu gestartet wurde (Abschnitt „Warteschlange“).
 - Kein Befehl der Sitzung läuft, auch keiner im Hintergrund: kein Shell-Prozess unter dem Claude-Prozess. Dauerhafte
-  Hilfsprozesse wie MCP-Server zählen nicht, das Warten von `sitzungen.py --warten` auch nicht.
+  Hilfsprozesse wie MCP-Server zählen nicht, ebenso jeder Befehl, der `sitzungen.py` aufruft (das Warten auf den
+  Neustart, auch in einer selbst gebauten Schleife).
+- Ausnahme: Eine Sitzung mit eingetragenem Wunsch ist frei, sobald sie ruht oder auf den Nutzer wartet, auch wenn bei
+  ihr noch ein Befehl läuft. Sie wartet selbst auf den Neustart.
 
 Ein Agent im Hintergrund, der gerade nur liest und keinen Befehl ausführt, ist so nicht sicher zu erkennen; startet er
 Befehle, ist die Sitzung belegt.
@@ -25,13 +28,13 @@ python3 <Skill-Ordner>/scripts/sitzungen.py
 zeigt je anderer Sitzung Status, laufende Befehle und `frei`/`belegt` (Quelle `~/.claude/sessions/`, nur lebende
 Prozesse, ohne die eigene Sitzung). Exit 0 = alle frei, 1 = mindestens eine belegt.
 
-Im Hintergrund warten, ohne den Chat zu blockieren:
+Eintragen und im Hintergrund warten, ohne den Chat zu blockieren – **ein** Befehl, keine eigene Schleife:
 
 ```
-python3 <Skill-Ordner>/scripts/sitzungen.py --warten 900
+python3 <Skill-Ordner>/scripts/sitzungen.py --warten 900 --ziel home-assistant --grund "<kurz>"
 ```
 
-Das Skript endet, sobald alle frei sind und keine andere Sitzung die Sperre hat (Exit 0), spätestens nach 900 Sekunden
+Mit `--ziel` trägt das Skript den eigenen Wunsch vorher in die Warteschlange ein; ohne `--ziel` wartet es nur. Es endet, sobald alle frei sind und keine andere Sitzung die Sperre hat (Exit 0), spätestens nach 900 Sekunden
 (Exit 1, mit der Liste der belegten). Hat eine andere Sitzung den eigenen Wunsch inzwischen erledigt, endet es mit
 Exit 4 („erledigt durch …“): dann nur noch kontrollieren.
 

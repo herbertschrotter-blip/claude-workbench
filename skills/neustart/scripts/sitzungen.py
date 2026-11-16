@@ -3,6 +3,8 @@
 
   python3 sitzungen.py                 Tabelle: frei/belegt, status, laufende Befehle, name, ordner (ohne die eigene)
   python3 sitzungen.py --warten 900    wartet, bis alle anderen frei sind (höchstens so viele Sekunden)
+  python3 sitzungen.py --warten 900 --ziel <stack> --grund <text>
+                                       dasselbe, trägt vorher den eigenen Wunsch in die Warteschlange ein
 
 Warteschlange (~/.claude/neustart/, references/sitzungen.md#Warteschlange):
   --eintragen --ziel <stack> --grund <text>   eigenen Neustart-Wunsch eintragen
@@ -11,9 +13,10 @@ Warteschlange (~/.claude/neustart/, references/sitzungen.md#Warteschlange):
   --sperre                                    Sperre für den Neustart nehmen (Exit 0) oder melden, wer sie hat (Exit 1)
   --fertig                                    Neustart erledigt: Wünsche von vorher austragen, Sperre lösen
 
-Frei = Status idle oder waiting (wartet auf den Nutzer) und kein Shell-Befehl unter dem Claude-Prozess (Claude Code
+Frei = Status idle, waiting (wartet auf den Nutzer) oder shell (Befehl im Hintergrund) und kein Shell-Befehl unter dem Claude-Prozess (Claude Code
 startet jeden Befehl, auch im Hintergrund, über eine Shell mit einem Snapshot unter shell-snapshots/; MCP-Server und
-das Warten dieses Skripts zählen nicht).
+jeder Befehl, der dieses Skript aufruft, zählen nicht). Eine Sitzung mit eingetragenem Wunsch ist frei, sobald sie ruht
+oder auf den Nutzer wartet, auch wenn bei ihr noch ein Befehl läuft.
 Quelle: ~/.claude/sessions/<pid>.json (bzw. $CLAUDE_CONFIG_DIR/sessions); Einträge ohne lebenden Prozess zählen nicht.
 Die eigene Sitzung wird über die Prozesskette erkannt (das Skript läuft als Kind von Claude Code).
 Exit 0: alle anderen frei; 1: nach Ablauf der Wartezeit noch belegt; 2: Sitzungsordner nicht lesbar;
@@ -29,6 +32,7 @@ import time
 
 
 FREI = ("idle", "waiting")
+RUHT = FREI + ("shell",)  # shell: Claude ruht, ein Befehl läuft im Hintergrund – dann zählen die Befehle
 SPERRE_MAX = 900  # Sekunden; eine ältere Sperre gilt als liegen geblieben
 
 
@@ -90,17 +94,19 @@ def cmdline(pid):
 
 def befehle(pid, kids=children, cmd=cmdline):
     """Laufende Befehle einer Sitzung: direkte Kind-Prozesse, die eine Shell von Claude Code sind (shell-snapshots).
-    Das Warten dieses Skripts (Neustart-Wunsch in der Warteschlange) zählt nicht."""
+    Befehle, die dieses Skript aufrufen (Warten auf den Neustart, auch in einer eigenen Schleife), zählen nicht."""
     zahl = 0
     for c in kids(pid):
         text = cmd(c)
-        if "shell-snapshots" in text and not ("sitzungen.py" in text and "--warten" in text):
+        if "shell-snapshots" in text and "sitzungen.py" not in text:
             zahl += 1
     return zahl
 
 
-def others(directory=None, own=None, is_alive=alive, count=befehle):
+def others(directory=None, own=None, is_alive=alive, count=befehle, mit_wunsch=None):
     own = ancestors() if own is None else own
+    if mit_wunsch is None:
+        mit_wunsch = {w.get("sitzung") for w in wuensche()}
     result = []
     for path in sorted(glob.glob(os.path.join(directory or sessions_dir(), "*.json"))):
         try:
@@ -114,7 +120,8 @@ def others(directory=None, own=None, is_alive=alive, count=befehle):
         status = data.get("status") or "?"
         laufend = count(pid)
         result.append({"name": data.get("name") or data.get("sessionId"), "status": status, "befehle": laufend,
-                       "frei": status in FREI and laufend == 0, "sitzung": data.get("sessionId") or "", "tmux": data.get("tmux") or "",
+                       "frei": status in RUHT and (laufend == 0 or data.get("sessionId") in mit_wunsch),
+                       "sitzung": data.get("sessionId") or "", "tmux": data.get("tmux") or "",
                        "ordner": data.get("cwd") or "", "art": data.get("kind") or ""})
     return result
 
@@ -272,7 +279,7 @@ def main():
         print(f"Sitzungsordner fehlt: {sessions_dir()}")
         return 2
     me = own_session()
-    if (args.eintragen or args.austragen or args.sperre or args.fertig) and not me.get("sessionId"):
+    if (args.eintragen or args.ziel or args.austragen or args.sperre or args.fertig) and not me.get("sessionId"):
         print("eigene Sitzung nicht gefunden (Skript nicht aus Claude Code gestartet?)")
         return 2
     if args.wuensche:
@@ -281,13 +288,14 @@ def main():
         s = sperre_lesen()
         print(f"Sperre: {s['name']} seit {uhr(s['seit'])}" if s else "Sperre: keine")
         return 0
-    if args.eintragen:
+    if args.eintragen or (args.warten and args.ziel):
         if not args.ziel:
             print("--ziel fehlt")
             return 2
         w = eintragen(me, args.ziel, args.grund)
         print(f"eingetragen: {w['ziel']} um {uhr(w['seit'])}")
-        return 0
+        if not args.warten:
+            return 0
     if args.austragen:
         austragen(me["sessionId"])
         print("ausgetragen")

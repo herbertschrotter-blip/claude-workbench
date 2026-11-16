@@ -50,15 +50,18 @@ Prüfung laut Reference. Ist sie nicht grün: kein Neustart, Fehler melden.
 ### 2. Nachsehen, ob anderswo etwas läuft
 
 Die anderen laufenden Claude-Sitzungen des Rechners still prüfen, ohne die eigene. Eine Sitzung ist **frei**, wenn
-Claude dort ruht oder auf den Nutzer wartet und kein Befehl von ihr läuft, auch keiner im Hintergrund. Das Warten einer
-Sitzung in der Warteschlange zählt nicht als Befehl. Wie das geht: [references/sitzungen.md](references/sitzungen.md).
+Claude dort ruht oder auf den Nutzer wartet und kein Befehl von ihr läuft, auch keiner im Hintergrund. Das Warten auf
+den Neustart zählt nicht als Befehl, und eine Sitzung mit eingetragenem Wunsch ist frei, sobald sie ruht. Wie das geht: [references/sitzungen.md](references/sitzungen.md).
 Den anderen Sitzungen nichts schicken.
 
 ### 3. Warten, wenn nötig
 
-Sind alle frei: gleich weiter mit Schritt 4. Sonst den eigenen Wunsch in die Warteschlange eintragen (Ziel, Grund) und
-still warten, bis alle frei sind, **höchstens 15 Minuten**, und dem Nutzer in einer Zeile sagen, auf welche Sitzung
-gewartet wird. Während des Wartens kann die Sitzung, die als Letzte fertig wird, den Neustart für alle machen; dann
+Sind alle frei: gleich weiter mit Schritt 4. Sonst den eigenen Wunsch eintragen und still warten, beides mit **einem**
+Befehl im Hintergrund: `sitzungen.py --warten 900 --ziel <Ziel> --grund "<kurz>"`
+([references/sitzungen.md](references/sitzungen.md#skript)). Keine eigene Warteschleife bauen: Nur so steht der Wunsch
+in der Warteschlange, und die anderen Sitzungen wissen davon. Gewartet wird, bis alle frei sind, **höchstens 15
+Minuten**; dem Nutzer in einer Zeile sagen, auf welche Sitzung gewartet wird. Endet der Befehl mit 0, weiter mit
+Schritt 4. Während des Wartens kann die Sitzung, die als Letzte fertig wird, den Neustart für alle machen; dann
 endet das Warten mit „erledigt durch …“ und es geht gleich mit Schritt 5 weiter. Nach den 15 Minuten Auswahlfrage mit
 den noch belegten Sitzungen: weiter warten (nochmals 15 Minuten) / trotzdem neu starten / abbrechen (Wunsch austragen).
 
@@ -83,8 +86,8 @@ Reihenfolge:
 
 1. **Einspielen, `<Name der Sitzung>` startet danach neu (Empfehlung):** einspielen, Wunsch in die Warteschlange, ohne
    Zeitgrenze warten; die Sitzung, die zuletzt fertig wird, startet für alle neu (Abschnitt „Warteschlange“). Diese
-   Sitzung kontrolliert danach selbst. Endet das Warten nach 15 Minuten ohne Neustart, wird es still erneuert, ohne
-   Auswahlfrage.
+   Sitzung kontrolliert danach selbst. Endet das Warten nach 15 Minuten ohne Neustart, wird derselbe Befehl still
+   erneut gestartet, ohne Auswahlfrage.
 2. **Einspielen und warten:** wie Schritt 3, höchstens 15 Minuten, dann Auswahlfrage.
 3. **Einspielen, Nutzer startet neu.**
 
@@ -129,6 +132,7 @@ Meldet der Hook am Ende der Runde einen wartenden Wunsch:
 - neu starten, ohne die Sperre der Warteschlange zu haben, oder sie nach dem Neustart liegen lassen
 - vor einem Einspielen mit Neustart fragen, ohne nachgesehen zu haben, ob eine andere Sitzung arbeitet (Abschnitt
   „Frage vor dem Einspielen“)
+- eine eigene Warteschleife bauen, statt mit `sitzungen.py --warten … --ziel …` einzutragen und zu warten
 
 ## VERWEIS
 

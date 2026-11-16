@@ -8,6 +8,13 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.77.0] — 2026-11-16
+
+- **skills/neustart, Fix:** Die Warteschlange griff im Alltag nie: Die Chats bauten eigene Warteschleifen, trugen sich
+  nicht ein und zählten sich gegenseitig als belegt. Jetzt trägt `sitzungen.py --warten … --ziel …` in einem Befehl ein
+  und wartet; eigene Schleifen sind verboten. Jeder Befehl, der `sitzungen.py` aufruft, zählt nicht als laufend, Status
+  `shell` gilt wie `idle`, und eine Sitzung mit Wunsch ist frei, sobald sie ruht.
+
 ## [v0.76.0] — 2026-11-16
 
 - **skills/mockup-erstellen, Fix:** Description nennt Seiten- und Datenliste anlegen, laden, zeigen und aktualisieren als

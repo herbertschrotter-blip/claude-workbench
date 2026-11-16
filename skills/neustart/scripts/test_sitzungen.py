@@ -20,14 +20,14 @@ class OthersTest(unittest.TestCase):
                     json.dump({"pid": pid, "name": name, "status": status, "cwd": "/x"}, fh)
             with open(os.path.join(d, "kaputt.json"), "w") as fh:
                 fh.write("{")
-            rows = sitzungen.others(d, own={10}, is_alive=lambda pid: pid != 20, count=lambda pid: 0)
+            rows = sitzungen.others(d, own={10}, is_alive=lambda pid: pid != 20, count=lambda pid: 0, mit_wunsch=set())
         self.assertEqual([(r["name"], r["frei"]) for r in rows], [("andere", True), ("arbeitet", False)])
 
     def test_ruhende_sitzung_mit_laufendem_befehl_ist_belegt(self):
         with tempfile.TemporaryDirectory() as d:
             with open(os.path.join(d, "30.json"), "w") as fh:
                 json.dump({"pid": 30, "name": "hintergrund", "status": "idle"}, fh)
-            rows = sitzungen.others(d, own=set(), is_alive=lambda pid: True, count=lambda pid: 1)
+            rows = sitzungen.others(d, own=set(), is_alive=lambda pid: True, count=lambda pid: 1, mit_wunsch=set())
         self.assertFalse(rows[0]["frei"])
 
     def test_befehle_zaehlt_nur_shells_von_claude(self):
@@ -38,8 +38,30 @@ class OthersTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             with open(os.path.join(d, "30.json"), "w") as fh:
                 json.dump({"pid": 30, "name": "frage", "status": "waiting"}, fh)
-            rows = sitzungen.others(d, own=set(), is_alive=lambda pid: True, count=lambda pid: 0)
+            rows = sitzungen.others(d, own=set(), is_alive=lambda pid: True, count=lambda pid: 0, mit_wunsch=set())
         self.assertTrue(rows[0]["frei"])
+
+    def test_eigene_warteschleife_zaehlt_nicht(self):
+        cmds = {1: "/bin/bash -c source /h/.claude/shell-snapshots/s.sh && for i in $(seq 90); do python3 x/sitzungen.py | grep -c belegt; sleep 10; done",
+                2: "/bin/bash -c source /h/.claude/shell-snapshots/s.sh && make test"}
+        self.assertEqual(sitzungen.befehle(0, kids=lambda pid: [1, 2], cmd=cmds.get), 1)
+
+    def test_sitzung_mit_wunsch_ist_beim_warten_frei(self):
+        with tempfile.TemporaryDirectory() as d:
+            for pid, sid, status in [(30, "a", "idle"), (40, "b", "busy"), (50, "c", "idle")]:
+                with open(os.path.join(d, f"{pid}.json"), "w") as fh:
+                    json.dump({"pid": pid, "sessionId": sid, "name": sid, "status": status}, fh)
+            rows = sitzungen.others(d, own=set(), is_alive=lambda pid: True, count=lambda pid: 1, mit_wunsch={"a", "b"})
+        self.assertEqual([(r["name"], r["frei"]) for r in rows], [("a", True), ("b", False), ("c", False)])
+
+    def test_status_shell_nur_mit_eigener_warteschleife_ist_frei(self):
+        with tempfile.TemporaryDirectory() as d:
+            for pid in (30, 40):
+                with open(os.path.join(d, f"{pid}.json"), "w") as fh:
+                    json.dump({"pid": pid, "sessionId": str(pid), "name": str(pid), "status": "shell"}, fh)
+            rows = sitzungen.others(d, own=set(), is_alive=lambda pid: True, count=lambda pid: 0 if pid == 30 else 1,
+                                    mit_wunsch=set())
+        self.assertEqual([(r["name"], r["frei"]) for r in rows], [("30", True), ("40", False)])
 
     def test_warten_dieses_skripts_zaehlt_nicht(self):
         cmds = {1: "/bin/bash -c source /h/.claude/shell-snapshots/s.sh && python3 x/sitzungen.py --warten 900"}
