@@ -278,13 +278,14 @@
         "ticket",
         "projekt-anlegen"
       ],
+      "profil": {"felder": ["Mockup.Theme", "Mockup.Seitenliste", "Mockup.Beziehungen", "Mockup.Datenliste"], "pflicht": ["mockup-erstellen"]},
       "modus": "blocken",
       "gilt_bis": [
         "commit",
         "aufgabenstart",
         "task_id"
       ],
-      "herkunft": "Startregel 07.10.2026; 07.10.2026: auf blocken hochgestuft (Rückblick 29.09.–07.10.: 89 Treffer, 0 Fehlalarme; Heidi-Neubau, ha-baustelle Teil 3); 08.10.2026: neue Docs unter docs/ verlangt die Regel doku-neu (doc-pflege); Auswertung 11.10.2026 (Herbert): Mockup-Ablage ausgenommen – dort gilt die Regel mockup (4 Blockaden an mockups/README.md unter mockup-erstellen); Auswertung 21.10.2026: 11.10. ab 19:54Z 2/1, 12.–21.10. 4/0; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 32/0, 0 Fehlalarme",
+      "herkunft": "Startregel 07.10.2026; 07.10.2026: auf blocken hochgestuft (Rückblick 29.09.–07.10.: 89 Treffer, 0 Fehlalarme; Heidi-Neubau, ha-baustelle Teil 3); 08.10.2026: neue Docs unter docs/ verlangt die Regel doku-neu (doc-pflege); Auswertung 11.10.2026 (Herbert): Mockup-Ablage ausgenommen – dort gilt die Regel mockup (4 Blockaden an mockups/README.md unter mockup-erstellen); Auswertung 21.10.2026: 11.10. ab 19:54Z 2/1, 12.–21.10. 4/0; Auswertung 29.10.2026 (alle 4 Rechner, desktop-pc erstmals): 32/0, 0 Fehlalarme; Auswertung 16.11.2026 (Herbert): Feld profil wie bei code – mockup-erstellen zählt für die Dateien aus den Mockup-Feldern (z. B. erzeugte Seiten- und Datenliste); Fehlalarm 02.11. (Mockup-Felder in CLAUDE.md eintragen) bleibt, CLAUDE.md bleibt geschützt",
       "stand": {
         "seit": "2026-10-07",
         "treffer": 77,
