@@ -1,20 +1,15 @@
 ---
 name: mockup-erstellen
 description: >
-  Erstellt UI-Mockups als HTML-Entwürfe für neue Screens, Dialoge und
-  Layoutvarianten – nach dem Skill-Profil des Projekts (Bereich Mockup: Ablage,
-  Designquelle, Ansichten, Theme, Seitenliste). Use when users want to mocken, entwerfen, skizzieren,
-  zeigen, visualisieren, layouten, or want to clarify how a screen should
-  look before coding — including mockups, screen designs, UI proposals,
-  layout drafts, dialog sketches, tab/panel arrangements, and changes to an
-  existing project mockup ("erst ins Mockup einbauen", "im Mockup ändern"),
-  also in the middle of a ticket or code task, including the mockup's generator
-  sources in the mockup folder, recording its approval (Abnahme, short:
-  „Mockup 3 ist abgenommen“), and "aktualisiere Seitenliste". For
-  sequential intents like "mock and then implement": triggers as the first
-  step (mockup), then defers to code-erstellen. Do not trigger for direct
-  XAML or Lit component implementation, small UI fixes in existing code, or
-  non-UI design topics like database design.
+  Erstellt UI-Mockups als HTML-Entwürfe für neue Screens, Dialoge und Layoutvarianten – nach dem Skill-Profil des
+  Projekts (Bereich Mockup). Use when users want to mocken, entwerfen, skizzieren, zeigen, visualisieren, layouten, or
+  want to clarify how a screen should look before coding — including mockups, screen designs, UI proposals, layout
+  drafts, dialog sketches, and changes to an existing project mockup ("erst ins Mockup einbauen", "im Mockup ändern"),
+  also in the middle of a ticket or code task, including the mockup's generator sources, recording its approval
+  (Abnahme, short: „Mockup 3 ist abgenommen“), and the project's Seitenliste and Datenliste (also spelled
+  „Seitenleiste“): anlegen, laden, zeigen, "aktualisiere Seitenliste". For sequential intents like "mock and then
+  implement": triggers as the first step (mockup), then defers to code-erstellen. Do not trigger for direct XAML or
+  Lit component implementation, small UI fixes in existing code, or non-UI design topics like database design.
 ---
 
 # Mockup-Erstellen — UI-Entwürfe als HTML

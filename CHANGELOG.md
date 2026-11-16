@@ -8,6 +8,14 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.76.0] — 2026-11-16
+
+- **skills/mockup-erstellen, Fix:** Description nennt Seiten- und Datenliste anlegen, laden, zeigen und aktualisieren als
+  Auslöser, auch in der Schreibweise „Seitenleiste“ (Issue mockup-erstellen-005, Skill-Auswertung 16.11.2026).
+- **skills/ticket, Fix:** Description nennt „welche tickets sind noch offen“, „lege Tickets an und beginne“ und den Fall
+  mitten in laufender Code-Arbeit (Issue ticket-004). Beide Descriptions an anderer Stelle gekürzt, damit sie unter 1024
+  Zeichen bleiben.
+
 ## [v0.75.0] — 2026-11-14
 
 - **skills/neustart, code-erstellen, ticket, Feature:** Frage vor dem Einspielen mit Neustart: Arbeitet eine andere
