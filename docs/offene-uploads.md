@@ -15,3 +15,4 @@ Smartphone arbeitet und dort nicht hochladen kann.
 |---|---|---|---|---|
 | mockup-erstellen | v0.76.0 | 1a8e9a4 | Zip (SKILL.md + references/, 5 Dateien) | 16.11.2026 |
 | ticket | v0.76.0 | 1a8e9a4 | Zip (SKILL.md + references/, 2 Dateien) | 16.11.2026 |
+| projekt-anlegen | v0.78.0 | 7aae378 | Zip (SKILL.md + references/, 7 Dateien) | 18.11.2026 |
