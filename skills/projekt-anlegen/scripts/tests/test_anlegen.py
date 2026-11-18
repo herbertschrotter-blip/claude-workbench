@@ -90,6 +90,40 @@ class AnlegenTest(unittest.TestCase):
         self.assertIn("befehl: unbekanntes Feld", r["fehler"])
         self.assertEqual(os.listdir(self.ablage), [])
 
+    def katalog_mit_einrichten(self, checks):
+        anlegen = ["{python}", "-c", "import os, sys; os.makedirs(sys.argv[1], exist_ok=True); "
+                   "open(os.path.join(sys.argv[1], 'ok'), 'w').close()", "{venv}"]
+        a = art(checks)
+        a["pruefung"]["einrichten"] = [anlegen]
+        return katalog_ordner(self.tmp / "katalog", katalog=KATALOG, art=a, inhalte=INHALTE)
+
+    def test_werkzeugablage_umgebung_ausserhalb_mit_verweis(self):
+        wz = self.tmp / "entwicklung"
+        pruefe_verweis = {"name": "verweis", "befehl": ["{python}", "-c",
+                          "import os; assert os.path.islink('.venv') and os.path.isfile('.venv/ok')"]}
+        r = g.anlegen(AUFTRAG, self.ablage, self.katalog_mit_einrichten([pruefe_verweis, START]), werkzeugablage=wz)
+        self.assertTrue(r["ok"], r)
+        ziel = self.ablage / "test-projekt"
+        self.assertTrue((ziel / ".venv").is_symlink())
+        self.assertEqual(Path(os.readlink(ziel / ".venv")), (wz / "test-projekt" / ".venv").resolve())
+        self.assertTrue((wz / "test-projekt" / ".venv" / "ok").is_file())
+        self.assertEqual(sorted(x.name for x in wz.iterdir()), ["test-projekt"])  # Prüf-Umgebung aufgeräumt
+        self.assertEqual(sorted(x.name for x in self.ablage.iterdir()), ["test-projekt"])
+
+    def test_werkzeugablage_existiert_schon(self):
+        wz = self.tmp / "entwicklung"
+        (wz / "test-projekt").mkdir(parents=True)
+        r = g.anlegen(AUFTRAG, self.ablage, self.katalog_mit_einrichten([START]), werkzeugablage=wz)
+        self.assertFalse(r["ok"])
+        self.assertIn("existiert schon", r["fehler"][0])
+        self.assertEqual(list(self.ablage.iterdir()), [])
+
+    def test_ohne_werkzeugablage_wie_bisher(self):
+        r = g.anlegen(AUFTRAG, self.ablage, self.katalog_mit_einrichten([START]))
+        self.assertTrue(r["ok"], r)
+        self.assertFalse(os.path.lexists(self.ablage / "test-projekt" / ".venv"))
+        self.assertNotIn("werkzeug", r)
+
     def test_unbekannter_platzhalter_im_pruefbefehl(self):
         self.assertTrue(p.tokens_pruefen({"checks": [{"name": "x", "befehl": ["{owner}"]}]}))
         self.assertEqual(p.tokens_pruefen({"checks": [START]}), [])

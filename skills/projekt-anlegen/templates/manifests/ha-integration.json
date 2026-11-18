@@ -46,7 +46,7 @@
         "--quiet",
         "--python",
         "3.14",
-        ".venv"
+        "{venv}"
       ],
       [
         "uv",

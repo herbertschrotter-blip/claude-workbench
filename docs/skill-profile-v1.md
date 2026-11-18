@@ -110,6 +110,7 @@ Review-Serie [CGR-2026-09-24-skillsystem](./chatgpt-reviews/CGR-2026-09-24-skill
 - Übersicht: none | <pfad>
 - GitHub-Owner: none | <owner>
 - Geschützt: none | <pfad-glob>; <pfad-glob>
+- Werkzeugablage: none | <pfad>
 ```
 
 Bedeutung einzelner Felder:
@@ -139,7 +140,11 @@ Bedeutung einzelner Felder:
   Hinweis im Audit, kein Fehler; `none` nimmt ein Projekt bewusst aus.
 - **Projekte:** gilt für das Repo, in dem neue Projekte angelegt werden (z. B. den Konfigurationsordner von Home
   Assistant). `Ablage` ist der Ordner für neue Projekt-Repos, `Übersicht` die Datei mit einer Zeile je Projekt,
-  `Geschützt` die Bereiche, die Claude dort nie ändert.
+  `Geschützt` die Bereiche, die Claude dort nie ändert. `Werkzeugablage` (optional) ist ein Ordner außerhalb der
+  Projekte für große, wiederherstellbare Werkzeuge: `.venv` und `node_modules` eines Projekts liegen dann unter
+  `<Werkzeugablage>/<projektordner>/<pfad>`, im Projekt steht an der alten Stelle ein Verweis. Gedacht für Ablagen, die
+  ganz gesichert werden (z. B. der Konfigurationsordner von Home Assistant). `none` oder ein fehlendes Feld: alles
+  bleibt im Projekt.
 - **Modul:** `Manifest` ist Pfad oder Muster der Modul-Manifeste (z. B. `**/module.yaml`), `Grundsatzregeln` der
   Verweis auf das Regelwerk, gegen das audit prüft. `Nachweise` ist eine Config, die Checks und Testfälle den
   Teilnachweisen der Regeln zuordnet (z. B. `G-15.lifecycle`); sie behauptet keinen Erfolg. `Prüfumfang` ist die

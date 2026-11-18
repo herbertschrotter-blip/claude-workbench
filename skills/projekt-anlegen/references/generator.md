@@ -62,13 +62,21 @@ das Netzlaufwerk anlegen (`references/windows-netzlaufwerk.md`) / abbrechen.
 ## Aufruf
 
 ```
-python3 <skill>/scripts/generate.py --auftrag <datei.json> --ablage <Projekte.Ablage>
+python3 <skill>/scripts/generate.py --auftrag <datei.json> --ablage <Projekte.Ablage> [--werkzeugablage <Projekte.Werkzeugablage>]
 ```
 
 `<skill>` ist der Ordner dieses Skills; den Auftrag schreibt Claude in den Scratchpad, nie ins Projekt. Unter Windows
 heißt der Interpreter je nach Installation `python`. Die Prüfung installiert die Werkzeuge in eine eigene Umgebung im
 Zwischenordner; das braucht Netz und auf einem Raspberry Pi etwa eine halbe Minute (HA-Integration: knapp eine
 Minute).
+
+`--werkzeugablage` nur, wenn das Profil `Projekte.Werkzeugablage` setzt. Dann liegt die Prüf-Umgebung vorübergehend
+dort statt im Zwischenordner, und nach dem Veröffentlichen richtet der Generator die Umgebung des Projekts unter
+`<Werkzeugablage>/<slug>/.venv` ein und setzt im Projekt den Verweis `.venv` (Ergebnisfeld `werkzeug`). Gibt es
+`<Werkzeugablage>/<slug>` schon, entsteht nichts. Scheitert nur dieses Einrichten, ist das Projekt trotzdem geprüft
+und angelegt; das Ergebnis nennt es unter `hinweise`, Claude meldet es und richtet die Umgebung im Ziel des Verweises
+nach. Die erzeugte `.gitignore` nennt `.venv` und `node_modules` ohne Schrägstrich, damit Git auch die Verweise
+ignoriert.
 
 ## Erzeugungsauftrag
 
@@ -101,7 +109,8 @@ Ablage, GitHub-Owner, Branch- und Push-Policy und Prüfbefehle stehen nie im Auf
 2. Bausteine auflösen und zweimal in einen Zwischenordner der Ablage erzeugen (gleiches Dateisystem).
 3. Eine Fassung prüfen: Umgebung einrichten, Formatierung, Lint, Tests (parallel), Start.
 4. Nur bei Grün die saubere Fassung (ohne Umgebung und Caches) an ihren Platz verschieben. Der Zwischenordner
-   verschwindet in jedem Fall.
+   verschwindet in jedem Fall, mit Werkzeugablage auch die Prüf-Umgebung dort.
+5. Mit Werkzeugablage: die Umgebung des Projekts dort einrichten, im Projekt steht der Verweis.
 
 Gleicher Auftrag ergibt gleiche Dateien. Im Projekt liegt `.projekt-anlegen.json` mit Generator-Version, Projektart und
 Bausteinen – nur Herkunft, keine Konfiguration und keine Update-Funktion.

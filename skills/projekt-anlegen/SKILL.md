@@ -46,6 +46,7 @@ Aus dem Skill-Profil der `CLAUDE.md` des Repos, in dem die Sitzung läuft (`docs
 | `Projekte.Übersicht` | Datei, in der Projekte eingetragen werden | `none` ist gültig; dann entfällt das Eintragen |
 | `Projekte.GitHub-Owner` | Besitzer für neue GitHub-Repos | nur gefragt, wenn GitHub gewählt wird |
 | `Projekte.Geschützt` | Bereiche, die Claude nicht ändert | `none` ist gültig |
+| `Projekte.Werkzeugablage` | Ordner für `.venv` und `node_modules` außerhalb des Projekts (z. B. außerhalb einer Sicherung) | wie `none`: alles im Projekt |
 | `Code.Stacks` | Stack der Umgebung, bestimmt die Reference | pro Projekt fragen |
 | `Modul.Grundsatzregeln` | fachliche Regeln für Module eines Stacks | `none` ist gültig |
 
@@ -114,6 +115,12 @@ bekommt keine. Als Inhaber `git config user.name` nennen, sonst fragen.
   erzeugt das Grundgerüst in einen Zwischenordner, prüft es (Werkzeuge einrichten, Formatierung, Lint, Tests, Start)
   und stellt es erst bei Grün an seinen Platz. Bei Rot entsteht nichts; Claude meldet den Schritt und die Ursache.
   Ergebnis als Tabelle Prüfung / Dauer / Ergebnis. Ablauf, Aufruf und Grenzen: `references/generator.md`.
+- **Werkzeugablage** (`Projekte.Werkzeugablage` gesetzt): Der Generator bekommt sie mit `--werkzeugablage`; die
+  Umgebung liegt dann unter `<Werkzeugablage>/<slug>/.venv`, im Projekt steht ein Verweis `.venv`. Dasselbe gilt für
+  `node_modules`, wenn später eines entsteht (`<Werkzeugablage>/<slug>/<pfad>/node_modules`, Verweis an der alten
+  Stelle). Einen vorhandenen Verweis nie löschen oder durch einen Ordner ersetzen: Muss die Umgebung neu aufgesetzt
+  werden, im Ziel des Verweises (`uv venv <ziel>` bzw. `python -m venv <ziel>`, ohne `rm -rf .venv` und ohne
+  `--clear` am Verweis).
 - **Versionen:** Vor dem Generator `scripts/versionen.py` aufrufen und neuere Werkzeugversionen in einem Satz nennen.
   Das ist nur ein Hinweis; angehoben wird erst nach grüner CI des Generators.
 - **Sonst** Ordner und Grunddateien nach der Stack-Reference. Nur das Gerüst: lauffähige Minimalfassung, keine
@@ -198,6 +205,8 @@ der Weg nach der Stack-Reference.
 - Fachlogik schreiben – das Gerüst endet mit technischer Funktionsfähigkeit; Fachliches macht code-erstellen
 - Beim Einrichten eines bestehenden Repos vorhandenen Text der `CLAUDE.md` überschreiben oder still entfernen
 - Ein Projekt mit roter Prüfung als angelegt melden oder den Generator in ein vorhandenes Ziel schreiben lassen
+- Bei gesetzter `Projekte.Werkzeugablage` eine `.venv` oder `node_modules` im Projekt anlegen oder einen Verweis dorthin
+  löschen
 - Ohne ausführbare Umgebung (z. B. bei claude.ai) eine Erzeugung behaupten – dort entsteht nur der Plan
 - Ein neues Projekt ohne Grundentscheidungen anlegen (`Doku.Entscheidungs-Ort` leer oder `none`)
 

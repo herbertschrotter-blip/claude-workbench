@@ -39,5 +39,22 @@ class PlattformTest(unittest.TestCase):
         self.assertIn("Prüfschritt x: plattform nur aus linux, macos, windows", befunde)
 
 
+class VenvTest(unittest.TestCase):
+    def test_umgebung_ausserhalb_bekommt_verweis(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            projekt, venv = Path(tmp) / "projekt", Path(tmp) / "ablage" / "x" / ".venv"
+            projekt.mkdir()
+            pr = {"einrichten": [[PY, "-c", "import os, sys; os.makedirs(sys.argv[1])", "{venv}"]],
+                  "checks": [{"name": "c", "befehl": [PY, "-c", "raise SystemExit(1)"]}]}
+            ok, ergebnisse = p.ausfuehren(pr, projekt, "demo", venv=venv, nur_einrichten=True)
+            self.assertTrue(ok)
+            self.assertEqual([e["name"] for e in ergebnisse], ["einrichten"])
+            self.assertTrue((projekt / ".venv").is_symlink())
+            self.assertTrue((projekt / ".venv").is_dir())
+
+    def test_venv_ist_bekannter_platzhalter(self):
+        self.assertEqual(p.tokens_pruefen({"einrichten": [["{venv}"]], "checks": []}), [])
+
+
 if __name__ == "__main__":
     unittest.main()

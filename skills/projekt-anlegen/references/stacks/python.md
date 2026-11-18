@@ -20,7 +20,8 @@ SQLite); die Vorlagen unter `templates/` setzen alles unten um. Bibliothek und D
 - `pyproject.toml`: Name, Version, `requires-python`; Prüfwerkzeuge (pytest, pytest-xdist, Ruff) als optionale
   Abhängigkeiten (`[project.optional-dependencies] dev = [...]`) mit fester Version.
 - `README.md` mit Aufruf und Testbefehl.
-- `.gitignore`: `__pycache__/`, `*.pyc`, `.venv/`, `.pytest_cache/`, `build/`, `dist/`, `*.egg-info/`, `.env`.
+- `.gitignore`: `__pycache__/`, `*.pyc`, `.venv`, `node_modules`, `.pytest_cache/`, `build/`, `dist/`, `*.egg-info/`,
+  `.env`. `.venv` und `node_modules` ohne Schrägstrich, damit auch ein Verweis in die Werkzeugablage ignoriert wird.
 
 ## Testgerüst (parallel-fähig)
 

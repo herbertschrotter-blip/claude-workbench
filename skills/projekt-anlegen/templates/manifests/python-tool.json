@@ -43,7 +43,7 @@
         "{python}",
         "-m",
         "venv",
-        ".venv"
+        "{venv}"
       ],
       [
         "{venv_python}",

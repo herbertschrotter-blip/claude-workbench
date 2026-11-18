@@ -1,8 +1,10 @@
 """Prüfschritte eines erzeugten Projekts ausführen (nur Standardbibliothek).
 
 Die Befehle stehen deklarativ im Manifest der Projektart (`pruefung`: `einrichten` und `checks`), nie im Auftrag.
-Als Platzhalter gibt es nur {python} (dieser Interpreter), {venv_python} (Interpreter der .venv im Projekt),
-{package}, {package_upper} und {tmp} (eigener leerer Ordner je Check). Ausgeführt wird ohne Shell.
+Als Platzhalter gibt es nur {python} (dieser Interpreter), {venv} (Ordner der Umgebung: .venv im Projekt oder, mit
+Werkzeugablage, der Ordner dort), {venv_python} (Interpreter dieser Umgebung), {package}, {package_upper} und {tmp}
+(eigener leerer Ordner je Check). Ausgeführt wird ohne Shell. Liegt die Umgebung außerhalb des Projekts, steht nach dem
+Einrichten im Projekt ein Verweis `.venv` auf sie.
 Ein Check mit `plattform` (z. B. ["linux"]) läuft nur dort; anderswo meldet er sich als übersprungen.
 """
 
@@ -16,7 +18,7 @@ import time
 from pathlib import Path
 
 TOKEN = re.compile(r"\{([a-z_]+)\}")
-TOKENS = {"python", "venv_python", "package", "package_upper", "tmp"}
+TOKENS = {"python", "venv", "venv_python", "package", "package_upper", "tmp"}
 TIMEOUT = 900  # Sekunden je Befehl; die Installation der Werkzeuge braucht auf dem Pi am längsten
 PLATTFORMEN = {"linux", "windows", "macos"}
 
@@ -28,10 +30,18 @@ def plattform():
     return "macos" if sys.platform == "darwin" else "linux"
 
 
-def venv_python(projekt):
+def venv_python(projekt, venv=None):
+    basis = Path(venv) if venv else Path(projekt) / ".venv"
     if os.name == "nt":
-        return Path(projekt) / ".venv" / "Scripts" / "python.exe"
-    return Path(projekt) / ".venv" / "bin" / "python"
+        return basis / "Scripts" / "python.exe"
+    return basis / "bin" / "python"
+
+
+def verweis(projekt, venv):
+    """Setzt im Projekt den Verweis `.venv` auf eine Umgebung außerhalb (Werkzeugablage); ein vorhandener bleibt."""
+    link = Path(projekt) / ".venv"
+    if not os.path.lexists(link):
+        os.symlink(Path(venv), link, target_is_directory=True)
 
 
 def _einsetzen(text, werte):
@@ -74,16 +84,21 @@ def _lauf(befehl, cwd, env):
     return code, out, err, time.monotonic() - start
 
 
-def ausfuehren(pruefung, projekt, package):
+def ausfuehren(pruefung, projekt, package, venv=None, nur_einrichten=False):
     """Richtet die Umgebung ein und führt alle Checks aus. Gibt (ok, Ergebnisse) zurück; Ergebnisse je Schritt mit
-    name, dauer (s), ok und bei Fehler den letzten Zeilen der Ausgabe. Bricht beim ersten Fehler ab."""
+    name, dauer (s), ok und bei Fehler den letzten Zeilen der Ausgabe. Bricht beim ersten Fehler ab.
+    `venv`: Umgebung außerhalb des Projekts (Werkzeugablage); nach dem Einrichten steht im Projekt ein Verweis.
+    `nur_einrichten`: nur die Umgebung einrichten, keine Checks."""
     projekt = Path(projekt)
-    werte = {"python": sys.executable, "venv_python": venv_python(projekt), "package": package,
-             "package_upper": package.upper()}
+    if venv:
+        Path(venv).parent.mkdir(parents=True, exist_ok=True)
+    werte = {"python": sys.executable, "venv": Path(venv) if venv else projekt / ".venv",
+             "venv_python": venv_python(projekt, venv), "package": package, "package_upper": package.upper()}
     basis_env = {k: v for k, v in os.environ.items() if not k.startswith("PYTHON")}
     ergebnisse = []
     schritte = [{"name": "einrichten", "befehle": pruefung.get("einrichten", [])}]
-    schritte += [dict(c, befehle=[c["befehl"]]) for c in pruefung.get("checks", [])]
+    if not nur_einrichten:
+        schritte += [dict(c, befehle=[c["befehl"]]) for c in pruefung.get("checks", [])]
     for schritt in schritte:
         if "plattform" in schritt and plattform() not in schritt["plattform"]:
             ergebnisse.append({"name": schritt["name"], "dauer": 0.0, "ok": True,
@@ -112,4 +127,6 @@ def ausfuehren(pruefung, projekt, package):
         ergebnisse.append({"name": schritt["name"], "dauer": round(dauer, 1), "ok": ok, **({"ausgabe": rest} if rest else {})})
         if not ok:
             return False, ergebnisse
+        if venv and schritt["name"] == "einrichten":
+            verweis(projekt, venv)
     return True, ergebnisse

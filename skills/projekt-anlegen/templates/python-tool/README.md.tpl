@@ -20,5 +20,6 @@ python -m venv .venv
 .venv/bin/python -m pytest
 ```
 
-Unter Windows heißt der Interpreter `.venv\Scripts\python.exe`. Die Tests laufen parallel auf allen Kernen
+Ist `.venv` ein Verweis (Werkzeugablage außerhalb der Sicherung), bleibt er stehen: neu aufsetzen mit
+`python -m venv <ziel des verweises>`, nie mit `rm -rf .venv`. Unter Windows heißt der Interpreter `.venv\Scripts\python.exe`. Die Tests laufen parallel auf allen Kernen
 (`-n auto`). Grundentscheidungen: [docs/entscheidungen.md](docs/entscheidungen.md).

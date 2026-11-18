@@ -17,6 +17,9 @@ uv pip install --python .venv/bin/python -r requirements-ha.txt
 .venv/bin/python -m pytest -q -n auto tests/integration
 ```
 
+Ist `.venv` ein Verweis (Werkzeugablage außerhalb der Sicherung), bleibt er stehen: neu aufsetzen nur im Ziel des
+Verweises, nie mit `rm -rf .venv`.
+
 Läuft das auf Home Assistant OS, gehört zu beiden `uv pip install` noch `--index-strategy unsafe-best-match` (dort
 ist ein zusätzlicher Paketindex eingetragen). Die Fachlogik-Tests unter `tests/logik` brauchen kein Home Assistant.
 

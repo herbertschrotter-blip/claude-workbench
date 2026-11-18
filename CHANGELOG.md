@@ -8,6 +8,15 @@ Format: Umgekehrte Chronologie (neueste zuerst). Versions-Tags folgen Semantic V
 
 ---
 
+## [v0.78.0] — 2026-11-18
+
+- **skills/projekt-anlegen, docs/skill-profile-v1.md, Feature:** Neues optionales Profilfeld
+  `Projekte.Werkzeugablage`: `.venv` und `node_modules` liegen außerhalb des Projekts (z. B. außerhalb der
+  HA-Sicherung), im Projekt steht ein Verweis. Der Generator bekommt sie mit `--werkzeugablage`, prüft mit einer
+  Umgebung dort und richtet nach dem Veröffentlichen die Umgebung des Projekts dort ein (neuer Platzhalter `{venv}` in
+  den Manifesten). Die Vorlagen für `.gitignore` nennen `.venv` und `node_modules` ohne Schrägstrich, damit Git auch
+  Verweise ignoriert; einen Verweis nie löschen, neu aufgesetzt wird im Ziel.
+
 ## [v0.77.0] — 2026-11-16
 
 - **skills/neustart, Fix:** Die Warteschlange griff im Alltag nie: Die Chats bauten eigene Warteschleifen, trugen sich
